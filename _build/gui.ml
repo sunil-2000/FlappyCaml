@@ -24,8 +24,6 @@ let draw =
     set_color (rgb 255 255 255);
 
     fill_circle x (y + 50) 40;
-
-  done
-
+  done; 
 
 
