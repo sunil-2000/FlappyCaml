@@ -3,6 +3,7 @@
 #require "ANSITerminal";;
 #require "camlimages.all_formats";;
 #require "ounit2";;
+<<<<<<< HEAD
 #require "camlimages.png";;
 #require "camlimages.graphics";;
 #directory "_build";;
@@ -10,3 +11,7 @@
 #use "main.ml";;
 
 
+=======
+#directory "_build";;
+#load "gui.cmo";;
+>>>>>>> fab02a1acbe9a309eee868c6daddadf6b95e5e54
