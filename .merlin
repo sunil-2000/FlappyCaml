@@ -4,3 +4,8 @@ PKG camlimages
 PKG camlimages.all_formats 
 PKG Graphics
 PKG ANSITerminal
+PKG str
+PKG CamlImages
+PKG Images
+PKG Png
+PKG Jpeg

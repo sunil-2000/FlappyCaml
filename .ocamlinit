@@ -1,0 +1,12 @@
+#require "graphics";;
+#require "camlimages";;
+#require "ANSITerminal";;
+#require "camlimages.all_formats";;
+#require "ounit2";;
+#require "camlimages.png";;
+#require "camlimages.graphics";;
+#directory "_build";;
+#use "gui.mli";;
+#use "main.ml";;
+
+
