@@ -3,9 +3,10 @@ open Camlimages
 open Images
 
 
-let x = 300
+type t = {width : int; height : int}
 
-let y = 200
+let make_gui width height = 
+  {width = width; height = height}
 
 (**let draw () = begin
    open_graph " 1000x750"; 
@@ -60,10 +61,16 @@ let array_of_image img =
   | Rgba32 _ -> failwith "RGBA not supported"
   | Cmyk32 _ -> failwith "CMYK not supported"
 
+(** [get_img] img takes the filename of the image as a ppm file and outputs
+    a Graphics.image, which can be displayed with Graphics module. *)
 let get_img img =
   Images.load img [] |> array_of_image |> make_image
 
-let test_img file = 
-  open_graph " 600x400";
+let test_img file gui = 
+  open_graph (" "^(string_of_int gui.width)^"x"^(string_of_int gui.width));
   let image = get_img file in
-  draw_image image 0 0;
+  draw_image image 0 0
+
+let rec test_move_img (player: Game.t) =
+  match Game.get_position player with 
+  | (x, y) -> ()

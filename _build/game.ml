@@ -20,6 +20,10 @@ type t = {
      mutable is_jump: bool; *)
 }
 
+
+let get_position player =
+  player.position 
+
 let velocity_change player = 
   match player.velocity with
   | v -> player.velocity <- max (v +. (gravity *. t_delta)) max_down

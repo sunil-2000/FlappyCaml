@@ -4,6 +4,7 @@
 #require "camlimages.all_formats";;
 #require "ounit2";;
 #directory "_build";;
+#load "game.cmo";;
 #load "gui.cmo";;
 #use "main.ml";;
 
