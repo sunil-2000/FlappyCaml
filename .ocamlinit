@@ -1,0 +1,7 @@
+#require "graphics";;
+#require "camlimages";;
+#require "ANSITerminal";;
+#require "camlimages.all_formats";;
+#require "ounit2";;
+#directory "_build";;
+#load "gui.cmo";;

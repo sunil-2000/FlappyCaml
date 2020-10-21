@@ -1,13 +1,10 @@
-(* need to constantly apply gravity, when jump is needed apply arbitrary 
-   upwards force to player, which is counteracted by gravity until player starts 
-   falling. 
-   Position (y-values): y(n + 1) = v * t + y(n)
-   Velocity: v(n + 1) = a * t + v(n) *)
 
-let gravity = -9.8
+open Graphics
+
+
+let gravity = -0.1
 let old_t = ref (Unix.gettimeofday())
-let velocity_global = 1.0
-let max_down = -5.
+let velocity = 1.0
 let t_delta = 1.0
 (* let min = bottom_of_screen *)
 
@@ -20,9 +17,9 @@ type t = {
      mutable is_jump: bool; *)
 }
 
-let velocity_change player = 
+let velocity_change player add_v = 
   match player.velocity with
-  | v -> player.velocity <- max (v +. (gravity *. t_delta)) max_down
+  | v -> player.velocity <- (v +. add_v +. (gravity *. t_delta))
 
 (* let calc_player_pos player = 
    let x = velocity_change player in
@@ -33,25 +30,35 @@ let velocity_change player =
       (x, y +. (velocity *. t_delta) +. (0.5 *. gravity *. (t_delta**2.0))) *)
 
 let calc_player_pos player = 
-  player |> velocity_change;
+  velocity_change player 0.;
   (**let t_delta = 0.01 (**Unix.gettimeofday() -. !old_t in*) in*)
   match player.position with 
   | (x, y) -> player.position <- 
       (x, y +. (player.velocity *. t_delta) +. (0.5 *. gravity *. (t_delta**2.0))) 
 
 
-(* let y_delta player velocity = 
-   let t_delta = Unix.gettimeofday() -. !old_t in 
-   match player.position with 
-   | (x, y) -> player.position  <- (x , y +. (velocity *. t_delta) +. (0.5 *. gravity *. (t_delta**2.0)));
-    old_t := Unix.gettimeofday(); *)
+let draw = 
+  open_graph " 800x400";
+  plot 5 5;
+  set_window_title "Flappy Caml"; 
 
+  set_color (rgb 255 0 0); ()
 
+(* let circle = fill_circle 200 200 20; *)
 
+let player_1 = {
+  position = (400.,200.);
+  velocity = velocity;
+} 
 
-
-
-
-
-
-
+let loop player = 
+  while (snd player_1.position) > 1. do
+    let e = wait_next_event [Mouse_motion; Key_pressed] in
+    clear_graph ();
+    if e.keypressed then
+      velocity_change player velocity;
+    player_1 |> calc_player_pos;
+    let x = int_of_float (fst player_1.position) in
+    let y = int_of_float (snd player_1.position) in 
+    fill_circle x y 20; 
+  done 

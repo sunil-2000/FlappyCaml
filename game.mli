@@ -4,15 +4,7 @@
 
 type t 
 
-val jump: t -> unit 
+val velocity_change : t -> unit
 
+val calc_player_pos : t -> unit
 
-val fall: t -> unit  
-
-
-
-val run: t -> unit 
-
-val fly: t -> unit 
-
-val collide: t -> t 
