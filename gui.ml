@@ -61,9 +61,9 @@ let array_of_image img =
   | Cmyk32 _ -> failwith "CMYK not supported"
 
 let get_img img =
-  Png.load img [] |> array_of_image |> make_image
+  Images.load img [] |> array_of_image |> make_image
 
-let test_img = 
+let test_img file = 
   open_graph " 600x400";
-  let water = get_img "images/camel_test_sprite.png" in
-  draw_image water 0 0;
+  let image = get_img file in
+  draw_image image 0 0;

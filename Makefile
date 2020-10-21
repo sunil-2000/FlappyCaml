@@ -1,6 +1,6 @@
-MODULES=gui
+MODULES=gui main game
 OBJECTS=$(MODULES:=.cmo)
-MLS=$(MODULES:=gui.ml)
+MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte

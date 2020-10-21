@@ -1,1 +1,1 @@
-val test_img : unit  
+val test_img : string->unit  

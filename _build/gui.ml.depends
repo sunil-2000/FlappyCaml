@@ -1,1 +1,1 @@
-gui.ml: Array Camlimages Graphics Images Index16 Index8 Png Rgb24
+gui.ml: Array Camlimages Graphics Images Index16 Index8 Rgb24
