@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "Rule: ocaml: ml & cmi -> cmo (%=game )": ":1\137L\2438\193\180\156\245\215\t\218\211mP"
 "Resource: /Users/rishikzaparde/3110_Final_Project/game.ml": "c\015\238\007i\131^\231\178P\214\145\012s\131)"
 "Resource: /Users/rishikzaparde/3110_Final_Project/gui.ml": "\2066>\235 \182\187s\206\2274[1\25087"
@@ -18,3 +19,20 @@
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.ml": "RL!\247\247\202\255\196@;\151Arb\241\208"
 "Resource: /Users/rishikzaparde/3110_Final_Project/game.mli": "j'\174E\200p\217W\207\190L\238\220H\247\138"
 "Rule: ocaml dependencies mli (%=gui )": "X%\206\234\146\163\186a<21r\198\205qT"
+=======
+"Rule: ocaml: ml & cmi -> cmo (%=game )": "\189\184\025u+\227\234\193z>\193'-?He"
+"Rule: ocaml dependencies ml (%=game )": "\223`\238\237V\177\205G\180\180\020\245m\173\152\135"
+"Rule: ocaml dependencies ml (%=gui )": "\203\200EJbT\204KK\021\148\133\172\131\170\211"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/main.ml": "}%\151B\1505\144\025\162\241\r]dL\159\014"
+"Rule: ocaml: mli -> cmi (%=game )": "\239\031|\018\208\001^-#\147\021\030I\212\176\154"
+"Rule: ocaml: ml -> cmo & cmi (%=main )": "\253{\244\"H\029\0313\208\174\147\193\203:e\228"
+"Rule: ocaml: ml & cmi -> cmo (%=gui )": "75\163\171\231\025|\252\182ph\198\159\018\231\""
+"Rule: ocaml dependencies ml (%=main )": "\163\165H\n4\228Q\185\211n/\017q\166$\226"
+"Rule: ocaml: mli -> cmi (%=gui )": "\191\254\027,U![\025\028\218\152\136V\t\153."
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.mli": "ZR\186\151,\245\1513U\147\217\028X\147\163\161"
+"Rule: ocaml dependencies mli (%=game )": "\132pF\212y\006\182v\1581\006(\000\"P\243"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.ml": "&\171n\242Dc\007 {\209tt\250\154q\132"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.mli": "\019_Z\026\210\250\128\223\227\144%]\253\180Ns"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.ml": "\174\"vL\199\181\165|\003\178\141\1777\218C\147"
+"Rule: ocaml dependencies mli (%=gui )": "\191\162F\215\148\138\023\1408\152\240\181f\220\202M"
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3

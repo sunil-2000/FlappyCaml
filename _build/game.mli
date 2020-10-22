@@ -4,14 +4,27 @@
 (** [type t] is an abstract type that represents a player *)
 type t 
 
+val create_t : (float * float) -> float -> t
+
+
 (** [get_position] returns current coordinates of player. *)
 val get_position : t -> (float * float)
 
 (** [get_velocity] returns current velocity of player*) 
 val get_velocity: t -> float 
 
+<<<<<<< HEAD
 (** [jump] returns player with updated player position and velocity values
     after player has jumped *)
 (*val jump : t -> t *)
+=======
+
+
+val gravity : t -> t
+
+(** [jump] returns player with updated player position and velocity values
+    after player has jumped *)
+val jump : t -> t 
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3
 
 
