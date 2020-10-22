@@ -70,7 +70,3 @@ let test_img file gui =
   open_graph (" "^(string_of_int gui.width)^"x"^(string_of_int gui.width));
   let image = get_img file in
   draw_image image 0 0
-
-let rec test_move_img (player: Game.t) =
-  match Game.get_position player with 
-  | (x, y) -> ()

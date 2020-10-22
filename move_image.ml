@@ -2,9 +2,9 @@
 open Graphics
 
 
-let gravity = -0.1
+let gravity = -1.5
 let old_t = ref (Unix.gettimeofday())
-let velocity = 1.0
+let velocity = 4.0
 let t_delta = 1.0
 (* let min = bottom_of_screen *)
 
@@ -17,9 +17,9 @@ type t = {
      mutable is_jump: bool; *)
 }
 
-let velocity_change player add_v = 
+let velocity_change player = 
   match player.velocity with
-  | v -> player.velocity <- (v +. add_v +. (gravity *. t_delta))
+  | v -> player.velocity <- (v +. (gravity *. t_delta))
 
 (* let calc_player_pos player = 
    let x = velocity_change player in
@@ -30,7 +30,7 @@ let velocity_change player add_v =
       (x, y +. (velocity *. t_delta) +. (0.5 *. gravity *. (t_delta**2.0))) *)
 
 let calc_player_pos player = 
-  velocity_change player 0.;
+  velocity_change player;
   (**let t_delta = 0.01 (**Unix.gettimeofday() -. !old_t in*) in*)
   match player.position with 
   | (x, y) -> player.position <- 
@@ -53,12 +53,14 @@ let player_1 = {
 
 let loop player = 
   while (snd player_1.position) > 1. do
-    let e = wait_next_event [Mouse_motion; Key_pressed] in
     clear_graph ();
+    let e = wait_next_event [Key_pressed] in
     if e.keypressed then
-      velocity_change player velocity;
-    player_1 |> calc_player_pos;
+      player.velocity <- player.velocity +. velocity
+    else 
+      player.velocity <- player.velocity +. 0.0;
+    calc_player_pos player_1;
     let x = int_of_float (fst player_1.position) in
-    let y = int_of_float (snd player_1.position) in 
-    fill_circle x y 20; 
+    let y = int_of_float (snd player_1.position) in
+    fill_circle x y 20;
   done 
