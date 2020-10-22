@@ -12,6 +12,6 @@ val get_velocity: t -> float
 
 (** [jump] returns player with updated player position and velocity values
     after player has jumped *)
-val jump : t -> t 
+(*val jump : t -> t *)
 
 

@@ -20,6 +20,8 @@ type t = {
      mutable is_jump: bool; *)
 }
 
+let get_velocity player = 
+  player.velocity 
 
 let get_position player =
   player.position 
