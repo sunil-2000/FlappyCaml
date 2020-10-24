@@ -3,11 +3,16 @@
     contains information about the width and height of the window.
     [t] also contains information for the images that will be displayed
     in the window. *)
-type t 
+type t
 
 (** [make_gui] creates a graphical window based on the dimensions that are
     input. Opens graphical window and instantiates initial game canvas.
     Required: valid dimensions that can display on a user's screen. *)
+<<<<<<< HEAD
+val make_gui : t -> unit
+
+val make_state : int -> int -> int -> int -> t
+=======
 val make_gui : int -> int -> t
 (*
 (** [draw_player] draws player onto gui *)
@@ -33,3 +38,4 @@ val draw_background: t -> unit
 *)
 (** [test_img] draws image on canvas, testing purpose *)
 val test_img : string -> t -> unit  
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3

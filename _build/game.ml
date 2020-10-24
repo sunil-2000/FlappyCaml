@@ -20,6 +20,8 @@ type t = {
      mutable is_jump: bool; *)
 }
 
+<<<<<<< HEAD
+=======
 let create_t pos v = {
   position = pos;
   velocity = v
@@ -28,6 +30,7 @@ let create_t pos v = {
 (* let set_velocity player v = 
    player.velocity <- v *)
 
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3
 let get_velocity player = 
   player.velocity 
 

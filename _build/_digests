@@ -1,4 +1,31 @@
+<<<<<<< HEAD
 "Rule: ocaml: ml & cmi -> cmo (%=game )": "\004Q%5\198[\218\162\173\016\218\011\192}E\148"
+=======
+<<<<<<< HEAD
+"Rule: ocaml: ml & cmi -> cmo (%=game )": ":1\137L\2438\193\180\156\245\215\t\218\211mP"
+"Resource: /Users/rishikzaparde/3110_Final_Project/game.ml": "c\015\238\007i\131^\231\178P\214\145\012s\131)"
+"Resource: /Users/rishikzaparde/3110_Final_Project/gui.ml": "\2066>\235 \182\187s\206\2274[1\25087"
+"Resource: /Users/rishikzaparde/3110_Final_Project/main.ml": "\t\174f\168\162\201\028\014\134K\018\133\130\235h\205"
+"Rule: ocaml dependencies ml (%=gui )": ")\030k\196\179!x\191\185 \247[e\193\131\242"
+"Rule: ocaml dependencies ml (%=game )": "\015\150\250m\1587y\253\168k\184\239%\211\241\209"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/main.ml": "\186\218\223(\024\027\236\248\173=u\007\243C\159o"
+"Resource: /Users/rishikzaparde/3110_Final_Project/gui.mli": "\198\200,\011Q^\157\2070\019\215\143\243\017Iw"
+"Rule: ocaml: mli -> cmi (%=game )": "\183\"\193\183\184F7\186\012\n\160\155z\161\012L"
+"Rule: ocaml: ml -> cmo & cmi (%=main )": "7\217\230\0053&~\237\245\159\030\206\187\181m\223"
+"Rule: ocaml: ml & cmi -> cmo (%=gui )": "\216o\227+\243\248\217\131;\016\172\248t/\128\136"
+"Rule: ocaml dependencies ml (%=main )": "\014\225\138wEl,x\215dX\025\r\175Ix"
+"Rule: ocaml: mli -> cmi (%=gui )": "\b\246\201\206\149Vr\194\194\211\196\172&\204qf"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.mli": "d\017<\146\245\197\224Vb\150\200\189\141\019\003\133"
+"Rule: ocaml dependencies mli (%=game )": "5\237\011`\143\140\027\185\206\196l\022\180Un\206"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.ml": "=\212!\208T@\160\220\000\250\246\129\007\129\247\r"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.mli": "E\132\127\239\223\229v\247X\1969&~-\000\250"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.ml": "RL!\247\247\202\255\196@;\151Arb\241\208"
+"Resource: /Users/rishikzaparde/3110_Final_Project/game.mli": "j'\174E\200p\217W\207\190L\238\220H\247\138"
+"Rule: ocaml dependencies mli (%=gui )": "X%\206\234\146\163\186a<21r\198\205qT"
+=======
+"Rule: ocaml: ml & cmi -> cmo (%=game )": "\189\184\025u+\227\234\193z>\193'-?He"
+"Rule: ocaml dependencies ml (%=game )": "\223`\238\237V\177\205G\180\180\020\245m\173\152\135"
+>>>>>>> 95af998188262206d23eb9fb6394022495d61d9c
 "Rule: ocaml dependencies ml (%=gui )": "\203\200EJbT\204KK\021\148\133\172\131\170\211"
 "Rule: ocaml dependencies ml (%=game )": "\2381\1862\175$\170\1762\011\222\210\225\022\131\232"
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/main.ml": "fuU\1310\027'\141\142\137\171\024-(\007\179"
@@ -13,3 +40,4 @@
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.mli": "\019_Z\026\210\250\128\223\227\144%]\253\180Ns"
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.ml": "\174\"vL\199\181\165|\003\178\141\1777\218C\147"
 "Rule: ocaml dependencies mli (%=gui )": "\191\162F\215\148\138\023\1408\152\240\181f\220\202M"
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3

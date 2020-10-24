@@ -6,7 +6,7 @@
 
 let gravity = -0.5
 let old_t = ref (Unix.gettimeofday())
-let max_down = -5.
+let max_down = -2.
 let jump_v = 10.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)

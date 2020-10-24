@@ -3,6 +3,16 @@
     contains information about the width and height of the window.
     [t] also contains information for the images that will be displayed
     in the window. *)
+<<<<<<< HEAD
+type t
+
+(** [make_gui] creates a graphical window based on the dimensions that are
+    input. 
+    Required: valid dimensions that can display on a user's screen. *)
+val make_gui : t -> unit
+
+val make_state : int -> int -> int -> int -> t
+=======
 type t 
 
 (** [make_gui] creates a graphical window based on the dimensions that are
@@ -33,3 +43,4 @@ val draw_background: t -> unit
 *)
 (** [test_img] draws image on canvas, testing purpose *)
 val test_img : string -> t -> unit  
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3

@@ -3,33 +3,19 @@ open Camlimages
 open Images
 
 
-type t = {width : int; height : int}
+type t = {
+  canvas_width : int; 
+  canvas_height : int;
+  camel_x : int;
+  camel_y : int;
+}
 
-let make_gui width height = 
-  {width = width; height = height}
-
-(**let draw () = begin
-   open_graph " 1000x750"; 
-
-   plot 5 5;
-
-   set_window_title "Flappy Caml"; 
-
-   set_color (rgb 255 0 0);
-
-   for y = 200 to 500 do 
-
-    set_color (rgb 255 0 0);
-
-    fill_circle x (y + 50) 40;
-
-    Unix.sleepf 0.01;
-
-    set_color (rgb 255 255 255);
-
-    fill_circle x (y + 50) 40;
-   done;
-   end*)
+let make_state a b c d = {
+  canvas_width = a; 
+  canvas_height = b;
+  camel_x = c;
+  camel_y = d;
+}
 
 let array_of_image img =
   match img with
@@ -66,7 +52,34 @@ let array_of_image img =
 let get_img img =
   Images.load img [] |> array_of_image |> make_image
 
-let test_img file gui = 
-  open_graph (" "^(string_of_int gui.width)^"x"^(string_of_int gui.width));
+let draw_camel file t = 
   let image = get_img file in
+<<<<<<< HEAD
+  draw_image image t.camel_x t.camel_y
+
+let draw_ground file = 
+  let image = get_img file in
+  draw_image image 0 0;
+  draw_image image 190 0;
+  draw_image image 380 0;
+  draw_image image 570 0
+
+let draw_back init = 
+  set_color (rgb 91 164 238);
+  fill_rect 0 0 init.canvas_width init.canvas_height
+
+let draw_pipes file1 file2 = 
+  let image1 = get_img file1 in 
+  let image2 = get_img file2 in
+  draw_image image1 300 100;
+  draw_image image2 300 500
+
+let make_gui init = 
+  open_graph (" "^(string_of_int init.canvas_width)^"x"^(string_of_int init.canvas_height));
+  draw_back init;
+  draw_camel "assets/clarkson.ppm" init;
+  draw_ground "assets/new_ground.ppm";
+  draw_pipes "assets/bottom.ppm" "assets/top.ppm"
+=======
   draw_image image 0 0
+>>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3
