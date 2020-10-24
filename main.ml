@@ -1,3 +1,4 @@
+
 let jump' player =
   let key = Graphics.wait_next_event [Key_pressed] in
   if key.keypressed then 

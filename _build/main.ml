@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-open Gui
 
-let main () = 
-  let test = make_state 600 700 100 200 in
-  make_gui test;
-  ()
-(** Gui.test_img "assets/camel_test_sprite.ppm" gui *)
 let jump' player =
   let key = Graphics.wait_next_event [Key_pressed] in
   if key.keypressed then 
@@ -38,7 +31,6 @@ let rec move_player player =
     else 
       move_player (gravity_draw player)
 
-<<<<<<< HEAD
 
 let main () = 
   (*let gui = Gui.make_gui 600 400 *)
@@ -48,6 +40,4 @@ let main () =
 
 
 
-=======
->>>>>>> 95af998188262206d23eb9fb6394022495d61d9c
 let () = main ()

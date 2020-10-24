@@ -6,7 +6,7 @@
 
 let gravity = -0.5
 let old_t = ref (Unix.gettimeofday())
-let max_down = -5.
+let max_down = -2.
 let jump_v = 10.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
@@ -20,8 +20,6 @@ type t = {
      mutable is_jump: bool; *)
 }
 
-<<<<<<< HEAD
-=======
 let create_t pos v = {
   position = pos;
   velocity = v
@@ -30,7 +28,6 @@ let create_t pos v = {
 (* let set_velocity player v = 
    player.velocity <- v *)
 
->>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3
 let get_velocity player = 
   player.velocity 
 

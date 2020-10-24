@@ -54,7 +54,6 @@ let get_img img =
 
 let draw_camel file t = 
   let image = get_img file in
-<<<<<<< HEAD
   draw_image image t.camel_x t.camel_y
 
 let draw_ground file = 
@@ -80,6 +79,3 @@ let make_gui init =
   draw_camel "assets/clarkson.ppm" init;
   draw_ground "assets/new_ground.ppm";
   draw_pipes "assets/bottom.ppm" "assets/top.ppm"
-=======
-  draw_image image 0 0
->>>>>>> 4a95d18d727ec347bfa225ea572e43035ceb3ab3

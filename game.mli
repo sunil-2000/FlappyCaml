@@ -13,12 +13,10 @@ val get_position : t -> (float * float)
 (** [get_velocity] returns current velocity of player*) 
 val get_velocity: t -> float 
 
-
-
 val gravity : t -> t
 
 (** [jump] returns player with updated player position and velocity values
     after player has jumped *)
-(*val jump : t -> t *)
+val jump : t -> t 
 
 
