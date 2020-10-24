@@ -15,3 +15,5 @@ val make_state : int -> int -> int -> int -> t
 
 (** [draw_player] draws player onto the window *)
 val draw_player : Game.t -> unit 
+
+val gravity_draw: Game.t -> Game.t

@@ -7,20 +7,6 @@ let jump' player =
   else 
     player
 
-(* put this function in gui.ml later, as helper for [draw_player] *)
-let gravity_draw player = 
-  match Game.get_position player with
-  |(x,y) ->  
-    Graphics.clear_graph ();
-    let a = int_of_float x in
-    let b = int_of_float y in
-    let test = make_state 600 700 a b in
-    make_gui test;
-    Unix.sleepf 0.01;
-    print_string "done";
-    Game.gravity player
-
-
 (* if key pressed, call jump and run player through gravity function again*)
 let rec move_player player = 
   match Game.get_position player with 

@@ -74,7 +74,6 @@ let draw_pipes file1 file2 =
   draw_image image2 300 500
 
 let make_gui init = 
-  draw_back init;
   draw_camel "assets/clarkson.ppm" init;
   draw_ground "assets/new_ground.ppm";
   draw_pipes "assets/bottom.ppm" "assets/top.ppm"
@@ -84,8 +83,11 @@ let gravity_draw player =
   match Game.get_position player with
   |(x,y) ->  
     Graphics.clear_graph ();
-    Graphics.fill_circle (int_of_float x ) (int_of_float y) 10;
-    Unix.sleepf 0.0001;
+    let a = int_of_float x in
+    let b = int_of_float y in
+    let test = make_state 600 700 a b in
+    make_gui test;
+    Unix.sleepf 0.01;
     Game.gravity player 
 
 (* [jump_draw player] is a helper function for [move_player] responsible for 
