@@ -79,3 +79,36 @@ let make_gui init =
   draw_camel "assets/clarkson.ppm" init;
   draw_ground "assets/new_ground.ppm";
   draw_pipes "assets/bottom.ppm" "assets/top.ppm"
+
+(* helper function for move_player, responsible for gravity drawing *)
+let gravity_draw player = 
+  match Game.get_position player with
+  |(x,y) ->  
+    Graphics.clear_graph ();
+    Graphics.fill_circle (int_of_float x ) (int_of_float y) 10;
+    Unix.sleepf 0.0001;
+    Game.gravity player 
+
+(* [jump_draw player] is a helper function for [move_player] responsible for 
+   drawing jump movement *)
+let jump_draw player =
+  let key = Graphics.wait_next_event [Key_pressed] in
+  if key.keypressed then 
+    Game.jump player
+  else 
+    player
+
+let rec draw_player player = 
+  match Game.get_position player with 
+  |(x,y) -> 
+    if y < 0. then 
+      Graphics.clear_graph ()
+    else 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
+      Game.jump player 
+      |> gravity_draw 
+      |> draw_player
+    else 
+      let p' = gravity_draw player in 
+      print_newline ();
+      draw_player (p')
