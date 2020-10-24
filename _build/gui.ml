@@ -74,7 +74,6 @@ let draw_pipes file1 file2 =
   draw_image image2 300 500
 
 let make_gui init = 
-  open_graph (" "^(string_of_int init.canvas_width)^"x"^(string_of_int init.canvas_height));
   draw_back init;
   draw_camel "assets/clarkson.ppm" init;
   draw_ground "assets/new_ground.ppm";
