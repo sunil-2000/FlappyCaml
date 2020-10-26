@@ -1,3 +1,4 @@
+open Gui
 
 let jump' player =
   let key = Graphics.wait_next_event [Key_pressed] in
@@ -6,6 +7,7 @@ let jump' player =
   else 
     player
 
+<<<<<<< HEAD
 (* put this function in gui.ml later, as helper for [draw_player] *)
 let gravity_draw player = 
   match Game.get_position player with
@@ -16,6 +18,8 @@ let gravity_draw player =
     print_string "done";
     Game.gravity player 
 
+=======
+>>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
 (* if key pressed, call jump and run player through gravity function again*)
 let rec move_player player = 
   match Game.get_position player with 
@@ -34,10 +38,8 @@ let rec move_player player =
 
 let main () = 
   (*let gui = Gui.make_gui 600 400 *)
-  Graphics.open_graph " 600x400";
+  Graphics.open_graph " 600x700";
   let player = Game.create_t (200., 200.) 5. in 
-  move_player player
-
-
+  Gui.draw_player player
 
 let () = main ()
