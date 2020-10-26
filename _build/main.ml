@@ -12,7 +12,7 @@ let gravity_draw player =
   |(x,y) ->  
     Graphics.clear_graph ();
     Graphics.fill_circle (int_of_float x ) (int_of_float y) 10;
-    Unix.sleepf 0.01;
+    Unix.sleepf 0.1;
     print_string "done";
     Game.gravity player 
 
