@@ -1,6 +1,26 @@
+<<<<<<< HEAD
 "Rule: ocaml: ml & cmi -> cmo (%=game )": "?E?\020\n\239\128\214\168\183\242\233\195\178'\134"
 "Resource: /Users/rishikzaparde/3110_Final_Project/game.ml": "\031G}k\238}\242\188:\211\021\140G\224\130\194"
 "Resource: /Users/rishikzaparde/3110_Final_Project/gui.ml": "\204g\229/\159\161\243c\217\142\228BG5S\\"
+=======
+<<<<<<< HEAD
+"Resource: /Users/udaikhattar/Desktop/CS 3110/3110_Final_Project/gui.ml": ">\253\214\177s\016^lK\1603NC\180\236\137"
+"Rule: ocaml: ml & cmi -> cmo (%=game )": "\t5\176^\156\025z\136\173|\151h\025G\212c"
+"Rule: ocaml dependencies ml (%=game )": "\232\173Eg\203\007^3IHar;\152\225W"
+"Rule: ocaml dependencies ml (%=gui )": "GP\247o\236n\024\234\149\240.(\150\223\014;"
+"Resource: /Users/sunil/Desktop/3110/3110_Final_Project/main.ml": "R\155\243\155\237\005&\n7\004X\158\\0a\241"
+"Resource: /Users/udaikhattar/Desktop/CS 3110/3110_Final_Project/game.ml": "J\202\227Qj\196<\0229\211;q\193\030\211\161"
+"Resource: /Users/udaikhattar/Desktop/CS 3110/3110_Final_Project/main.ml": "\202V\243\165\231\015\127\177;I>\142\243\180}\193"
+"Rule: ocaml: mli -> cmi (%=game )": "ANK\175\252\001\192\222\1467\246\02027}U"
+"Rule: ocaml: ml -> cmo & cmi (%=main )": "a%t\250\198\236\250\021\175D\018S\186\132\214\003"
+"Rule: ocaml: ml & cmi -> cmo (%=gui )": "-\255O\031\247\201\014\243I\027\243\248\168\198\250\154"
+"Rule: ocaml dependencies ml (%=main )": "go\182;\193f\019\245\001\142e2M33\226"
+"Rule: ocaml: mli -> cmi (%=gui )": "\149\223U|n@.\170\186\020\027\226\197\187}\t"
+=======
+"Rule: ocaml: ml & cmi -> cmo (%=game )": "r\030KA[Ls\186\0156\210\188\215\151\020_"
+"Resource: /Users/rishikzaparde/3110_Final_Project/game.ml": "\214\1847\230\005\191W\128\024\206\181\194\191u\215`"
+"Resource: /Users/rishikzaparde/3110_Final_Project/gui.ml": "\016l\236\022OU\163t\243\130\140\189XW\229J"
+>>>>>>> 2d9092d60c4d72756e022c1334191812fadccf18
 "Resource: /Users/rishikzaparde/3110_Final_Project/main.ml": "y}\005\006\196\203\157\229F\003\157\141\165\147C\246"
 "Rule: ocaml dependencies ml (%=gui )": "\127V\224AQ\131\155\153;\235\2350\188\186\240\228"
 "Rule: ocaml dependencies ml (%=game )": "\ba\247\191\180\t,\185\140\253\199\128\243\134\236$"
@@ -10,11 +30,18 @@
 "Rule: ocaml: ml -> cmo & cmi (%=main )": "%v^\247V\235n\027X\219\211}\002\229$\147"
 "Rule: ocaml: ml & cmi -> cmo (%=gui )": "=\208\131\253\195\1976\026\005We1\154c\195%"
 "Rule: ocaml dependencies ml (%=main )": "\017#{\131g\208\0209\197u\163*\240X\205*"
+<<<<<<< HEAD
 "Rule: ocaml: mli -> cmi (%=gui )": "SG\244\0160\018B\194|\165\221r\144\002\171\132"
+=======
+"Rule: ocaml: mli -> cmi (%=gui )": "\134\016\018\240\239B\184\164\015\224\221\136\011UlJ"
+>>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
+>>>>>>> 2d9092d60c4d72756e022c1334191812fadccf18
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.mli": "\159\220\018\234\225\147T~}Z\246{\030\129\171 "
 "Rule: ocaml dependencies mli (%=game )": "\233\158c\226!`,B>qi\206,\155G\194"
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.ml": "z\226\132^wB\186\132o\215\189\129q\185\014\007"
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/game.mli": "A\026\172\1659\2036paS\223\197\003\196\182."
+"Resource: /Users/udaikhattar/Desktop/CS 3110/3110_Final_Project/game.mli": "A\026\172\1659\2036paS\223\197\003\196\182."
+"Resource: /Users/udaikhattar/Desktop/CS 3110/3110_Final_Project/gui.mli": "\159\220\018\234\225\147T~}Z\246{\030\129\171 "
 "Resource: /Users/sunil/Desktop/3110/3110_Final_Project/gui.ml": ">\253\214\177s\016^lK\1603NC\180\236\137"
 "Resource: /Users/rishikzaparde/3110_Final_Project/game.mli": "S\215a\143a\014\130\138\219n\170\179\166.\248\154"
 "Rule: ocaml dependencies mli (%=gui )": "\188\167\175\138\188z\255\002\1760\171\249\146$L\243"

@@ -16,7 +16,9 @@ ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerm
 # Target: main.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmo main.ml # cached
 # Target: game.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:game.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends # cached
-# Target: game.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:game.cmo, file:game.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o game.cmo game.ml # cached
-# Compilation successful.
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends
++ ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends
+File "game.ml", line 72, characters 0-0:
+Error: Syntax error
+Command exited with code 2.
+# Compilation unsuccessful.
