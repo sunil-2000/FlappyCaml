@@ -11,7 +11,7 @@ type t
 val make_gui : t -> unit
 
 (** [make_state] initializes window dimensions and starting coordinates of player *)
-val make_state : int -> int -> int -> int -> t
+val make_state : int -> int -> int -> int -> int -> t
 
 (** [draw_player] draws player onto the window *)
 val draw_player : Game.t -> unit 

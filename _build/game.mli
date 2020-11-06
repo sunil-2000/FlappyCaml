@@ -14,6 +14,8 @@ val get_position : t -> (float * float)
 (** [get_velocity] returns current velocity of player*) 
 val get_velocity: t -> float 
 
+val get_pipe : t -> int
+
 (** [gravity] applies gravity and velocity to a player and updates the 
     x and y coordinates appropiately. *)
 val gravity : t -> t
@@ -22,4 +24,5 @@ val gravity : t -> t
     after player has jumped *)
 val jump : t -> t 
 
+val pipe_change : t -> t
 

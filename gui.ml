@@ -8,13 +8,11 @@ type t = {
   canvas_height : int;
   camel_x : int;
   camel_y : int;
-}
-
-let make_state a b c d = {
-  canvas_width = a; 
-  canvas_height = b;
-  camel_x = c;
-  camel_y = d;
+  pipe_x : int;
+  camel_image : Graphics.image;
+  bottom_pipe_image: Graphics.image;
+  top_pipe_image: Graphics.image;
+  ground_image: Graphics.image;
 }
 
 let array_of_image img =
@@ -52,40 +50,52 @@ let array_of_image img =
 let get_img img =
   Images.load img [] |> array_of_image |> make_image
 
-let draw_camel file t = 
-  let image = get_img file in
-  draw_image image t.camel_x t.camel_y
+let make_state a b c d e = {
+  canvas_width = a; 
+  canvas_height = b;
+  camel_x = c;
+  camel_y = d;
+  pipe_x = e;
+  camel_image = get_img "assets/clarkson.ppm";
+  bottom_pipe_image = get_img "assets/bottom.ppm";
+  top_pipe_image = get_img "assets/top.ppm";
+  ground_image = get_img "assets/new_ground.ppm";
+}
 
-let draw_ground file = 
-  let image = get_img file in
-  draw_image image 0 0;
-  draw_image image 190 0;
-  draw_image image 380 0;
-  draw_image image 570 0
+let draw_camel t =
+  set_color (white);
+  fill_rect 200 100 50 600;
+  draw_image t.camel_image t.camel_x t.camel_y
+
+let draw_ground init = 
+  draw_image init.ground_image 0 0;
+  draw_image init.ground_image 190 0;
+  draw_image init.ground_image 380 0;
+  draw_image init.ground_image 570 0
 
 let draw_back init = 
   set_color (rgb 91 164 238);
   fill_rect 0 0 init.canvas_width init.canvas_height
 
-let draw_pipes file1 file2 = 
-  let image1 = get_img file1 in 
-  let image2 = get_img file2 in
-  draw_image image1 300 100;
-  draw_image image2 300 500
+let draw_pipes init =
+  fill_rect 250 100 400 600;
+  fill_rect 0 100 200 600; 
+  draw_image init.bottom_pipe_image init.pipe_x 100;
+  draw_image init.top_pipe_image init.pipe_x 500
 
 let make_gui init = 
-  draw_camel "assets/clarkson.ppm" init;
-  draw_ground "assets/new_ground.ppm";
-  draw_pipes "assets/bottom.ppm" "assets/top.ppm"
+  draw_ground init;
+  draw_pipes init;
+  draw_camel init
 
 (* helper function for move_player, responsible for gravity drawing *)
 let gravity_draw player = 
   match Game.get_position player with
   |(x,y) ->  
-    Graphics.clear_graph ();
     let a = int_of_float x in
     let b = int_of_float y in
-    let test = make_state 600 700 a b in
+    let pipe_x = Game.get_pipe player in
+    let test = make_state 600 700 a b pipe_x in
     make_gui test;
     Unix.sleepf 0.01;
     Game.gravity player 
@@ -99,10 +109,14 @@ let jump_draw player =
   else 
     player
 
+let pipe_change player = 
+  Game.pipe_change player
+  |> Game.get_pipe
+
 let rec draw_player player = 
   match Game.get_position player with 
   |(x,y) -> 
-    if y < 0. then 
+    if y < 100. then 
       Graphics.clear_graph ()
     else 
     if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
@@ -110,6 +124,6 @@ let rec draw_player player =
       |> gravity_draw 
       |> draw_player
     else 
-      let p' = gravity_draw player in 
-      print_newline ();
-      draw_player (p')
+      gravity_draw player
+      |> Game.pipe_change 
+      |> draw_player
