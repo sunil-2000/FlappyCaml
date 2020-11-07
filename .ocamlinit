@@ -9,5 +9,6 @@
 #directory "_build";;
 #load "game.cmo";;
 #load "gui.cmo";;
+#load "state.cmo";;
 #use "main.ml";;
 

@@ -60,6 +60,7 @@ let make_state a b c d e = {
   bottom_pipe_image = get_img "assets/bottom.ppm";
   top_pipe_image = get_img "assets/top.ppm";
   ground_image = get_img "assets/new_ground.ppm";
+
 }
 
 let draw_camel t =
@@ -89,7 +90,7 @@ let make_gui init =
   draw_camel init
 
 (* helper function for move_player, responsible for gravity drawing *)
-let gravity_draw player = 
+let gravity_draw t_delta player = 
   match Game.get_position player with
   |(x,y) ->  
     let a = int_of_float x in
@@ -97,8 +98,8 @@ let gravity_draw player =
     let pipe_x = Game.get_pipe player in
     let test = make_state 600 700 a b pipe_x in
     make_gui test;
-    Unix.sleepf 0.01;
-    Game.gravity player 
+    Unix.sleepf 0.001;
+    Game.gravity t_delta player
 
 (* [jump_draw player] is a helper function for [move_player] responsible for 
    drawing jump movement *)
@@ -113,17 +114,12 @@ let pipe_change player =
   Game.pipe_change player
   |> Game.get_pipe
 
-let rec draw_player player = 
+let draw_player t_delta player = 
   match Game.get_position player with 
   |(x,y) -> 
-    if y < 100. then 
-      Graphics.clear_graph ()
+    if 
+      (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
+
+      gravity_draw t_delta (Game.jump player) 
     else 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
-      Game.jump player 
-      |> gravity_draw 
-      |> draw_player
-    else 
-      gravity_draw player
-      |> Game.pipe_change 
-      |> draw_player
+      gravity_draw t_delta player                                                                                              

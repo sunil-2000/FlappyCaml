@@ -1,14 +1,10 @@
-let gravity = -1.
-let old_t = ref (Unix.gettimeofday())
-<<<<<<< HEAD
-let max_down = -1.5
-let jump_v = 10.
+
+let gravity = -100.
+(* let old_t = ref (Unix.gettimeofday()) *)
+let max_down = -180.
+let jump_v = 100.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
-=======
-let max_down = -2.
-let jump_v = 7.
->>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
 
 type t = {
   (* name : string;
@@ -17,14 +13,21 @@ type t = {
   velocity : float;
   (* orientation : float;
      mutable is_jump: bool; *)
-  pipe_x : int
+  pipe_x : int;
+  game_over : bool;
+  is_jump : bool 
 }
 
 let create_t pos v = {
   position = pos;
   velocity = v;
-  pipe_x = 600
+  pipe_x = 600;
+  game_over = false;
+  is_jump = false
 }
+
+let is_gameover t = 
+  t.game_over
 
 let get_velocity player = 
   player.velocity 
@@ -35,31 +38,26 @@ let get_position player =
 let get_pipe player = 
   player.pipe_x
 
-let velocity_change player = 
-  let t_delta = 0.33 in    
+let velocity_change t_delta player =  
   max (player.velocity +. (gravity *. t_delta)) max_down
 
-<<<<<<< HEAD
 let pipe_change player = {
   player with pipe_x = player.pipe_x - 5
 }
 
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
->>>>>>> 2d9092d60c4d72756e022c1334191812fadccf18
-let gravity player = 
+let gravity t_delta player = 
   (* player |> velocity_change; *)
-  let t_delta = Unix.gettimeofday()  -. !old_t in
   match player.position with 
-  | (x, y) -> { player with position = 
-                              (x, y +. 
-                                  (player.velocity *. t_delta) +. 
-                                  (0.5 *. gravity *. (t_delta**2.0)));
-                            velocity = velocity_change player}
+  | (x, y) -> 
+    let is_jump' = if player.velocity = 0. then true else false in 
+    { player with 
+      position = (x, y +. (player.velocity *. t_delta) +. 
+                     (0.5 *. gravity *. (t_delta**2.0)));
+      velocity = velocity_change t_delta player;
+      is_jump = is_jump'}
 
 let jump player = 
-  old_t := Unix.gettimeofday ();
-  {player with velocity =  player.velocity +. jump_v}
+  if player.is_jump = false then 
+    {player with velocity =  player.velocity +. jump_v; is_jump = true}
+  else 
+    player 
