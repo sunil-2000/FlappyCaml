@@ -1,14 +1,9 @@
 let gravity = -1.
 let old_t = ref (Unix.gettimeofday())
-<<<<<<< HEAD
 let max_down = -1.5
-let jump_v = 10.
+let jump_v = 5.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
-=======
-let max_down = -2.
-let jump_v = 7.
->>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
 
 type t = {
   (* name : string;
@@ -39,17 +34,9 @@ let velocity_change player =
   let t_delta = 0.33 in    
   max (player.velocity +. (gravity *. t_delta)) max_down
 
-<<<<<<< HEAD
 let pipe_change player = {
-  player with pipe_x = player.pipe_x - 5
+  player with pipe_x = if(player.pipe_x = -75) then 600 else player.pipe_x - 5
 }
-
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> b0cd2a3fd5ffa3394e89f9be7fd485b755a5fe53
->>>>>>> 2d9092d60c4d72756e022c1334191812fadccf18
 let gravity player = 
   (* player |> velocity_change; *)
   let t_delta = Unix.gettimeofday()  -. !old_t in

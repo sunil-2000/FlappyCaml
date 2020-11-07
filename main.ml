@@ -35,7 +35,6 @@ let rec move_player player =
 
 let main () = 
   (*let gui = Gui.make_gui 600 400 *)
-  Graphics.open_graph " 600x700";
   let player = Game.create_t (200., 200.) 5. in 
   Gui.draw_player player
 
