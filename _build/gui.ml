@@ -2,6 +2,7 @@ open Graphics
 open Camlimages
 open Images
 
+let open_screen = Graphics.open_graph " 600x700";
 
 type t = {
   canvas_width : int; 
@@ -12,6 +13,9 @@ type t = {
   camel_image : Graphics.image;
   bottom_pipe_image: Graphics.image;
   top_pipe_image: Graphics.image;
+  bottom_pipe_high_image : Graphics.image;
+  top_pipe_high_image : Graphics.image;
+  pipe_num : int;
   ground_image: Graphics.image;
 }
 
@@ -50,6 +54,14 @@ let array_of_image img =
 let get_img img =
   Images.load img [] |> array_of_image |> make_image
 
+let reg_top_pipe = get_img "assets/top.ppm"
+
+let reg_bottom_pipe = get_img "assets/bottom.ppm"
+
+let high_top_pipe = get_img "assets/top_high.ppm"
+
+let high_bottom_pipe = get_img "assets/bottom_high.ppm"
+
 let make_state a b c d e = {
   canvas_width = a; 
   canvas_height = b;
@@ -57,15 +69,24 @@ let make_state a b c d e = {
   camel_y = d;
   pipe_x = e;
   camel_image = get_img "assets/clarkson.ppm";
+<<<<<<< HEAD
   bottom_pipe_image = get_img "assets/bottom.ppm";
   top_pipe_image = get_img "assets/top.ppm";
   ground_image = get_img "assets/new_ground.ppm";
 
+=======
+  bottom_pipe_image = reg_bottom_pipe;
+  top_pipe_image = reg_top_pipe;
+  bottom_pipe_high_image = high_bottom_pipe;
+  top_pipe_high_image = high_top_pipe; 
+  pipe_num = 0;
+  ground_image = get_img "assets/new_ground.ppm"
+>>>>>>> f12c63cc4ee1b0faf46c9d9445347642f32adf5e
 }
 
 let draw_camel t =
   set_color (white);
-  fill_rect 200 100 50 600;
+  if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
   draw_image t.camel_image t.camel_x t.camel_y
 
 let draw_ground init = 
@@ -80,7 +101,8 @@ let draw_back init =
 
 let draw_pipes init =
   fill_rect 250 100 400 600;
-  fill_rect 0 100 200 600; 
+  fill_rect 0 100 250 600;
+  if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
   draw_image init.bottom_pipe_image init.pipe_x 100;
   draw_image init.top_pipe_image init.pipe_x 500
 

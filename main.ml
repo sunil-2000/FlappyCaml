@@ -19,7 +19,14 @@ let rec main player =
     Graphics.close_graph
 
 
+<<<<<<< HEAD
 let player = Game.create_t (200., 200.) 5. 
+=======
+let main () = 
+  (*let gui = Gui.make_gui 600 400 *)
+  let player = Game.create_t (200., 200.) 5. in 
+  Gui.draw_player player
+>>>>>>> f12c63cc4ee1b0faf46c9d9445347642f32adf5e
 
 let () = 
   Graphics.open_graph " 600x700"; 

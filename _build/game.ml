@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 
 let gravity = -100.
 (* let old_t = ref (Unix.gettimeofday()) *)
 let max_down = -180.
 let jump_v = 100.
+=======
+let gravity = -1.
+let old_t = ref (Unix.gettimeofday())
+let max_down = -1.5
+let jump_v = 5.
+>>>>>>> f12c63cc4ee1b0faf46c9d9445347642f32adf5e
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
 
@@ -42,10 +49,14 @@ let velocity_change t_delta player =
   max (player.velocity +. (gravity *. t_delta)) max_down
 
 let pipe_change player = {
-  player with pipe_x = player.pipe_x - 5
+  player with pipe_x = if(player.pipe_x = -75) then 600 else player.pipe_x - 5
 }
+<<<<<<< HEAD
 
 let gravity t_delta player = 
+=======
+let gravity player = 
+>>>>>>> f12c63cc4ee1b0faf46c9d9445347642f32adf5e
   (* player |> velocity_change; *)
   match player.position with 
   | (x, y) -> 
