@@ -1,6 +1,7 @@
 open Graphics
 open Camlimages
 open Images
+open Game 
 
 let open_screen = Graphics.open_graph " 600x700";
 
@@ -69,19 +70,12 @@ let make_state a b c d e = {
   camel_y = d;
   pipe_x = e;
   camel_image = get_img "assets/clarkson.ppm";
-<<<<<<< HEAD
-  bottom_pipe_image = get_img "assets/bottom.ppm";
-  top_pipe_image = get_img "assets/top.ppm";
-  ground_image = get_img "assets/new_ground.ppm";
-
-=======
   bottom_pipe_image = reg_bottom_pipe;
   top_pipe_image = reg_top_pipe;
   bottom_pipe_high_image = high_bottom_pipe;
   top_pipe_high_image = high_top_pipe; 
   pipe_num = 0;
   ground_image = get_img "assets/new_ground.ppm"
->>>>>>> f12c63cc4ee1b0faf46c9d9445347642f32adf5e
 }
 
 let draw_camel t =
@@ -141,7 +135,6 @@ let draw_player t_delta player =
   |(x,y) -> 
     if 
       (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
-
       gravity_draw t_delta (Game.jump player) 
     else 
       gravity_draw t_delta player                                                                                              
