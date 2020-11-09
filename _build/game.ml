@@ -1,7 +1,7 @@
-let gravity = -100.
+let gravity = -150.
 (* let old_t = ref (Unix.gettimeofday()) *)
-let max_down = -180.
-let jump_v = 120.
+let max_down = -220.
+let jump_v = 230.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
 
@@ -14,19 +14,26 @@ type t = {
      mutable is_jump: bool; *)
   pipe_x : int;
   game_over : bool;
-  is_jump : bool 
+  can_jump : bool 
 }
 
-let create_t pos v = {
+let create pos v = {
   position = pos;
   velocity = v;
   pipe_x = 600;
   game_over = false;
-  is_jump = false
+  can_jump = true
 }
 
 let is_gameover t = 
   t.game_over
+
+let set_can_jump player bool = 
+  {player with can_jump = bool}
+
+let get_y player =
+  match player.position with 
+  | (x,y) -> y 
 
 let get_velocity player = 
   player.velocity 
@@ -38,7 +45,7 @@ let get_pipe player =
   player.pipe_x
 
 let velocity_change t_delta player =  
-  max (player.velocity +. (2.25 *. gravity *. t_delta)) max_down
+  max (player.velocity +. (3. *. gravity *. t_delta)) max_down
 
 let pipe_change player = {
   player with pipe_x = if(player.pipe_x = -75) then 600 else player.pipe_x - 5
@@ -53,10 +60,21 @@ let gravity t_delta player =
       position = (x, y +. (player.velocity *. t_delta) +. 
                      (0.5 *. gravity *. (t_delta**2.0)));
       velocity = velocity_change t_delta player;
-      is_jump = is_jump'}
+      can_jump = is_jump'}
 
 let jump player = 
-  if player.is_jump = false then 
-    {player with velocity = jump_v; is_jump = true}
+  if player.can_jump then 
+    {player with velocity = jump_v; can_jump = false}
   else 
     player 
+
+
+let update t_delta player  = 
+  if player.can_jump then
+    (* jumps with gravity applied after, then apply pipe change *)
+    jump player 
+    |> gravity t_delta
+    |> pipe_change 
+  else 
+    gravity t_delta player |> pipe_change 
+

@@ -105,36 +105,3 @@ let make_gui init =
   draw_pipes init;
   draw_camel init
 
-(* helper function for move_player, responsible for gravity drawing *)
-let gravity_draw t_delta player = 
-  match Game.get_position player with
-  |(x,y) ->  
-    let a = int_of_float x in
-    let b = int_of_float y in
-    let pipe_x = Game.get_pipe player in
-    let test = make_state 600 700 a b pipe_x in
-    make_gui test;
-    Unix.sleepf 0.001;
-    Game.gravity t_delta player
-
-(* [jump_draw player] is a helper function for [move_player] responsible for 
-   drawing jump movement *)
-let jump_draw player =
-  let key = Graphics.wait_next_event [Key_pressed] in
-  if key.keypressed then 
-    Game.jump player
-  else 
-    player
-
-let pipe_change player = 
-  Game.pipe_change player
-  |> Game.get_pipe
-
-let draw_player t_delta player = 
-  match Game.get_position player with 
-  |(x,y) -> 
-    if 
-      (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
-      gravity_draw t_delta (Game.jump player) 
-    else 
-      gravity_draw t_delta player                                                                                              
