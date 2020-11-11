@@ -4,6 +4,15 @@ let max_down = -220.
 let jump_v = 230.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
+let pipe_width = 73
+let pipe_1_set = (250, 500)
+let pipe_2_set = (337, 575)
+let pipe_3_set = (141, 400)
+
+let player_width = 50
+let player_height = 50
+
+let bottom_height = 100
 
 type t = {
   (* name : string;
@@ -15,7 +24,8 @@ type t = {
   pipe_x : int;
   game_over : bool;
   can_jump : bool;
-  pipe_type : int 
+  pipe_type : int;
+  collision : bool;
 }
 
 let create pos v = {
@@ -24,7 +34,8 @@ let create pos v = {
   pipe_x = 600;
   game_over = false;
   can_jump = true;
-  pipe_type = 0
+  collision = false;
+  pipe_type = Random.int 3
 }
 
 let is_gameover t = 
@@ -48,6 +59,9 @@ let get_pipe player =
 
 let get_pipe_type player = 
   player.pipe_type
+
+let get_collision player = 
+  player.collision
 
 let velocity_change t_delta player =  
   max (player.velocity +. (3. *. gravity *. t_delta)) max_down
@@ -77,6 +91,41 @@ let jump player =
   else 
     player 
 
+(* [pipe_chooser player] matches pipe_type and returns the bottom y value of the
+   top pipe and the top y value of the bottom pipe in the form of a tuple *)
+let pipe_chooser player=
+  match player.pipe_type with
+  | 0 -> pipe_1_set
+  | 1 -> pipe_2_set
+  | 2 ->  pipe_3_set
+  | _ -> failwith "more"
+
+let get_player_x player = 
+  match player.position with 
+  | (x, y) -> int_of_float x 
+
+let get_player_y player = 
+  match player.position with 
+  | (x, y) -> int_of_float y
+
+let collision player = 
+  let left_boundary = player.pipe_x - player_width in
+  let right_boundary = player.pipe_x + pipe_width + player_width in 
+  let player_x = get_player_x player in 
+  print_string "player: ";
+  print_int player_x;
+  print_string "pipe: ";
+  print_int left_boundary;
+  if  player_x > left_boundary && player_x < right_boundary then 
+    let player_y =  get_player_y player in 
+    match pipe_chooser player with 
+    | (bottom, top)-> 
+      if player_y <= bottom + bottom_height || player_y + player_height >= top then 
+        {player with collision = true}
+      else 
+        player 
+  else 
+    player 
 
 let update t_delta player  = 
   if player.can_jump then
@@ -86,5 +135,5 @@ let update t_delta player  =
     |> pipe_change
     |> pipe_type_change 
   else 
-    gravity t_delta player |> pipe_change |> pipe_type_change
+    gravity t_delta player |> pipe_change |> pipe_type_change |> collision
 

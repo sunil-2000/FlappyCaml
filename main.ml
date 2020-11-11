@@ -13,7 +13,9 @@ let rec main gui player =
   old_t := time_instant;
   (* temporary conditional to close graph, eventually need to do something with 
      state module to transition to different state *)
-  if Game.get_y player < 100. then Graphics.close_graph () else ();
+  if Game.get_y player < 100. || Game.get_collision player then 
+    Graphics.close_graph () 
+  else ();
   (* in if statement so that game ends *)
   (* update gui and update player *)
   let player' = if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 

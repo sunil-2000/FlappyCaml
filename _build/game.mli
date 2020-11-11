@@ -25,3 +25,5 @@ val update: float -> t -> t
 val get_y: t -> float 
 
 val get_pipe_type: t -> int
+
+val get_collision: t -> bool
