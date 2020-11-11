@@ -23,14 +23,15 @@ let rec main gui player =
 
   let new_player = Game.update delta_t player' in 
   let y' = Game.get_y new_player |> int_of_float in
-  let pipe_x' = Game.get_pipe new_player in 
+  let pipe_x' = Game.get_pipe new_player in
+  let choose_pipe = Game.get_pipe_type new_player in
 
-  let gui_update = Gui.make_state 600 700 200 y' pipe_x' in 
+  let gui_update = Gui.make_state 600 700 200 y' pipe_x' choose_pipe in 
   Gui.make_gui gui_update; 
   Unix.sleepf(0.01);
   main gui_update new_player 
 
 let () = 
-  let gui_init = Gui.make_state 600 700 200 200 400 in 
+  let gui_init = Gui.make_state 600 700 200 200 400 0 in 
   let player = Game.create (200., 200.) 5.  in 
   main gui_init player 

@@ -5,6 +5,8 @@ open Game
 
 let open_screen = Graphics.open_graph " 600x700";
 
+  (* let animation_sequence = [] in *)
+
 type t = {
   canvas_width : int; 
   canvas_height : int;
@@ -16,8 +18,11 @@ type t = {
   top_pipe_image: Graphics.image;
   bottom_pipe_high_image : Graphics.image;
   top_pipe_high_image : Graphics.image;
+  bottom_pipe_low_image : Graphics.image;
+  top_pipe_low_image : Graphics.image;
   pipe_num : int;
   ground_image: Graphics.image;
+  pipe_type : int;
 }
 
 let array_of_image img =
@@ -63,7 +68,11 @@ let high_top_pipe = get_img "assets/top_high.ppm"
 
 let high_bottom_pipe = get_img "assets/bottom_high.ppm"
 
-let make_state a b c d e = {
+let low_top_pipe = get_img "assets/top_low.ppm"
+
+let low_bottom_pipe = get_img "assets/bottom_low.ppm"
+
+let make_state a b c d e f = {
   canvas_width = a; 
   canvas_height = b;
   camel_x = c;
@@ -73,9 +82,12 @@ let make_state a b c d e = {
   bottom_pipe_image = reg_bottom_pipe;
   top_pipe_image = reg_top_pipe;
   bottom_pipe_high_image = high_bottom_pipe;
-  top_pipe_high_image = high_top_pipe; 
+  top_pipe_high_image = high_top_pipe;
+  bottom_pipe_low_image = low_bottom_pipe;
+  top_pipe_low_image = low_top_pipe; 
   pipe_num = 0;
-  ground_image = get_img "assets/new_ground.ppm"
+  ground_image = get_img "assets/new_ground.ppm";
+  pipe_type = f
 }
 
 let draw_camel t =
@@ -93,12 +105,24 @@ let draw_back init =
   set_color (rgb 91 164 238);
   fill_rect 0 0 init.canvas_width init.canvas_height
 
+let draw_pipe_helper_bottom init t = 
+  match t with 
+  | 0 -> draw_image init.bottom_pipe_image init.pipe_x 100
+  | 1 -> draw_image init.bottom_pipe_high_image init.pipe_x 100
+  | _ -> draw_image init.bottom_pipe_low_image init.pipe_x 100
+
+let draw_pipe_helper_top init t =
+  match t with 
+  | 0 -> draw_image init.top_pipe_image init.pipe_x 500
+  | 1 -> draw_image init.top_pipe_high_image init.pipe_x 575
+  | _ -> draw_image init.top_pipe_low_image init.pipe_x 400
+
 let draw_pipes init =
   fill_rect 250 100 400 600;
   fill_rect 0 100 250 600;
   if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
-  draw_image init.bottom_pipe_image init.pipe_x 100;
-  draw_image init.top_pipe_image init.pipe_x 500
+  draw_pipe_helper_bottom init init.pipe_type;
+  draw_pipe_helper_top init init.pipe_type
 
 let make_gui init = 
   draw_ground init;

@@ -14,7 +14,8 @@ type t = {
      mutable is_jump: bool; *)
   pipe_x : int;
   game_over : bool;
-  can_jump : bool 
+  can_jump : bool;
+  pipe_type : int 
 }
 
 let create pos v = {
@@ -22,7 +23,8 @@ let create pos v = {
   velocity = v;
   pipe_x = 600;
   game_over = false;
-  can_jump = true
+  can_jump = true;
+  pipe_type = 0
 }
 
 let is_gameover t = 
@@ -44,11 +46,18 @@ let get_position player =
 let get_pipe player = 
   player.pipe_x
 
+let get_pipe_type player = 
+  player.pipe_type
+
 let velocity_change t_delta player =  
   max (player.velocity +. (3. *. gravity *. t_delta)) max_down
 
 let pipe_change player = {
-  player with pipe_x = if(player.pipe_x = -75) then 600 else player.pipe_x - 5
+  player with pipe_x = if player.pipe_x = -75 then 600 else player.pipe_x - 5
+}
+
+let pipe_type_change player = {
+  player with pipe_type = if player.pipe_x = -75 then Random.int 3 else player.pipe_type
 }
 
 let gravity t_delta player = 
@@ -74,7 +83,8 @@ let update t_delta player  =
     (* jumps with gravity applied after, then apply pipe change *)
     jump player 
     |> gravity t_delta
-    |> pipe_change 
+    |> pipe_change
+    |> pipe_type_change 
   else 
-    gravity t_delta player |> pipe_change 
+    gravity t_delta player |> pipe_change |> pipe_type_change
 

@@ -23,3 +23,5 @@ val jump: t -> t
 val update: float -> t -> t
 
 val get_y: t -> float 
+
+val get_pipe_type: t -> int
