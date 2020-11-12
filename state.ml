@@ -1,15 +1,19 @@
 open Game
 
-type state = GameOver | Go | Pause 
+type state = Start| GameOver | Go | Pause | Run
 type t = {
   state : state; 
-  score : int }
+  score : int
+}
 
 let make_state () =  
   {
     state = Go;
     score = 0
   }
+
+let get_state t = 
+  t.state
 
 let set_gameover state = 
   {state with state = GameOver}
@@ -19,6 +23,9 @@ let set_go state =
 
 let set_pause state = 
   {state with state = GameOver}
+
+let set_run state = 
+  {state with state = Run}
 
 let set_score value t = 
   {t with score = value}

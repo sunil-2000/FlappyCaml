@@ -1,4 +1,4 @@
-let gravity = -150.
+let gravity_global = -150.
 (* let old_t = ref (Unix.gettimeofday()) *)
 let max_down = -220.
 let jump_v = 230.
@@ -26,6 +26,8 @@ type t = {
   can_jump : bool;
   pipe_type : int;
   collision : bool;
+  score : int;
+  score_updated : bool;
 }
 
 let create pos v = {
@@ -35,7 +37,9 @@ let create pos v = {
   game_over = false;
   can_jump = true;
   collision = false;
-  pipe_type = Random.int 3
+  pipe_type = Random.int 3;
+  score = 0;
+  score_updated = false;
 }
 
 let is_gameover t = 
@@ -63,8 +67,14 @@ let get_pipe_type player =
 let get_collision player = 
   player.collision
 
+let get_score player =
+  player.score
+
+let get_score_updated player =
+  player.score_updated
+
 let velocity_change t_delta player =  
-  max (player.velocity +. (3. *. gravity *. t_delta)) max_down
+  max (player.velocity +. (3. *. gravity_global *. t_delta)) max_down
 
 let pipe_change player = {
   player with pipe_x = if player.pipe_x = -75 then 600 else player.pipe_x - 5
@@ -81,9 +91,19 @@ let gravity t_delta player =
     let is_jump' = if player.velocity = 0. then true else false in 
     { player with 
       position = (x, y +. (player.velocity *. t_delta) +. 
-                     (0.5 *. gravity *. (t_delta**2.0)));
+                     (0.5 *. gravity_global *. (t_delta**2.0)));
       velocity = velocity_change t_delta player;
       can_jump = is_jump'}
+
+let gravity_run t_delta player = 
+  (* player |> velocity_change; *)
+  match player.position with 
+  | (x, y) -> 
+    { player with 
+      position = (x,max (y +. (player.velocity *. t_delta) +. 
+                         (0.5 *. gravity_global *. (t_delta**2.0))) 100.);
+      velocity = velocity_change t_delta player;
+      can_jump = false}
 
 let jump player = 
   if player.can_jump then 
@@ -110,13 +130,13 @@ let get_player_y player =
 
 let collision player = 
   let left_boundary = player.pipe_x - player_width in
-  let right_boundary = player.pipe_x + pipe_width + player_width in 
+  let right_boundary = player.pipe_x + pipe_width in 
   let player_x = get_player_x player in 
   print_string "player: ";
   print_int player_x;
   print_string "pipe: ";
   print_int left_boundary;
-  if  player_x > left_boundary && player_x < right_boundary then 
+  if player_x > left_boundary && player_x < right_boundary then 
     let player_y =  get_player_y player in 
     match pipe_chooser player with 
     | (bottom, top)-> 
@@ -127,13 +147,27 @@ let collision player =
   else 
     player 
 
+let score_update player =
+  (* let left_boundary = player.pipe_x - player_width in *)
+  let right_boundary = player.pipe_x + pipe_width in 
+  let player_x = get_player_x player in 
+  if player_x > right_boundary && player.score_updated = false then 
+    {player with score = player.score + 1; score_updated = true}
+  else if player_x < right_boundary then
+    {player with score_updated = false}
+  else
+    player
+
 let update t_delta player  = 
   if player.can_jump then
     (* jumps with gravity applied after, then apply pipe change *)
-    jump player 
-    |> gravity t_delta
-    |> pipe_change
-    |> pipe_type_change 
+    jump player |> gravity t_delta |> pipe_change |> pipe_type_change |> collision |> score_update
   else 
-    gravity t_delta player |> pipe_change |> pipe_type_change |> collision
+    gravity t_delta player |> pipe_change |> pipe_type_change |> collision |> score_update
 
+let update_run t_delta player =
+  if player.can_jump then
+    (* jumps with gravity applied after, then apply pipe change *)
+    jump player |> gravity_run t_delta 
+  else 
+    gravity_run t_delta player 

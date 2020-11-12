@@ -23,6 +23,7 @@ type t = {
   pipe_num : int;
   ground_image: Graphics.image;
   pipe_type : int;
+  player_score : int;
 }
 
 let array_of_image img =
@@ -72,7 +73,7 @@ let low_top_pipe = get_img "assets/top_low.ppm"
 
 let low_bottom_pipe = get_img "assets/bottom_low.ppm"
 
-let make_state a b c d e f = {
+let make_state a b c d e f score = {
   canvas_width = a; 
   canvas_height = b;
   camel_x = c;
@@ -87,7 +88,8 @@ let make_state a b c d e f = {
   top_pipe_low_image = low_top_pipe; 
   pipe_num = 0;
   ground_image = get_img "assets/new_ground.ppm";
-  pipe_type = f
+  pipe_type = f;
+  player_score = score;
 }
 
 let draw_camel t =
@@ -124,8 +126,32 @@ let draw_pipes init =
   draw_pipe_helper_bottom init init.pipe_type;
   draw_pipe_helper_top init init.pipe_type
 
+let draw_score init =
+  let score_string = string_of_int init.player_score in
+  moveto 520 620;
+  set_text_size 500;
+  set_color black;
+  set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
+  draw_string score_string;
+  set_color white
+
 let make_gui init = 
   draw_ground init;
   draw_pipes init;
-  draw_camel init
+  draw_camel init;
+  draw_score init
 
+let draw_pause =
+  "fail"
+
+let draw_gameover = 
+  "fail"
+
+let draw_start init =
+  Graphics.clear_graph ();
+  set_color black;
+  draw_string "Flappy";
+  draw_string "Caml";
+  draw_image init.camel_image 250 300;
+  draw_string "Click anywhere to start";
+  set_color white
