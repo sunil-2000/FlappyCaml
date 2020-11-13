@@ -8,7 +8,7 @@ type t = {
 
 let make_state () =  
   {
-    state = Go;
+    state = Start;
     score = 0
   }
 
@@ -36,3 +36,5 @@ let game_over player =
     true 
   else 
     false
+
+

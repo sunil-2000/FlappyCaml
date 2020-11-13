@@ -117,7 +117,7 @@ let pipe_chooser player=
   match player.pipe_type with
   | 0 -> pipe_1_set
   | 1 -> pipe_2_set
-  | 2 ->  pipe_3_set
+  | 2 -> pipe_3_set
   | _ -> failwith "more"
 
 let get_player_x player = 
@@ -132,10 +132,7 @@ let collision player =
   let left_boundary = player.pipe_x - player_width in
   let right_boundary = player.pipe_x + pipe_width in 
   let player_x = get_player_x player in 
-  print_string "player: ";
-  print_int player_x;
-  print_string "pipe: ";
-  print_int left_boundary;
+
   if player_x > left_boundary && player_x < right_boundary then 
     let player_y =  get_player_y player in 
     match pipe_chooser player with 
@@ -161,9 +158,18 @@ let score_update player =
 let update t_delta player  = 
   if player.can_jump then
     (* jumps with gravity applied after, then apply pipe change *)
-    jump player |> gravity t_delta |> pipe_change |> pipe_type_change |> collision |> score_update
+    jump player |> 
+    gravity t_delta |> 
+    pipe_change |> 
+    pipe_type_change |> 
+    collision |> 
+    score_update
   else 
-    gravity t_delta player |> pipe_change |> pipe_type_change |> collision |> score_update
+    gravity t_delta player |> 
+    pipe_change |> 
+    pipe_type_change |> 
+    collision |> 
+    score_update
 
 let update_run t_delta player =
   if player.can_jump then
