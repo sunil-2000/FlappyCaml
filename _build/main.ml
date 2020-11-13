@@ -10,7 +10,7 @@ let old_t = ref (Unix.gettimeofday ())
 
 (* [check_mouse_click] returns true if a mouse click has occured *)
 let rec check_mouse_click () = 
-  (Graphics.button_down ())  && (check_mouse_click () = false )
+  (Graphics.button_down ()) && (check_mouse_click () = false )
 
 (* [state_to_go] transitions the state from start to go *)
 let state_to_go () = 
@@ -72,8 +72,7 @@ let state_run gui player delta_t =
   (new_player, gui_update) 
 
 let state_start gui =
-  Gui.draw_start gui;
-  gui
+  Gui.draw_start gui
 
 let rec main gui player state = 
   let curr_state = check state player in 
@@ -81,9 +80,7 @@ let rec main gui player state =
   let time_instant = Unix.gettimeofday () in
   let delta_t = time_instant -. !old_t in
   old_t := time_instant;
-  if state' = Start then 
-    main gui player (check state player)
-  else if state' = Go then
+  if state' = Go then
     match state_go gui player delta_t with 
     | (player, gui) -> main gui player state
   else if state' = Run then 
@@ -92,9 +89,15 @@ let rec main gui player state =
   else 
     Graphics.close_graph ()
 
+let rec start_game gui player state = 
+  let curr_state = check state player in
+  if State.get_state curr_state <> Go then start_game gui player curr_state 
+  else 
+    main gui player curr_state 
 
 let () = 
   let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 in 
   let player = Game.create (200., 200.) 5. in 
   let state_init = State.make_state () in 
-  main (state_start gui_init) player state_init
+  state_start gui_init; 
+  start_game gui_init player state_init
