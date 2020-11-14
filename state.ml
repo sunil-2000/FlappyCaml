@@ -47,7 +47,7 @@ let state_to_go () =
   match Graphics.mouse_pos () with 
   | (x, y) -> 
     (* dimensions of button <- should make field in gui for button *)
-    if x > 0 && x < 600 && y > 0 && y < 700 && check_key_click () then 
+    if check_key_click () then 
       true 
     else 
       false

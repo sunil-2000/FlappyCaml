@@ -169,6 +169,7 @@ let draw_score init =
   set_color white
 
 let make_gui init = 
+  auto_synchronize true;
   draw_ground init;
   draw_pipes init;
   draw_camel init;
