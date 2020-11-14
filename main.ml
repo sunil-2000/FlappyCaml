@@ -9,7 +9,6 @@ open State
    equation *)
 let old_t = ref (Unix.gettimeofday ())
 
-
 (* [state_go gui player delta_t] executes game properly if state of game
    = Go. *)
 let state_go gui player delta_t = 
@@ -30,6 +29,8 @@ let state_go gui player delta_t =
   Gui.make_gui gui_update;
   (new_player, gui_update) 
 
+(* [state_run gui player delta_t] is a helper function for main that runs
+   game properly when state = Run *)
 let state_run gui player delta_t = 
   let player' = 
     if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
@@ -45,9 +46,16 @@ let state_run gui player delta_t =
   Gui.make_gui gui_update;
   (new_player, gui_update) 
 
+(* [state_start gui] executes code properly when state = Start *)
 let state_start gui =
   Gui.draw_start gui
 
+(* [state_over gui] responsible for executing code when state = Gameover *)
+let state_over gui = 
+  Gui.draw_gameover gui
+
+(* [main gui player state] is responsible for executing the game properly when
+   running *)
 let rec main gui player state = 
   let curr_state = State.check state player in 
   let state' = curr_state |> State.get_state in 
@@ -61,9 +69,15 @@ let rec main gui player state =
   else if state' = Run then 
     match state_run gui player delta_t with 
     | (player, gui) -> main gui player state
-  else 
+  else
+    Gui.draw_gameover gui;
+  if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
     Graphics.close_graph ()
+  else main gui player state 
 
+
+(* [start_game gui player state] runs game with start screen and then changes
+   to go state when user executes a mouse click *)
 let rec start_game gui player state = 
   let curr_state = State.check state player in
   if State.get_state curr_state <> Go then 

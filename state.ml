@@ -39,15 +39,15 @@ let game_over player =
     false
 
 (* [check_mouse_click] returns true if a mouse click has occured *)
-let rec check_mouse_click () = 
-  (Graphics.button_down ()) && (check_mouse_click () = false )
-
+let rec check_key_click () = 
+  let e = wait_next_event [Mouse_motion; Key_pressed] in
+  if e.keypressed then true else check_key_click ()
 (* [state_to_go] transitions the state from start to go *)
 let state_to_go () = 
   match Graphics.mouse_pos () with 
   | (x, y) -> 
     (* dimensions of button <- should make field in gui for button *)
-    if x > 0 && x < 600 && y > 0 && y < 700 && check_mouse_click () then 
+    if x > 0 && x < 600 && y > 0 && y < 700 && check_key_click () then 
       true 
     else 
       false

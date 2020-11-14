@@ -95,6 +95,7 @@ let gravity t_delta player =
       velocity = velocity_change t_delta player;
       can_jump = is_jump'}
 
+(** [gravity_run n p] applies gravity to player during the Run game state. *)
 let gravity_run t_delta player = 
   (* player |> velocity_change; *)
   match player.position with 

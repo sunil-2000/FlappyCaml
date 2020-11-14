@@ -110,7 +110,6 @@ let update_fly y score index pipe_x pipe_type t =
   {t with camel_y = y; player_score = score; camel_index = index; 
           pipe_x = pipe_x; pipe_type = pipe_type}
 
-(* [update_run y score index t] updates t appropriately when the state is run *)
 let update_run y score index t =
   {t with camel_y = y; player_score = score; camel_index = index}
 
@@ -178,8 +177,17 @@ let make_gui init =
 let draw_pause =
   "fail"
 
-let draw_gameover = 
-  "fail"
+let draw_gameover init = 
+  Graphics.clear_graph ();
+  set_color black;
+  moveto 120 500;
+  set_text_size 50;
+  draw_string "Game Over";
+  let score_s = string_of_int init.player_score in 
+  moveto 300 350;
+  set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
+  draw_string score_s
+
 
 let draw_start init =
   Graphics.clear_graph ();
@@ -187,7 +195,7 @@ let draw_start init =
   draw_string "Flappy";
   draw_string "Caml";
   draw_image init.camel_image 250 300;
-  let button = "Click anywhere to start" in
+  let button = "Click any key to start" in
   moveto 200 400;
   draw_string button;
   set_color white
