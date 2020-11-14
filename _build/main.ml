@@ -57,19 +57,16 @@ let state_over gui =
 (* [main gui player state] is responsible for executing the game properly when
    running *)
 let rec main gui player state = 
-
   let curr_state = State.check state player in 
   let state' = curr_state |> State.get_state in 
+  let time_instant = Unix.gettimeofday () in
+  let delta_t = time_instant -. !old_t in
+  old_t := time_instant;
+
   if state' = Go then
-    let time_instant = Unix.gettimeofday () in
-    let delta_t = time_instant -. !old_t in
-    old_t := time_instant;
     match state_go gui player delta_t with 
     | (player, gui) -> main gui player state
   else if state' = Run then 
-    let time_instant = Unix.gettimeofday () in
-    let delta_t = time_instant -. !old_t in
-    old_t := time_instant;
     match state_run gui player delta_t with 
     | (player, gui) -> main gui player state
   else
