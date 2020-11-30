@@ -65,10 +65,12 @@ let rec main gui player state =
 
   if state' = Go then
     match state_go gui player delta_t with 
-    | (player, gui) -> main gui player state
+    | (player, gui) -> 
+      Unix.sleepf 0.001; 
+      main gui player state
   else if state' = Run then 
     match state_run gui player delta_t with 
-    | (player, gui) -> Graphics.auto_synchronize true; main gui player state
+    | (player, gui) -> main gui player state
   else
     Gui.draw_gameover gui;
   if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
