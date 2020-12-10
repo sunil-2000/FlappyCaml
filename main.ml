@@ -38,7 +38,7 @@ let state_go gui player delta_t frame =
   let pipe_x' = Game.get_pipe new_player in
   let choose_pipe = Game.get_pipe_type new_player in
   let score' = Game.get_score new_player in
-  let gui_update = Gui.update_fly y' score' frame pipe_x' 
+  let gui_update = Gui.update_fly y' score' frame pipe_x'  
       choose_pipe gui in 
 
   Gui.make_gui gui_update;
@@ -55,8 +55,9 @@ let state_run gui player delta_t frame =
 
   let new_player = Game.update_run delta_t player' in 
   let y' = Game.get_y new_player |> int_of_float in
+  let pipe_x' = Game.get_pipe new_player in
   let score' = Game.get_score new_player in
-  let gui_update = Gui.update_run y' score' frame gui in 
+  let gui_update = Gui.update_run y' score' frame pipe_x' gui in 
 
   Gui.make_gui gui_update;
   (new_player, gui_update) 
@@ -104,7 +105,6 @@ let rec main gui player state =
     main gui player state 
 (* else return unit *)
 (* main gui player state *)
-
 
 (* [start_game gui player state] runs game with start screen and then changes
    to go state when user executes a mouse click *)

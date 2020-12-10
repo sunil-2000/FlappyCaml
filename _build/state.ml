@@ -52,6 +52,7 @@ let game_over player =
 let rec check_key_click () = 
   let e = wait_next_event [Key_pressed] in
   if e.keypressed then true else check_key_click ()
+
 (* [state_to_go] transitions the state from start to go *)
 let state_to_go () = 
   (* dimensions of button <- should make field in gui for button *)
@@ -75,7 +76,7 @@ let switch state player =
 let check state player = 
   if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
     {state with state = GameOver}
-  else if Game.get_score player = !state_interval then 
+  else if Game.get_score player > 3 then 
     switch state player    
   else if get_state state = Start then 
     if state_to_go () then 

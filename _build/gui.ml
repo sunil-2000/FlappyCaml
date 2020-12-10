@@ -3,8 +3,8 @@ open Camlimages
 open Images
 open Game 
 
+let time_per_frame = 1. /. 30. 
 let open_screen = Graphics.open_graph " 600x700";
-
   (* let animation_sequence = [] in *)
 
 type t = {
@@ -104,17 +104,20 @@ let make_state wth hgt x y pipe_x pipe_type score index = {
   player_score = score;
 }
 
-let rec animate_player frame  = 
-  frame mod 4
+let rec animate_player frame t = 
+  if frame mod 5 = 0 then 
+    (t.camel_index + 1) mod 4
+  else t.camel_index
 
 (* [update_fly y score index pipe pipe_type t] updates t appropriately when
    the state is fly (go) *)
 let update_fly y score frame pipe_x pipe_type t =
-  {t with camel_y = y; player_score = score; camel_index = animate_player frame; 
+  {t with camel_y = y; player_score = score; camel_index = animate_player frame t; 
           pipe_x = pipe_x; pipe_type = pipe_type}
 
-let update_run y score frame t  =
-  {t with camel_y = y; player_score = score; camel_index = animate_player frame}
+let update_run y score frame pipe_x t =
+  {t with camel_y = y; player_score = score; camel_index = animate_player frame t;
+          pipe_x = pipe_x; pipe_type = 1}
 
 let draw_camel t =
   set_color (white);

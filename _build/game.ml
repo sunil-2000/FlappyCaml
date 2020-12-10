@@ -83,6 +83,10 @@ let pipe_type_change player = {
   player with pipe_type = if player.pipe_x = -75 then Random.int 3 else player.pipe_type
 }
 
+let run_pipe_choose player = {
+  player with pipe_type = 1
+}
+
 let gravity t_delta player = 
   (* player |> velocity_change; *)
   match player.position with 
@@ -174,6 +178,15 @@ let update t_delta player  =
 let update_run t_delta player =
   if player.can_jump then
     (* jumps with gravity applied after, then apply pipe change *)
-    jump player |> gravity_run t_delta 
+    jump player 
+    |> gravity_run t_delta 
+    |> pipe_change
+    |> run_pipe_choose
+    |> collision
+    |> score_update
   else 
     gravity_run t_delta player 
+    |> pipe_change
+    |> run_pipe_choose
+    |> collision
+    |> score_update

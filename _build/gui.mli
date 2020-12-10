@@ -18,7 +18,7 @@ val make_gui: t -> unit
 val make_state: int -> int -> int -> int -> int -> int -> int -> int -> t
 
 (* [update_run y score index t] updates t appropriately when the state is run *)
-val update_run: int -> int -> int -> t -> t 
+val update_run: int -> int -> int -> int -> t -> t 
 
 (**[draw_start] is used to draw the start screen when state is Start.
    it displays the sprite that the player will use and that the player should 
