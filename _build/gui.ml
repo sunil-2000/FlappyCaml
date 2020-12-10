@@ -15,7 +15,7 @@ type t = {
   pipe_x : int;
   camel_image : Graphics.image;
   camel_index : int; 
-  camel_image_array: Graphics.image list ;
+  camel_image_array: Graphics.image array;
   bottom_pipe_image: Graphics.image;
   top_pipe_image: Graphics.image;
   bottom_pipe_high_image : Graphics.image;
@@ -78,8 +78,8 @@ let low_bottom_pipe = get_img "assets/bottom_low.ppm"
 
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
-let make_player_array lst = 
-  List.map get_img lst 
+let make_player_array array = 
+  Array.map get_img array 
 
 let make_state wth hgt x y pipe_x pipe_type score index = {
   canvas_width = wth; 
@@ -90,8 +90,8 @@ let make_state wth hgt x y pipe_x pipe_type score index = {
   camel_image = get_img "assets/clarkson.ppm";
   camel_index = index;
   camel_image_array = make_player_array 
-      ["assets/clarkson.ppm"; "assets/clarkson1.ppm"; "assets/clarkson2.ppm";
-       "assets/clarkson3.ppm"];
+      [| "assets/clarkson.ppm"; "assets/clarkson1.ppm"; "assets/clarkson2.ppm";
+         "assets/clarkson3.ppm" |];
   bottom_pipe_image = reg_bottom_pipe;
   top_pipe_image = reg_top_pipe;
   bottom_pipe_high_image = high_bottom_pipe;
@@ -104,31 +104,22 @@ let make_state wth hgt x y pipe_x pipe_type score index = {
   player_score = score;
 }
 
+let rec animate_player frame  = 
+  frame mod 4
+
 (* [update_fly y score index pipe pipe_type t] updates t appropriately when
    the state is fly (go) *)
-let update_fly y score index pipe_x pipe_type t =
-  {t with camel_y = y; player_score = score; camel_index = index; 
+let update_fly y score frame pipe_x pipe_type t =
+  {t with camel_y = y; player_score = score; camel_index = animate_player frame; 
           pipe_x = pipe_x; pipe_type = pipe_type}
 
-let update_run y score index t =
-  {t with camel_y = y; player_score = score; camel_index = index}
-
-(* [animate_player] changes image of character to create animation 
-   effect *)
-let rec animate_player index t = 
-  match t with 
-  | [] -> failwith "Impossible"
-  | h::t -> if index = 0 then h else animate_player (index-1) t 
-
-(* [update_index t] updates index of camel_image_array *)
-let update_index t  = 
-  let index = t.camel_index in 
-  if index = 3 then 0 else t.camel_index + 1
+let update_run y score frame t  =
+  {t with camel_y = y; player_score = score; camel_index = animate_player frame}
 
 let draw_camel t =
   set_color (white);
   if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
-  draw_image (animate_player t.camel_index t.camel_image_array) t.camel_x t.camel_y
+  draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
 
 let draw_ground init = 
   draw_image init.ground_image 0 0;

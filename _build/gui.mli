@@ -6,9 +6,9 @@ type t
     state, so that on the next drawing the game is drawn properly *)
 val update_fly: int -> int -> int -> int -> int -> t -> t
 
-(** [update_index t] updates the index of the animation array, so that the next
+(* (** [update_index t] updates the index of the animation array, so that the next
     image in the array is drawn on the next update *)
-val update_index: t -> int
+   val update_index: t -> int *)
 
 (** [make_gui] makes the gui for the running of the game, building the ground,
     pipes, camel and score objects on the screen *)

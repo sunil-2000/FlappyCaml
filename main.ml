@@ -15,7 +15,8 @@ let fps = ref 0.
 let last_update = ref 0. 
 let target_fps = 60.
 let frame_count = ref 0
-let time_per_frame = 1. /. 60.
+let time_per_frame = 1. /. 30.
+let dummy = ref 0
 
 let fps_counter = 
   let d = (Unix.gettimeofday ()) -. !old_t_fps in 
@@ -25,7 +26,7 @@ let fps_counter =
 
 (* [state_go gui player delta_t] executes game properly if state of game
    = Go. *)
-let state_go gui player delta_t = 
+let state_go gui player delta_t frame = 
   let player' = 
     if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
       Game.set_can_jump player true
@@ -37,7 +38,7 @@ let state_go gui player delta_t =
   let pipe_x' = Game.get_pipe new_player in
   let choose_pipe = Game.get_pipe_type new_player in
   let score' = Game.get_score new_player in
-  let gui_update = Gui.update_fly y' score' (Gui.update_index gui) pipe_x' 
+  let gui_update = Gui.update_fly y' score' frame pipe_x' 
       choose_pipe gui in 
 
   Gui.make_gui gui_update;
@@ -45,9 +46,9 @@ let state_go gui player delta_t =
 
 (* [state_run gui player delta_t] is a helper function for main that runs
    game properly when state = Run *)
-let state_run gui player delta_t = 
+let state_run gui player delta_t frame = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') && (Game.get_y player <= 100.) then 
       Game.set_can_jump player true
     else 
       player in 
@@ -55,7 +56,7 @@ let state_run gui player delta_t =
   let new_player = Game.update_run delta_t player' in 
   let y' = Game.get_y new_player |> int_of_float in
   let score' = Game.get_score new_player in
-  let gui_update = Gui.update_run y' score' (Gui.update_index gui) gui in 
+  let gui_update = Gui.update_run y' score' frame gui in 
 
   Gui.make_gui gui_update;
   (new_player, gui_update) 
@@ -68,26 +69,31 @@ let state_start gui =
 let state_over gui = 
   Gui.draw_gameover gui
 
+let next_frame = 
+  fun () ->
+  dummy := (!dummy) + 1;
+  !dummy
+
 (* [main gui player state] is responsible for executing the game properly when
    running *)
 let rec main gui player state = 
   (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
-  print_float (Unix.gettimeofday () -. !old_t_fps) ;
   if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
     let curr_state = State.check state player in 
+    print_int !State.state_interval; print_string " ";
     let state' = curr_state |> State.get_state in 
     let time_instant = Unix.gettimeofday () in
     let delta_t = time_instant -. !old_t in
     old_t := time_instant;
     old_t_fps := time_instant;
-    frame_count := !frame_count + 1;
+    frame_count := (!frame_count) + 1;
     if state' = Go then
-      match state_go gui player delta_t with 
+      match state_go gui player delta_t (!frame_count) with 
       | (player, gui) -> 
         Unix.sleepf 0.001; 
         main gui player state
     else if state' = Run then 
-      match state_run gui player delta_t with 
+      match state_run gui player delta_t (!frame_count) with 
       | (player, gui) -> main gui player state
     else
       Gui.draw_gameover gui;
@@ -95,7 +101,7 @@ let rec main gui player state =
       Graphics.close_graph ()
     else main gui player state 
   else 
-    main gui player state
+    main gui player state 
 (* else return unit *)
 (* main gui player state *)
 
@@ -113,5 +119,6 @@ let () =
   let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 in 
   let player = Game.create (200., 200.) 5. in 
   let state_init = State.make_state () in 
+  State.pick_interval player;
   state_start gui_init; 
   start_game gui_init player state_init

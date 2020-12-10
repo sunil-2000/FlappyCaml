@@ -9,6 +9,14 @@ type t = {
   score : int
 }
 
+let state_interval = ref 0
+
+let pick_interval player = 
+  let interval = (Random.int 1) + 1 in 
+  let new_interval = interval + Game.get_score player in
+  (*print_int new_interval;*)
+  state_interval := new_interval 
+
 let make_state () =  
   {
     state = Start;
@@ -53,22 +61,22 @@ let state_to_go () =
     false
 
 let switch state player =
+  pick_interval player;
   if get_state state = Go then 
     {state with state = Run}
   else if get_state state = Run then
     {state with state = Go}
   else state
 
-let state_length state player = 
-  Random.int 10 + 3 
+(* let pick_interval state player = 
+   let interval = Random.int 10 + 3 *)
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
-
   if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
     {state with state = GameOver}
-  else if Game.get_score player = -10 then 
-    set_run state 
+  else if Game.get_score player = !state_interval then 
+    switch state player    
   else if get_state state = Start then 
     if state_to_go () then 
       {state with state = Go}
