@@ -15,7 +15,7 @@ let fps = ref 0.
 let last_update = ref 0. 
 let target_fps = 60.
 let frame_count = ref 0
-let time_per_frame = 1. /. 60. *. 1000000. (* in microseconds *)
+let time_per_frame = 1. /. 60.
 
 let fps_counter = 
   let d = (Unix.gettimeofday ()) -. !old_t_fps in 
@@ -27,7 +27,7 @@ let fps_counter =
    = Go. *)
 let state_go gui player delta_t = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') then 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
       Game.set_can_jump player true
     else 
       player in 
@@ -72,6 +72,7 @@ let state_over gui =
    running *)
 let rec main gui player state = 
   (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
+  print_float (Unix.gettimeofday () -. !old_t_fps) ;
   if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
     let curr_state = State.check state player in 
     let state' = curr_state |> State.get_state in 
@@ -80,7 +81,6 @@ let rec main gui player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := !frame_count + 1;
-
     if state' = Go then
       match state_go gui player delta_t with 
       | (player, gui) -> 

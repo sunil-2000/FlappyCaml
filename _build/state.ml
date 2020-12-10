@@ -60,10 +60,11 @@ let switch state player =
   else state
 
 let state_length state player = 
-  failwith""
+  Random.int 10 + 3 
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
+
   if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
     {state with state = GameOver}
   else if Game.get_score player = -10 then 
