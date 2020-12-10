@@ -27,7 +27,7 @@ let fps_counter =
    = Go. *)
 let state_go gui player delta_t = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') then 
       Game.set_can_jump player true
     else 
       player in 
