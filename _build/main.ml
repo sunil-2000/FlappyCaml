@@ -9,6 +9,20 @@ open State
    equation *)
 let old_t = ref (Unix.gettimeofday ())
 
+(* track fps *)
+let old_t_fps = ref (Unix.gettimeofday ())
+let fps = ref 0. 
+let last_update = ref 0. 
+let target_fps = 60.
+let frame_count = ref 0
+let time_per_frame = 1. /. 60. *. 1000000. (* in microseconds *)
+
+let fps_counter = 
+  let d = (Unix.gettimeofday ()) -. !old_t_fps in 
+  old_t_fps := Unix.gettimeofday ();
+  last_update := d; 
+  fps := 1. /. d
+
 (* [state_go gui player delta_t] executes game properly if state of game
    = Go. *)
 let state_go gui player delta_t = 
@@ -57,25 +71,33 @@ let state_over gui =
 (* [main gui player state] is responsible for executing the game properly when
    running *)
 let rec main gui player state = 
-  let curr_state = State.check state player in 
-  let state' = curr_state |> State.get_state in 
-  let time_instant = Unix.gettimeofday () in
-  let delta_t = time_instant -. !old_t in
-  old_t := time_instant;
+  (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
+  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
+    let curr_state = State.check state player in 
+    let state' = curr_state |> State.get_state in 
+    let time_instant = Unix.gettimeofday () in
+    let delta_t = time_instant -. !old_t in
+    old_t := time_instant;
+    old_t_fps := time_instant;
+    frame_count := !frame_count + 1;
 
-  if state' = Go then
-    match state_go gui player delta_t with 
-    | (player, gui) -> 
-      Unix.sleepf 0.001; 
-      main gui player state
-  else if state' = Run then 
-    match state_run gui player delta_t with 
-    | (player, gui) -> main gui player state
-  else
-    Gui.draw_gameover gui;
-  if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
-    Graphics.close_graph ()
-  else main gui player state 
+    if state' = Go then
+      match state_go gui player delta_t with 
+      | (player, gui) -> 
+        Unix.sleepf 0.001; 
+        main gui player state
+    else if state' = Run then 
+      match state_run gui player delta_t with 
+      | (player, gui) -> main gui player state
+    else
+      Gui.draw_gameover gui;
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
+      Graphics.close_graph ()
+    else main gui player state 
+  else 
+    main gui player state
+(* else return unit *)
+(* main gui player state *)
 
 
 (* [start_game gui player state] runs game with start screen and then changes

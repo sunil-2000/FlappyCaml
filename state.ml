@@ -1,7 +1,9 @@
 open Game
 open Graphics 
+open Random 
 
-type state = Start| GameOver | Go | Pause | Run
+type state = Start| GameOver | Go (* flying *) | Pause | Run
+
 type t = {
   state : state; 
   score : int
@@ -50,8 +52,19 @@ let state_to_go () =
   else 
     false
 
+let switch state player =
+  if get_state state = Go then 
+    {state with state = Run}
+  else if get_state state = Run then
+    {state with state = Go}
+  else state
+
+let state_length state player = 
+  Random.int 10 + 3 
+
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
+
   if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
     {state with state = GameOver}
   else if Game.get_score player = -10 then 

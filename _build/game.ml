@@ -19,8 +19,7 @@ type t = {
      sprite : string; *)
   position : (float * float);
   velocity : float;
-  (* orientation : float;
-     mutable is_jump: bool; *)
+
   pipe_x : int;
   game_over : bool;
   can_jump : bool;

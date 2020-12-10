@@ -1,7 +1,9 @@
 open Game
 open Graphics 
+open Random 
 
-type state = Start| GameOver | Go | Pause | Run
+type state = Start| GameOver | Go (* flying *) | Pause | Run
+
 type t = {
   state : state; 
   score : int
@@ -49,6 +51,16 @@ let state_to_go () =
     true 
   else 
     false
+
+let switch state player =
+  if get_state state = Go then 
+    {state with state = Run}
+  else if get_state state = Run then
+    {state with state = Go}
+  else state
+
+let state_length state player = 
+  failwith""
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
