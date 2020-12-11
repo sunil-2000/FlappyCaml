@@ -11,6 +11,7 @@ type state =
   | ToGo 
   | ToRun 
   | Instructions
+  | Sprites
   (* add more states for game logic, then just pattern match against in 
   *)
 
@@ -86,11 +87,11 @@ let check_to_transition xl xr yb yt =
 
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
-  match Graphics.key_pressed (), check_to_transition 255 355 195 220 with 
-  | true, true -> {state = Instructions}
-  | false, true -> {state = Instructions}
-  | true, false -> {state = Go} 
-  | false, false -> state  
+  match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
+  | _, true, _ -> {state = Instructions}
+  | _, _, true -> {state = Sprites}
+  | true, _, _ -> {state = Go} 
+  | _, _, _ -> state  
 
 (* transitions state appropriately if state = GameOver *)
 let check_state_over state = 
@@ -99,6 +100,11 @@ let check_state_over state =
   | false -> state 
 
 let check_instructions state = 
+  match check_to_transition 450 550 50 100 with 
+  | true -> {state = Start}
+  | false -> state
+
+let check_sprites state = 
   match check_to_transition 450 550 50 100 with 
   | true -> {state = Start}
   | false -> state
@@ -118,7 +124,8 @@ let check state player =
   | Go -> check_go state player 
   | Start -> check_state_start state 
   | Run -> failwith "not implemented <- see [check] in state.ml"
-  | Instructions -> check_instructions state 
+  | Instructions -> check_instructions state
+  | Sprites -> check_sprites state
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
@@ -131,3 +138,4 @@ let string_of_state t =
   | ToGo -> "togo"
   | ToRun -> "torun"
   | Instructions -> "instructions"
+  | Sprites -> "sprites"

@@ -80,6 +80,12 @@ let low_bottom_pipe = get_img "assets/bottom_low.ppm"
 
 let cactus = get_img "assets/cactus.ppm"
 
+let clarkson = get_img "assets/clarkson.ppm"
+
+let gries = get_img "assets/gries.ppm"
+
+let w_white = get_img "assets/white.ppm"
+
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
 let make_player_array array = 
@@ -244,18 +250,17 @@ let draw_start init =
   set_color black;
   set_text_size 10;
   draw_flappycaml 120 500;
-  draw_image init.camel_image 120 300;
-  draw_image init.camel_image 220 300;
-  draw_image init.camel_image 320 300;
-  draw_image init.camel_image 420 300;
+  draw_image init.camel_image 280 300;
   moveto 240 400;
   set_color red;
   draw_string "Press any key to start";
-  moveto 270 200;
   fill_rect 255 195 100 25; (* rectangle box that can be clicked *)
-  set_color black;
+  fill_rect 255 140 100 25; 
+  moveto 270 202;
+  set_color white;
   draw_string "Instructions";
-  set_color white
+  moveto 283 147;
+  draw_string "Sprites"
 
 let draw_instructions init = 
   Graphics.clear_graph ();
@@ -272,7 +277,21 @@ let draw_instructions init =
   draw_string "Press 'q' to exit the game application.";
   set_color red; 
   fill_rect 450 50 100 50;
-  set_color black;
   moveto 465 70;
-  draw_string "start screen";
-  set_color white; 
+  set_color white;
+  draw_string "start screen"
+
+let draw_sprites init = 
+  Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  set_color black;
+  draw_image clarkson 170 300;
+  draw_image gries 270 300;
+  draw_image w_white 370 300;
+  set_color red; 
+  fill_rect 450 50 100 50;
+  set_color white;
+  moveto 465 70;
+  draw_string "start screen"

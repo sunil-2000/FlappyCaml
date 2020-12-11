@@ -43,7 +43,7 @@ let string_of_mouse_pos mouse =
    = Go. *)
 let state_go gui player delta_t frame = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') then 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') then 
       Game.set_can_jump player true
     else 
       player in 
@@ -64,7 +64,7 @@ let state_go gui player delta_t frame =
    game properly when state = Run *)
 let state_run gui player delta_t frame = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'v') && (Game.get_y player <= 100.) then 
+    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') && (Game.get_y player <= 100.) then 
       Game.set_can_jump player true
     else 
       player in 
@@ -118,7 +118,8 @@ let rec main gui player state =
         | (player, gui) -> main gui player curr_state
       end 
     | GameOver -> end_game gui player curr_state
-    | Instructions -> instructions gui player curr_state 
+    | Instructions -> instructions gui player curr_state
+    | Sprites -> sprites gui player curr_state 
     | _ -> failwith "state not implemented <- main"
     (**************************************)
 
@@ -140,7 +141,20 @@ and instructions gui player state =
     | Instructions -> instructions gui player state 
     | _ -> main gui player curr_state 
   else 
-    instructions gui player state 
+    instructions gui player state
+
+and sprites gui player state = 
+  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then
+    let time_instant = Unix.gettimeofday () in 
+    old_t_fps := time_instant;
+    Graphics.auto_synchronize true;
+    Gui.draw_sprites gui;
+    let curr_state = State.check state player in 
+    match curr_state.state with 
+    | Sprites -> sprites gui player state 
+    | _ -> main gui player curr_state 
+  else 
+    sprites gui player state
 
 and start_game_aux gui player state = 
   let curr_state = State.check state player in
