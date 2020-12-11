@@ -4,7 +4,7 @@ type t
 
 (** [update_fly int int int int t] updates t properly when in "fly" or "go" 
     state, so that on the next drawing the game is drawn properly *)
-val update_fly: int -> int -> int -> int -> int -> t -> t
+val update_fly: int -> int -> int -> int -> int -> int -> t -> t
 
 (* (** [update_index t] updates the index of the animation array, so that the next
     image in the array is drawn on the next update *)
@@ -15,7 +15,7 @@ val update_fly: int -> int -> int -> int -> int -> t -> t
 val make_gui: t -> unit 
 
 (** [make_state] instantiates the state type with all the required parameters *)
-val make_state: int -> int -> int -> int -> int -> int -> int -> int -> t
+val make_state: int -> int -> int -> int -> int -> int -> int -> int -> int -> t
 
 (* [update_run y score index t] updates t appropriately when the state is run *)
 val update_run: int -> int -> int -> int -> t -> t 

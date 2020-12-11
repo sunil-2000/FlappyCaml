@@ -67,7 +67,7 @@ let state_to_go () =
 let switch state player =
   pick_interval player;
   if get_state state = Go then 
-    {state with state = ToRun}
+    {state with state = Run}
   else if get_state state = Run then
     {state with state = Go}
   else state
@@ -76,19 +76,25 @@ let switch state player =
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
-  if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
+  if get_state state = GameOver then 
+    begin 
+      if state_to_go () then 
+        make_state ()
+      else 
+        state
+    end 
+  else if 
+    (Game.get_y player < 100. && get_state state = Go) 
+    || Game.get_collision player then 
     {state with state = GameOver}
   else if get_state state = Start then 
-    if state_to_go () then 
-      {state with state = Go}
-    else 
-      state 
-      (* else if (Game.get_score player mod 3) = 0 then 
-         switch state player     *)
-  else if get_state state = GameOver then 
-    if state_to_go () then 
-      make_state ()
-    else 
-      state
+    begin 
+      if state_to_go () then 
+        {state with state = Go}
+      else 
+        state 
+    end 
+  else if (Game.get_score player mod 3 = 0) && (Game.get_score player > 0) then 
+    switch state player    
   else 
     state

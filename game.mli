@@ -3,7 +3,7 @@ type t
 
 (** [create (a, b) c] returns a player type with position and velocity 
     specified. *)
-val create: (float * float) -> float -> t
+val create: (float * float) -> float -> int -> t
 
 (** [is_gameover t] returns true if game over conditions are met, false 
     otherwise.*)
@@ -54,6 +54,7 @@ val get_collision: t -> bool
 (** [get_score t] returns the current score of the player. *)
 val get_score: t -> int
 
+val get_highscore: t ->  int 
 (** [get_score_updated t] returns true if player score has been updated since
     passing the most recent pipe, false otherwise. *)
 val get_score_updated: t -> bool

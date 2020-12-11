@@ -27,6 +27,7 @@ type t = {
   ground_image: Graphics.image;
   pipe_type : int;
   player_score : int;
+  highscore : int; 
 
 }
 
@@ -84,7 +85,7 @@ let cactus = get_img "assets/cactus.ppm"
 let make_player_array array = 
   Array.map get_img array 
 
-let make_state wth hgt x y pipe_x pipe_type score index = {
+let make_state wth hgt x y pipe_x pipe_type score index highscore = {
   canvas_width = wth; 
   canvas_height = hgt;
   camel_x = x;
@@ -106,6 +107,7 @@ let make_state wth hgt x y pipe_x pipe_type score index = {
   ground_image = get_img "assets/new_ground.ppm";
   pipe_type = pipe_type;
   player_score = score;
+  highscore = highscore; 
 }
 
 let rec animate_player frame t = 
@@ -115,16 +117,17 @@ let rec animate_player frame t =
 
 (* [update_fly y score index pipe pipe_type t] updates t appropriately when
    the state is fly (go) *)
-let update_fly y score frame pipe_x pipe_type t =
+let update_fly y score frame pipe_x pipe_type highscore t =
   {t with camel_y = y; player_score = score; camel_index = animate_player frame t; 
-          pipe_x = pipe_x; pipe_type = pipe_type}
+          pipe_x = pipe_x; pipe_type = pipe_type; highscore = highscore}
 
 let update_run y score frame pipe_x t =
   {t with camel_y = y; player_score = score; camel_index = animate_player frame t;
           pipe_x = pipe_x; pipe_type = 1}
 
 let draw_camel t =
-  set_color (white);
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
   if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
   draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
 
@@ -135,7 +138,8 @@ let draw_ground init =
   draw_image init.ground_image 570 0
 
 let draw_back init = 
-  set_color (rgb 91 164 238);
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
   fill_rect 0 0 init.canvas_width init.canvas_height
 
 let draw_pipe_helper_bottom init t = 
@@ -151,6 +155,8 @@ let draw_pipe_helper_top init t =
   | _ -> draw_image init.top_pipe_low_image init.pipe_x 400
 
 let draw_pipes init =
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
   fill_rect 250 100 400 600;
   fill_rect 0 100 250 600;
   if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
@@ -162,7 +168,7 @@ let draw_score init =
   moveto 520 620;
   set_text_size 500;
   set_color black;
-  set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
+  (*set_font "-*-Helvetica-medium-r-normal--50-*-*-*-*-*-iso8859-1";*)
   draw_string score_string;
   set_color white
 
@@ -178,31 +184,51 @@ let draw_pause =
 
 let draw_gameover init = 
   Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  moveto 400 400;
   set_color black;
-  moveto 120 500;
+  draw_string "HighScore:";
+  draw_string (string_of_int init.highscore); 
+  moveto 270 500;
+  draw_string "Game Over!";
   set_text_size 50;
   let score_s = string_of_int init.player_score in 
-  draw_string 
-    "   _____                         ____                 \n 
-        / ____|                       / __ \                 \n
-      | |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __   \n
-      | | |_ |/ _` | '_ ` _ \ / _ \ | |  | \ \ / / _ \ '__|  \n
-      | |__| | (_| | | | | | |  __/ | |__| |\ V /  __/  |     \n
-        \_____|\__,_|_| |_| |_|\___|  \____/  \_/ \___|_|    \n
-                                                             \n
-                                                             \n";
-  moveto 300 350;
-  (*set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1"*)
-  draw_string score_s
-
+  moveto 275 350;
+  set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
+  draw_string score_s;
+  set_font "fixed"
 
 let draw_start init =
   Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  draw_image init.bottom_pipe_high_image 0 100;
+  draw_image init.top_pipe_high_image 0 575;
+  draw_image init.bottom_pipe_low_image 530 100;
+  draw_image init.top_pipe_low_image 530 400;
+  draw_ground init;
   set_color black;
-  draw_string "Flappy";
-  draw_string "Caml";
-  draw_image init.camel_image 250 300;
-  let button = "Click any key to start" in
-  moveto 200 400;
-  draw_string button;
+  set_text_size 10;
+  moveto 120 500;
+  draw_string "  _____ _                            ____                _ ";
+  moveto 120 490;
+  draw_string " |  ___| | __ _ _ __  _ __  _   _   / ___|__ _ _ __ ___ | |";
+  moveto 120 480;
+  draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+  moveto 120 470;
+  draw_string " |  _| | | (_| | |_) | |_) | |_| | | |__| (_| | | | | | | |";
+  moveto 120 460;
+  draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+  moveto 120 450;
+  draw_string "               |_|   |_|    |___/                          ";
+  draw_image init.camel_image 120 300;
+  draw_image init.camel_image 220 300;
+  draw_image init.camel_image 320 300;
+  draw_image init.camel_image 420 300;
+  moveto 240 400;
+  set_color red;
+  draw_string "Press any key to start";
   set_color white

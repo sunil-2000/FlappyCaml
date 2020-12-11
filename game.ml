@@ -2,6 +2,7 @@ let gravity_global = -150.
 (* let old_t = ref (Unix.gettimeofday()) *)
 let max_down = -220.
 let jump_v = 230.
+let jump_v_run = 340.
 (* let t_delta = 1.0 *)
 (* let min = bottom_of_screen *)
 let pipe_width = 73
@@ -27,9 +28,10 @@ type t = {
   collision : bool;
   score : int;
   score_updated : bool;
+  highscore : int;
 }
 
-let create pos v = {
+let create pos v highscore = {
   position = pos;
   velocity = v;
   pipe_x = 600;
@@ -39,6 +41,7 @@ let create pos v = {
   pipe_type = Random.int 3;
   score = 0;
   score_updated = false;
+  highscore = highscore 
 }
 
 let is_gameover t = 
@@ -71,6 +74,9 @@ let get_score player =
 
 let get_score_updated player =
   player.score_updated
+
+let get_highscore player = 
+  max player.score player.highscore
 
 let velocity_change t_delta player =  
   max (player.velocity +. (3. *. gravity_global *. t_delta)) max_down
@@ -115,6 +121,13 @@ let jump player =
   else 
     player 
 
+let jump_run player = 
+  if player.can_jump then 
+    {player with velocity = jump_v_run ; can_jump = false}
+  else 
+    player 
+
+
 (* [pipe_chooser player] matches pipe_type and returns the bottom y value of the
    top pipe and the top y value of the bottom pipe in the form of a tuple *)
 let pipe_chooser player=
@@ -148,6 +161,19 @@ let collision player =
   else 
     player 
 
+(* collision_run player = 
+   let left_boundary = player.pipe_x - player_width in
+   let right_boundary = player.pipe_x + cactus_width in 
+   let player_x = get_player_x player in
+   if player_x > left_boundary && player_x < right_boundary then 
+    let player_y = get_player_y player in 
+    if player_y <= bottom_height + cactus_height then 
+      {player with collision = true}
+    else 
+      player
+   else 
+    player *)
+
 let score_update player =
   (* let left_boundary = player.pipe_x - player_width in *)
   let right_boundary = player.pipe_x + pipe_width in 
@@ -178,7 +204,7 @@ let update t_delta player  =
 let update_run t_delta player =
   if player.can_jump then
     (* jumps with gravity applied after, then apply pipe change *)
-    jump player 
+    jump_run player 
     |> gravity_run t_delta 
     |> pipe_change
     |> run_pipe_choose

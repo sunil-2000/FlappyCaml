@@ -4,8 +4,8 @@ open State
 
 (* move some of these functions to state module *)
 (* gui, player, state initial values *)
-let gui_init = Gui.make_state 600 700 200 200 400 0 0 0  
-let player_init = Game.create (200., 200.) 5. 
+let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 0
+let player_init = Game.create (200., 200.) 5. 0 
 let state_init = State.make_state ()
 (* [old_t] stores the time of the previous call to main, which 
    helps track time of game, which is used in the game module's gravity
@@ -41,8 +41,9 @@ let state_go gui player delta_t frame =
   let pipe_x' = Game.get_pipe new_player in
   let choose_pipe = Game.get_pipe_type new_player in
   let score' = Game.get_score new_player in
+  let highscore = Game.get_highscore new_player in 
   let gui_update = Gui.update_fly y' score' frame pipe_x'  
-      choose_pipe gui in 
+      choose_pipe highscore gui in 
 
   Gui.make_gui gui_update;
   (new_player, gui_update) 
@@ -119,15 +120,15 @@ and start_game gui player state =
   else 
     main gui player curr_state 
 
+(* [end_game gui player state] executes game when state = GameOver *)
 and end_game gui player state = 
   Gui.draw_gameover gui;
   let state' = check state player in 
   if get_state state' <> Start then 
     end_game gui player state
   else 
-    start_game gui_init player_init state'
+    start_game gui_init (Game.create (200., 200.) 5. (Game.get_highscore player)) state_init
 
 let () = 
   State.pick_interval player_init;
-  (* state_start gui_init;  *)
   start_game gui_init player_init state_init
