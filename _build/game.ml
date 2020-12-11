@@ -121,6 +121,7 @@ let jump player =
   else 
     player 
 
+(* factor this into jump, same thing just different velocity value *)
 let jump_run player = 
   if player.can_jump then 
     {player with velocity = jump_v_run ; can_jump = false}

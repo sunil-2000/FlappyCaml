@@ -18,14 +18,26 @@ let fps = ref 0.
 let last_update = ref 0. 
 let target_fps = 60.
 let frame_count = ref 0
-let time_per_frame = 1. /. 30.
+let time_per_frame = 1. /. 60.
 let dummy = ref 0
 
+(**************************DEBUG FUNCTIONS*************************************)
+(******************************************************************************)
 let fps_counter = 
   let d = (Unix.gettimeofday ()) -. !old_t_fps in 
   old_t_fps := Unix.gettimeofday ();
   last_update := d; 
   fps := 1. /. d
+
+let next_frame = 
+  fun () ->
+  dummy := (!dummy) + 1;
+  !dummy
+
+let string_of_mouse_pos mouse = 
+  match mouse with 
+  | (x, y) -> "(" ^ string_of_int x ^ "," ^ string_of_int y ^ ")"
+(******************************************************************************)
 
 (* [state_go gui player delta_t] executes game properly if state of game
    = Go. *)
@@ -71,54 +83,82 @@ let state_run gui player delta_t frame =
 let state_torun gui player delta_t frame = 
   failwith"TODO"
 
-let next_frame = 
-  fun () ->
-  dummy := (!dummy) + 1;
-  !dummy
-
 (* [main gui player state] is responsible for executing the game properly when
    running *)
 let rec main gui player state = 
   (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
   if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
+    (* should create helper for this part *)
+    (**************************************)
     let curr_state = State.check state player in 
-
     let state' = curr_state |> State.get_state in 
     let time_instant = Unix.gettimeofday () in
     let delta_t = time_instant -. !old_t in
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
-    if state' = Go then
-      match state_go gui player delta_t (!frame_count) with 
-      | (player, gui) -> 
-        Unix.sleepf 0.001; 
-        main gui player state
-    else if state' = Run then 
-      match state_run gui player delta_t (!frame_count) with 
-      | (player, gui) -> main gui player state
-    else if state' = GameOver then 
+    (**************************************)
+    (* factor into helper for pattern matches against state *)
+    (* state is abstract so need to make method for getting string_of_state, and
+       pattern match against that, haven't made mli yet which is why we can access
+       type of state directly *)
+    (**************************************)
+    match state' with 
+    | Start -> start_game gui player state 
+    | Go -> 
       begin 
-        end_game gui player curr_state
+        match state_go gui player delta_t (!frame_count) with 
+        | (player, gui) -> 
+          (* Unix.sleepf 0.001;  *)
+          main gui player curr_state
       end 
-    else main gui player state 
-    (* if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
-       Graphics.close_graph ()
-       else main gui player state  *)
+    | Run ->
+      begin
+        match state_run gui player delta_t (!frame_count) with 
+        | (player, gui) -> main gui player curr_state
+      end 
+    | GameOver -> end_game gui player curr_state
+    | Instructions -> instructions gui player curr_state 
+    | _ -> failwith "state not implemented <- main"
+    (**************************************)
+
+  (* if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
+     Graphics.close_graph ()
+     else main gui player state  *)
   else 
     main gui player state 
 (* else return unit *)
 (* main gui player state *)
+and instructions gui player state = 
+  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then
+    let time_instant = Unix.gettimeofday () in 
+    old_t_fps := time_instant;
+    Graphics.auto_synchronize true;
+    Gui.draw_instructions gui;
+    let curr_state = State.check state player in 
+    match curr_state.state with 
+    | Instructions -> instructions gui player state 
+    | _ -> main gui player curr_state 
+  else 
+    instructions gui player state 
+
+and start_game_aux gui player state = 
+  let curr_state = State.check state player in
+  match curr_state.state with 
+  | Start -> start_game gui player curr_state 
+  | _ -> main gui player curr_state 
 
 (* [start_game gui player state] runs game with start screen and then changes
    to go state when user executes a mouse click *)
 and start_game gui player state = 
-  Gui.draw_start gui;
-  let curr_state = State.check state player in
-  if State.get_state curr_state <> Go then 
-    start_game gui player curr_state 
+  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
+    let time_instant = Unix.gettimeofday () in 
+    old_t_fps := time_instant;
+    Graphics.auto_synchronize true;
+    Gui.draw_start gui;
+    start_game_aux gui player state 
   else 
-    main gui player curr_state 
+    start_game gui player state 
 
 (* [end_game gui player state] executes game when state = GameOver *)
 and end_game gui player state = 

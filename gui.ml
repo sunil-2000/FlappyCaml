@@ -200,6 +200,20 @@ let draw_gameover init =
   draw_string score_s;
   set_font "fixed"
 
+let draw_flappycaml x y = 
+  moveto x y;
+  draw_string "  _____ _                            ____                _ ";
+  moveto x (y -10);
+  draw_string " |  ___| | __ _ _ __  _ __  _   _   / ___|__ _ _ __ ___ | |";
+  moveto x (y-20);
+  draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+  moveto x (y-30);
+  draw_string " |  _| | | (_| | |_) | |_) | |_| | | |__| (_| | | | | | | |";
+  moveto x (y-40);
+  draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+  moveto x (y-50);
+  draw_string "               |_|   |_|    |___/                          "
+
 let draw_start init =
   Graphics.clear_graph ();
   let light_blue = rgb 76 186 196 in
@@ -212,18 +226,7 @@ let draw_start init =
   draw_ground init;
   set_color black;
   set_text_size 10;
-  moveto 120 500;
-  draw_string "  _____ _                            ____                _ ";
-  moveto 120 490;
-  draw_string " |  ___| | __ _ _ __  _ __  _   _   / ___|__ _ _ __ ___ | |";
-  moveto 120 480;
-  draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
-  moveto 120 470;
-  draw_string " |  _| | | (_| | |_) | |_) | |_| | | |__| (_| | | | | | | |";
-  moveto 120 460;
-  draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
-  moveto 120 450;
-  draw_string "               |_|   |_|    |___/                          ";
+  draw_flappycaml 120 500;
   draw_image init.camel_image 120 300;
   draw_image init.camel_image 220 300;
   draw_image init.camel_image 320 300;
@@ -231,4 +234,28 @@ let draw_start init =
   moveto 240 400;
   set_color red;
   draw_string "Press any key to start";
+  moveto 270 200;
+  fill_rect 255 195 100 25; (* rectangle box that can be clicked *)
+  set_color black;
+  draw_string "Instructions";
   set_color white
+
+let draw_instructions init = 
+  Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  set_color black; 
+  draw_flappycaml 120 500;
+  moveto 150 400;
+  draw_string "Press spacebar to jump through the obstacles when flying";
+  moveto 150 380;
+  draw_string "and over the obstacles when running.";
+  moveto 150 350;
+  draw_string "Press 'q' to exit the game application.";
+  set_color red; 
+  fill_rect 450 50 100 50;
+  set_color black;
+  moveto 465 70;
+  draw_string "start screen";
+  set_color white; 

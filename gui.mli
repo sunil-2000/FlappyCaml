@@ -30,3 +30,5 @@ val draw_start: t -> unit
    It also offers an option for the player to restart the game. *)
 val draw_gameover: t -> unit 
 
+val draw_instructions: t -> unit 
+

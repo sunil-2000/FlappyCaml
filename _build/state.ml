@@ -2,11 +2,21 @@ open Game
 open Graphics 
 open Random 
 
-type state = Start| GameOver | Go (* flying *) | Pause | Run | ToGo | ToRun
+type state = 
+  | Start
+  | GameOver 
+  | Go (* flying *) 
+  | Pause 
+  | Run 
+  | ToGo 
+  | ToRun 
+  | Instructions
+  (* add more states for game logic, then just pattern match against in 
+  *)
 
+(* just make this variant type, not using record if only one field *)
 type t = {
   state : state; 
-  score : int
 }
 
 let state_interval = ref 0
@@ -20,29 +30,25 @@ let pick_interval player =
 let make_state () =  
   {
     state = Start;
-    score = 0
   }
 
 let get_state t = 
   t.state
 
 let set_gameover state = 
-  {state with state = GameOver}
+  {state = GameOver}
 
 let set_go state = 
-  {state with state = Go}
+  {state = Go}
 
 let set_torun state = 
-  {state with state = ToRun}
+  {state = ToRun}
 
 let set_pause state = 
-  {state with state = GameOver}
+  {state = GameOver}
 
 let set_run state = 
-  {state with state = Run}
-
-let set_score value t = 
-  {t with score = value}
+  {state = Run}
 
 let game_over player = 
   let y = snd (Game.get_position player) in 
@@ -52,49 +58,75 @@ let game_over player =
     false
 
 (* [check_mouse_click] returns true if a mouse click has occured *)
-let rec check_key_click () = 
+let check_key_click () = 
   let e = wait_next_event [Key_pressed] in
-  if e.keypressed then true else check_key_click ()
-
-(* [state_to_go] transitions the state from start to go *)
-let state_to_go () = 
-  (* dimensions of button <- should make field in gui for button *)
-  if check_key_click () then 
-    true 
-  else 
-    false
+  if e.keypressed then true else false 
 
 let switch state player =
   pick_interval player;
   if get_state state = Go then 
-    {state with state = Run}
+    {state = Run}
   else if get_state state = Run then
-    {state with state = Go}
+    {state = Go}
   else state
 (* let pick_interval state player = 
    u.let interval = Random.int 10 + 3 *)
 
+(* return true if state should transition to instruction screen 
+   xl = left boundary, xr = right boundary, yb = bottom boundary, 
+   yt = top boundary *)
+let check_to_transition xl xr yb yt = 
+  match Graphics.mouse_pos () , Graphics.button_down () with 
+  | (x, y), b -> 
+    (* user is in the rectangle for button and has clicked *)
+    if b && x > xl && x < xr && y > yb && y < yt then 
+      true
+    else 
+      false  
+
+(* transitions state appropriately if state = Start *)
+let check_state_start state = 
+  match Graphics.key_pressed (), check_to_transition 255 355 195 220 with 
+  | true, true -> {state = Instructions}
+  | false, true -> {state = Instructions}
+  | true, false -> {state = Go} 
+  | false, false -> state  
+
+(* transitions state appropriately if state = GameOver *)
+let check_state_over state = 
+  match check_key_click () with 
+  | true -> {state = Start}
+  | false -> state 
+
+let check_instructions state = 
+  match check_to_transition 450 550 50 100 with 
+  | true -> {state = Start}
+  | false -> state
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
-  if get_state state = GameOver then 
-    begin 
-      if state_to_go () then 
-        make_state ()
-      else 
-        state
-    end 
-  else if 
-    (Game.get_y player < 100. && get_state state = Go) 
+
+  match get_state state with 
+  | GameOver -> check_state_over state 
+  | Go -> 
+    if (Game.get_y player < 100. && get_state state = Go) 
     || Game.get_collision player then 
-    {state with state = GameOver}
-  else if get_state state = Start then 
-    begin 
-      if state_to_go () then 
-        {state with state = Go}
-      else 
-        state 
-    end 
-  else if (Game.get_score player mod 3 = 0) && (Game.get_score player > 0) then 
-    switch state player    
-  else 
-    state
+      {state = GameOver}
+    else if Game.get_score player mod 3 = 0 && Game.get_score player > 0 then 
+      switch state player    
+    else 
+      state 
+  | Start -> check_state_start state 
+  | Run -> failwith "not implemented <- see [check] in state.ml"
+  | Instructions -> check_instructions state 
+  | _ -> failwith "not implmented in state.ml [check]"
+
+let string_of_state t = 
+  match t.state with 
+  | Go -> "go"
+  | GameOver -> "gameover"
+  | Start -> "start"
+  | Pause -> "pause"
+  | Run -> "run"
+  | ToGo -> "togo"
+  | ToRun -> "torun"
+  | Instructions -> "instructions"
