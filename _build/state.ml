@@ -2,7 +2,7 @@ open Game
 open Graphics 
 open Random 
 
-type state = Start| GameOver | Go (* flying *) | Pause | Run
+type state = Start| GameOver | Go (* flying *) | Pause | Run | ToGo | ToRun
 
 type t = {
   state : state; 
@@ -31,6 +31,9 @@ let set_gameover state =
 
 let set_go state = 
   {state with state = Go}
+
+let set_torun state = 
+  {state with state = ToRun}
 
 let set_pause state = 
   {state with state = GameOver}
@@ -64,24 +67,28 @@ let state_to_go () =
 let switch state player =
   pick_interval player;
   if get_state state = Go then 
-    {state with state = Run}
+    {state with state = ToRun}
   else if get_state state = Run then
     {state with state = Go}
   else state
-
 (* let pick_interval state player = 
-   let interval = Random.int 10 + 3 *)
+   u.let interval = Random.int 10 + 3 *)
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   if (Game.get_y player < 100. && get_state state = Go) || Game.get_collision player then 
     {state with state = GameOver}
-  else if Game.get_score player > 3 then 
-    switch state player    
   else if get_state state = Start then 
     if state_to_go () then 
       {state with state = Go}
     else 
       state 
+      (* else if (Game.get_score player mod 3) = 0 then 
+         switch state player     *)
+  else if get_state state = GameOver then 
+    if state_to_go () then 
+      make_state ()
+    else 
+      state
   else 
     state

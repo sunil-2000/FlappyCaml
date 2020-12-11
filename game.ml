@@ -190,3 +190,7 @@ let update_run t_delta player =
     |> run_pipe_choose
     |> collision
     |> score_update
+
+let update_torun t_delta player = 
+  gravity_run t_delta player 
+  |> pipe_change 

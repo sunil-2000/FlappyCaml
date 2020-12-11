@@ -22,6 +22,7 @@ type t = {
   top_pipe_high_image : Graphics.image;
   bottom_pipe_low_image : Graphics.image;
   top_pipe_low_image : Graphics.image;
+  cactus_image : Graphics.image;
   pipe_num : int;
   ground_image: Graphics.image;
   pipe_type : int;
@@ -76,6 +77,8 @@ let low_top_pipe = get_img "assets/top_low.ppm"
 
 let low_bottom_pipe = get_img "assets/bottom_low.ppm"
 
+let cactus = get_img "assets/cactus.ppm"
+
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
 let make_player_array array = 
@@ -98,6 +101,7 @@ let make_state wth hgt x y pipe_x pipe_type score index = {
   top_pipe_high_image = high_top_pipe;
   bottom_pipe_low_image = low_bottom_pipe;
   top_pipe_low_image = low_top_pipe; 
+  cactus_image = cactus; 
   pipe_num = 0;
   ground_image = get_img "assets/new_ground.ppm";
   pipe_type = pipe_type;
@@ -168,6 +172,7 @@ let make_gui init =
   draw_camel init;
   draw_score init
 
+
 let draw_pause =
   "fail"
 
@@ -176,10 +181,18 @@ let draw_gameover init =
   set_color black;
   moveto 120 500;
   set_text_size 50;
-  draw_string "Game Over";
   let score_s = string_of_int init.player_score in 
+  draw_string 
+    "   _____                         ____                 \n 
+        / ____|                       / __ \                 \n
+      | |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __   \n
+      | | |_ |/ _` | '_ ` _ \ / _ \ | |  | \ \ / / _ \ '__|  \n
+      | |__| | (_| | | | | | |  __/ | |__| |\ V /  __/  |     \n
+        \_____|\__,_|_| |_| |_|\___|  \____/  \_/ \___|_|    \n
+                                                             \n
+                                                             \n";
   moveto 300 350;
-  set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
+  (*set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1"*)
   draw_string score_s
 
 

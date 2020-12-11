@@ -3,7 +3,10 @@ open Game
 open State
 
 (* move some of these functions to state module *)
-
+(* gui, player, state initial values *)
+let gui_init = Gui.make_state 600 700 200 200 400 0 0 0  
+let player_init = Game.create (200., 200.) 5. 
+let state_init = State.make_state ()
 (* [old_t] stores the time of the previous call to main, which 
    helps track time of game, which is used in the game module's gravity
    equation *)
@@ -62,13 +65,10 @@ let state_run gui player delta_t frame =
   Gui.make_gui gui_update;
   (new_player, gui_update) 
 
-(* [state_start gui] executes code properly when state = Start *)
-let state_start gui =
-  Gui.draw_start gui
-
-(* [state_over gui] responsible for executing code when state = Gameover *)
-let state_over gui = 
-  Gui.draw_gameover gui
+(** [state_torun gui player delta_t frame] that handles the game updates as it 
+    transitions to the running game state. *)
+let state_torun gui player delta_t frame = 
+  failwith"TODO"
 
 let next_frame = 
   fun () ->
@@ -81,7 +81,7 @@ let rec main gui player state =
   (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
   if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
     let curr_state = State.check state player in 
-    print_int !State.state_interval; print_string " ";
+
     let state' = curr_state |> State.get_state in 
     let time_instant = Unix.gettimeofday () in
     let delta_t = time_instant -. !old_t in
@@ -96,11 +96,14 @@ let rec main gui player state =
     else if state' = Run then 
       match state_run gui player delta_t (!frame_count) with 
       | (player, gui) -> main gui player state
-    else
-      Gui.draw_gameover gui;
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
-      Graphics.close_graph ()
+    else if state' = GameOver then 
+      begin 
+        end_game gui player curr_state
+      end 
     else main gui player state 
+    (* if (Graphics.key_pressed ()) && (Graphics.read_key () = 'q') then 
+       Graphics.close_graph ()
+       else main gui player state  *)
   else 
     main gui player state 
 (* else return unit *)
@@ -108,17 +111,23 @@ let rec main gui player state =
 
 (* [start_game gui player state] runs game with start screen and then changes
    to go state when user executes a mouse click *)
-let rec start_game gui player state = 
+and start_game gui player state = 
+  Gui.draw_start gui;
   let curr_state = State.check state player in
   if State.get_state curr_state <> Go then 
     start_game gui player curr_state 
   else 
     main gui player curr_state 
 
+and end_game gui player state = 
+  Gui.draw_gameover gui;
+  let state' = check state player in 
+  if get_state state' <> Start then 
+    end_game gui player state
+  else 
+    start_game gui_init player_init state'
+
 let () = 
-  let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 in 
-  let player = Game.create (200., 200.) 5. in 
-  let state_init = State.make_state () in 
-  State.pick_interval player;
-  state_start gui_init; 
-  start_game gui_init player state_init
+  State.pick_interval player_init;
+  (* state_start gui_init;  *)
+  start_game gui_init player_init state_init
