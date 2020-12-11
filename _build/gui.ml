@@ -187,15 +187,32 @@ let draw_gameover init =
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
   fill_rect 0 0 600 700;
-  moveto 400 400;
+  draw_image init.bottom_pipe_high_image 0 100;
+  draw_image init.top_pipe_high_image 0 575;
+  draw_image init.bottom_pipe_low_image 530 100;
+  draw_image init.top_pipe_low_image 530 400;
+  draw_ground init;
   set_color black;
-  draw_string "HighScore:";
+  moveto 80 500;
+  draw_string " _______  _______  __   __  _______    _______  __   __  _______  ______   ";
+  moveto 80 490;
+  draw_string "|       ||   _   ||  |_|  ||       |  |       ||  | |  ||       ||    _ |  ";
+  moveto 80 480;
+  draw_string "|    ___||  |_|  ||       ||    ___|  |   _   ||  |_|  ||    ___||   | ||  ";
+  moveto 80 470;
+  draw_string "|   | __ |       ||       ||   |___   |  | |  ||       ||   |___ |   |_||_ ";
+  moveto 80 460;
+  draw_string "|   ||  ||       ||       ||    ___|  |  |_|  ||       ||    ___||    __  |";
+  moveto 80 450;
+  draw_string "|   |_| ||   _   || ||_|| ||   |___   |       | |     | |   |___ |   |  | |";
+  moveto 80 440;
+  draw_string "|_______||__| |__||_|   |_||_______|  |_______|  |___|  |_______||___|  |_|";
+  moveto 260 275;
+  draw_string "High Score: ";
   draw_string (string_of_int init.highscore); 
-  moveto 270 500;
-  draw_string "Game Over!";
   set_text_size 50;
   let score_s = string_of_int init.player_score in 
-  moveto 275 350;
+  moveto 275 325;
   set_font "-*-Helvetica-medium-r-normal--80-*-*-*-*-*-iso8859-1";
   draw_string score_s;
   set_font "fixed"

@@ -102,19 +102,20 @@ let check_instructions state =
   match check_to_transition 450 550 50 100 with 
   | true -> {state = Start}
   | false -> state
+
+let check_go state player = 
+  if (Game.get_y player < 100. && get_state state = Go) 
+  || Game.get_collision player then 
+    {state = GameOver}
+  else if Game.get_score player mod 3 = 0 && Game.get_score player > 0 then 
+    switch state player    
+  else 
+    state 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
-
   match get_state state with 
   | GameOver -> check_state_over state 
-  | Go -> 
-    if (Game.get_y player < 100. && get_state state = Go) 
-    || Game.get_collision player then 
-      {state = GameOver}
-    else if Game.get_score player mod 3 = 0 && Game.get_score player > 0 then 
-      switch state player    
-    else 
-      state 
+  | Go -> check_go state player 
   | Start -> check_state_start state 
   | Run -> failwith "not implemented <- see [check] in state.ml"
   | Instructions -> check_instructions state 
