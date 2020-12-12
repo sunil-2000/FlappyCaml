@@ -195,6 +195,7 @@ let make_gui init =
   draw_camel init;
   draw_score init
 
+
 let draw_pause =
   "fail"
 

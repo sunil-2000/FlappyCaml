@@ -91,9 +91,9 @@ let check_to_transition xl xr yb yt =
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
   match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
-  | true, _, _ -> {state = Go} 
   | _, true, _ -> {state = Instructions}
   | _, _, true -> {state = Sprites}
+  | true, _, _ -> {state = Go} 
   | _, _, _ -> state  
 
 (* transitions state appropriately if state = GameOver *)
@@ -108,6 +108,8 @@ let check_instructions state =
   | false -> state
 
 let check_sprite_select state = 
+
+  (* clarkson *)
   let sp1 = check_to_transition 170 220 300 350 in 
   let sp2 = check_to_transition 270 320 300 350 in 
   let sp3 = check_to_transition 370 420 300 350 in 

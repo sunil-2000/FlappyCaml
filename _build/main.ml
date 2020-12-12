@@ -177,7 +177,6 @@ and fly gui player state delta_t frame =
   Gui.make_gui gui_update;
   main gui_update new_player state 
 
-(* transitions state properly when user selects a character *)
 and select_char gui player state = 
   let array_no = 
     match State.get_state state with 
@@ -188,6 +187,7 @@ and select_char gui player state =
   let gui' = Gui.set_sprite gui array_no in 
   let state' = make_state () in 
   start_game gui' player state' 
+
 
 let () = 
   Graphics.open_graph "600 700";
