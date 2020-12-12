@@ -66,13 +66,12 @@ let check_key_click () =
   let e = wait_next_event [Key_pressed] in
   if e.keypressed then true else false 
 
+(* switch moves state to transition *)
 let switch state player =
-  pick_interval player;
-  if get_state state = Go then 
-    {state = Run}
-  else if get_state state = Run then
-    {state = Go}
-  else state
+  match Random.int 2 with 
+  | 0 -> {state = ToRun}
+  | 1 -> {state = ToGo}
+  | _ -> failwith "switch"
 (* let pick_interval state player = 
    u.let interval = Random.int 10 + 3 *)
 
@@ -126,7 +125,7 @@ let check_go state player =
   if (Game.get_y player < 100. && get_state state = Go) 
   || Game.get_collision player then 
     {state = GameOver}
-  else if Game.get_score player mod 3 = 0 && Game.get_score player > 0 then 
+  else if Game.get_score player mod 2 = 0 && Game.get_score player > 0 then 
     switch state player    
   else 
     state 
@@ -134,6 +133,20 @@ let check_go state player =
 let check_run state player = 
   if Game.get_collision player then 
     {state = GameOver}
+  else if Game.get_score player mod 2 = 0 && Game.get_score player > 0 then 
+    switch state player  
+  else 
+    state
+
+let check_torun state player = 
+  if Game.get_y player = 100. then 
+    {state = Run} 
+  else 
+    state
+
+let check_togo state player = 
+  if Game.get_y player >= 350. then 
+    {state = Go} 
   else 
     state
 
@@ -147,6 +160,8 @@ let check state player =
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 
+  | ToRun -> check_torun state player
+  | ToGo -> check_togo state player
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 

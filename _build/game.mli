@@ -3,18 +3,14 @@ type t
 
 (** [create (a, b) c] returns a player type with position and velocity 
     specified. *)
-val create: (float * float) -> float -> int -> t
-
-(** [is_gameover t] returns true if game over conditions are met, false 
-    otherwise.*)
-val is_gameover: t -> bool 
-
-(** [get_velocity t] returns the velocity of a player object.*)
-val get_velocity: t -> float
+val create: float * float -> float -> int -> string -> int option -> int -> t
 
 (** [get_pipe t] returns the x-coordinate of the bottom-left corner of a pipe.*)
-val get_pipe: t -> int 
+val get_obs_x: t -> int 
 
+val get_pipe_type: t -> int
+
+val gravity_run: float -> t -> t 
 (** [get_position t] returns the current coordinates of the player object as a 
     tuple.*)
 val get_position: t -> float * float 
@@ -23,15 +19,7 @@ val get_position: t -> float * float
     allowed to jump or not. *)
 val set_can_jump: t -> bool -> t 
 
-(** [pipe_change t] updates the position of the pipes. *)
-val pipe_change: t -> t 
-
-(** [gravity (a, b) p] returns a player object with the position updated to 
-    reflect changes due to gravity, velocity, and acceleration. *)
-val gravity: float -> t -> t
-
-(** [jump t] modifies player velocity to apply a jump to the player model. *)
-val jump: t -> t
+val set_obs_type: t -> string -> t 
 
 (** [update (a, b) t] updates the parameters of the player to reflect changes 
     in game state due to gravity, jumping, score, collisions, and pipes. *)
@@ -55,6 +43,5 @@ val get_collision: t -> bool
 val get_score: t -> int
 
 val get_highscore: t ->  int 
-(** [get_score_updated t] returns true if player score has been updated since
-    passing the most recent pipe, false otherwise. *)
-val get_score_updated: t -> bool
+
+val gravity_zero: float -> t -> t 

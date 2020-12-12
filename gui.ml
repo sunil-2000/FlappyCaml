@@ -3,6 +3,7 @@ open Camlimages
 open Images
 open Game 
 let open_screen = Graphics.open_graph " 600x700";
+
 type t = {
   canvas_width : int; 
   canvas_height : int;
@@ -74,7 +75,7 @@ let low_top_pipe = get_img "assets/top_low.ppm"
 
 let low_bottom_pipe = get_img "assets/bottom_low.ppm"
 
-let cactus = get_img "assets/cactus.ppm"
+let cactus = get_img "assets/cactus.pbm"
 
 let clarkson = get_img "assets/clarkson.ppm"
 
@@ -180,6 +181,17 @@ let draw_pipes init =
   draw_pipe_helper_bottom init init.pipe_type;
   draw_pipe_helper_top init init.pipe_type
 
+let draw_cactus_helper init = 
+  draw_image init.cactus_image init.pipe_x 100
+
+let draw_cactus init = 
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 250 100 400 600;
+  fill_rect 0 100 250 600;
+  if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
+  draw_cactus_helper init
+
 let draw_score init =
   let score_string = string_of_int init.player_score in
   moveto 520 620;
@@ -193,6 +205,17 @@ let make_gui init =
   draw_ground init;
   draw_pipes init;
   draw_camel init;
+  draw_score init
+
+let draw_torun init = 
+  draw_ground init;
+  draw_camel init;
+  draw_score init
+
+let draw_run init = 
+  draw_ground init;
+  draw_cactus init;
+  draw_camel init; 
   draw_score init
 
 let draw_pause =

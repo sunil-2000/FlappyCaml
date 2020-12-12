@@ -32,6 +32,10 @@ val draw_gameover: t -> unit
 
 val draw_instructions: t -> unit 
 
+val draw_transition:  t -> unit 
+
 val draw_sprites: t -> unit
 
 val set_sprite: t -> int -> t 
+
+(* val draw_cactus: t -> t *)
