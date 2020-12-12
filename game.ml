@@ -16,11 +16,8 @@ let player_height = 50
 let bottom_height = 100
 
 type t = {
-  (* name : string;
-     sprite : string; *)
   position : (float * float);
   velocity : float;
-
   pipe_x : int;
   game_over : bool;
   can_jump : bool;
@@ -30,6 +27,7 @@ type t = {
   score_updated : bool;
   highscore : int;
 }
+
 
 let create pos v highscore = {
   position = pos;

@@ -130,13 +130,20 @@ let check_go state player =
     switch state player    
   else 
     state 
+
+let check_run state player = 
+  if Game.get_collision player then 
+    {state = GameOver}
+  else 
+    state
+
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match get_state state with 
   | GameOver -> check_state_over state 
   | Go -> check_go state player 
   | Start -> check_state_start state 
-  | Run -> failwith "not implemented <- see [check] in state.ml"
+  | Run -> check_run state player 
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 

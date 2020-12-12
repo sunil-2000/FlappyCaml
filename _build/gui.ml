@@ -108,7 +108,7 @@ let make_state wth hgt x y pipe_x pipe_type score index highscore = {
   pipe_x = pipe_x;
   camel_image = clarkson;
   camel_index = index;
-  camel_image_array = camel_array;
+  camel_image_array = clarkson_array;
   bottom_pipe_image = reg_bottom_pipe;
   top_pipe_image = reg_top_pipe;
   bottom_pipe_high_image = high_bottom_pipe;
@@ -138,7 +138,7 @@ let update_fly y score frame pipe_x pipe_type highscore t =
   {t with camel_y = y; player_score = score; camel_index = animate_player frame t; 
           pipe_x = pipe_x; pipe_type = pipe_type; highscore = highscore}
 
-let update_run y score frame pipe_x t =
+let update_run y score frame pipe_x pipe_type highscore t =
   {t with camel_y = y; player_score = score; camel_index = animate_player frame t;
           pipe_x = pipe_x; pipe_type = 1}
 
@@ -194,7 +194,6 @@ let make_gui init =
   draw_pipes init;
   draw_camel init;
   draw_score init
-
 
 let draw_pause =
   "fail"

@@ -39,24 +39,6 @@ let string_of_mouse_pos mouse =
   | (x, y) -> "(" ^ string_of_int x ^ "," ^ string_of_int y ^ ")"
 (******************************************************************************)
 
-(* [state_run gui player delta_t] is a helper function for main that runs
-   game properly when state = Run *)
-let state_run gui player delta_t frame = 
-  let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') && (Game.get_y player <= 100.) then 
-      Game.set_can_jump player true
-    else 
-      player in 
-
-  let new_player = Game.update_run delta_t player' in 
-  let y' = Game.get_y new_player |> int_of_float in
-  let pipe_x' = Game.get_pipe new_player in
-  let score' = Game.get_score new_player in
-  let gui_update = Gui.update_run y' score' frame pipe_x' gui in 
-
-  Gui.make_gui gui_update;
-  (new_player, gui_update) 
-
 (** [state_torun gui player delta_t frame] that handles the game updates as it 
     transitions to the running game state. *)
 let state_torun gui player delta_t frame = 
@@ -64,7 +46,7 @@ let state_torun gui player delta_t frame =
 
 (* [main gui player state] is responsible for executing the game properly when
    running *)
-let rec main gui player state = 
+let rec main (gui:Gui.t) player state = 
   (* if now - lastupdatetime > time_between_updates && update_count < 1 (1 update per second) *)
   if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
     (* should create helper for this part *)
@@ -85,11 +67,7 @@ let rec main gui player state =
     match state' with 
     | Start -> start_game gui player state 
     | Go -> fly gui player curr_state delta_t (!frame_count)
-    | Run ->
-      begin
-        match state_run gui player delta_t (!frame_count) with 
-        | (player, gui) -> main gui player curr_state
-      end 
+    | Run -> run gui player curr_state delta_t (!frame_count)
     | GameOver -> end_game gui player curr_state
     | Instructions -> instructions gui player curr_state
     | Sprites -> sprites gui player curr_state 
@@ -157,25 +135,35 @@ and end_game gui player state =
   else 
     start_game gui_init (Game.create (200., 200.) 5. (Game.get_highscore player)) state_init
 
-(* executes game properly when state = Go *)
-and fly gui player state delta_t frame = 
+and run_fly_aux (gui:Gui.t) player state delta_t frame gamefn guifn bool = 
   let player' = 
-    if (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') then 
+    if bool then 
       Game.set_can_jump player true
     else 
       player in 
 
-  let new_player = Game.update delta_t player' in 
+  let new_player = gamefn delta_t player' in 
   let y' = Game.get_y new_player |> int_of_float in
   let pipe_x' = Game.get_pipe new_player in
   let choose_pipe = Game.get_pipe_type new_player in
   let score' = Game.get_score new_player in
   let highscore = Game.get_highscore new_player in 
-  let gui_update = Gui.update_fly y' score' frame pipe_x'  
-      choose_pipe highscore gui in 
+  let gui_update = guifn y' score' frame pipe_x' choose_pipe highscore gui in 
 
   Gui.make_gui gui_update;
   main gui_update new_player state 
+
+(* executes game properly when state = Go *)
+and fly (gui: Gui.t) player state delta_t frame = 
+  let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') in 
+  run_fly_aux gui player state delta_t frame Game.update Gui.update_fly bool 
+
+(* [state_run gui player delta_t] is a helper function for main that runs
+   game properly when state = Run *)
+and run gui player state delta_t frame = 
+  let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') 
+             && (Game.get_y player <= 100.) in 
+  run_fly_aux gui player state delta_t frame Game.update_run Gui.update_run bool 
 
 (* transitions state properly when user selects a character *)
 and select_char gui player state = 
