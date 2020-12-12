@@ -169,7 +169,7 @@ and fly (gui: Gui.t) player state delta_t frame =
 and run gui player state delta_t frame = 
   let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') 
              && (Game.get_y player <= 100.) in 
-  run_fly_aux gui player state delta_t frame Game.update_run Gui.update_run bool Gui.draw_transition
+  run_fly_aux gui player state delta_t frame Game.update_run Gui.update_run bool Gui.draw_run
 
 (* transitions state properly when user selects a character *)
 and select_char gui player state = 
@@ -194,7 +194,7 @@ and update_gui_run player gui =
     choose_pipe highscore gui
 
 and torun gui player state delta_t = 
-  Gui.draw_transition gui; 
+  Gui.draw_torun gui; 
 
   let new_player = Game.gravity_run delta_t player in 
   let player' = Game.set_obs_type new_player "cactus" in 

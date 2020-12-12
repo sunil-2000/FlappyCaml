@@ -32,7 +32,9 @@ val draw_gameover: t -> unit
 
 val draw_instructions: t -> unit 
 
-val draw_transition:  t -> unit 
+val draw_run:  t -> unit 
+
+val draw_torun: t -> unit
 
 val draw_sprites: t -> unit
 

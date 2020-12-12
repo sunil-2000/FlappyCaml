@@ -207,9 +207,14 @@ let make_gui init =
   draw_camel init;
   draw_score init
 
-let draw_transition init = 
+let draw_torun init = 
   draw_ground init;
-  draw_cactus init; 
+  draw_camel init;
+  draw_score init
+
+let draw_run init = 
+  draw_ground init;
+  draw_cactus init;
   draw_camel init; 
   draw_score init
 
