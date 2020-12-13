@@ -90,6 +90,7 @@ let check_to_transition xl xr yb yt =
 
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
+
   match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
   | true, _, _ -> {state = Go} 
   | _, true, _ -> {state = Instructions}

@@ -65,7 +65,7 @@ let rec main (gui:Gui.t) player state =
        type of state directly *)
     (**************************************)
     match state' with 
-    | Start -> start_game gui player state 
+    | Start -> start_game gui player curr_state 
     | Go -> fly gui player curr_state delta_t (!frame_count)
     | Run -> run gui player curr_state delta_t (!frame_count)
     | GameOver -> end_game gui player curr_state
@@ -82,52 +82,31 @@ let rec main (gui:Gui.t) player state =
     main gui player state 
 (* else return unit *)
 (* main gui player state *)
+
+and synchronize () = 
+  old_t_fps :=  Unix.gettimeofday ();
+  Graphics.auto_synchronize true
+
 and instructions gui player state = 
-  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then
-    let time_instant = Unix.gettimeofday () in 
-    old_t_fps := time_instant;
-    Graphics.auto_synchronize true;
-    Gui.draw_instructions gui;
-    let curr_state = State.check state player in 
-    match curr_state.state with 
-    | Instructions -> instructions gui player state 
-    | _ -> main gui player curr_state 
-  else 
-    instructions gui player state
+  synchronize ();
+  Gui.draw_instructions gui;
+  main gui player state
 
 and sprites gui player state = 
-  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then
-    let time_instant = Unix.gettimeofday () in 
-    old_t_fps := time_instant;
-    Graphics.auto_synchronize true;
-    Gui.draw_sprites gui;
-    let curr_state = State.check state player in 
-    match curr_state.state with 
-    | Sprites -> sprites gui player state 
-    | _ -> main gui player curr_state 
-  else 
-    sprites gui player state
-
-and start_game_aux gui player state = 
-  let curr_state = State.check state player in
-  match curr_state.state with 
-  | Start -> start_game gui player curr_state 
-  | _ -> main gui player curr_state 
+  synchronize ();
+  Gui.draw_sprites gui;
+  main gui player state 
 
 (* [start_game gui player state] runs game with start screen and then changes
    to go state when user executes a mouse click *)
 and start_game gui player state = 
-  if Unix.gettimeofday () -. !old_t_fps > time_per_frame then 
-    let time_instant = Unix.gettimeofday () in 
-    old_t_fps := time_instant;
-    Graphics.auto_synchronize true;
-    Gui.draw_start gui;
-    start_game_aux gui player state 
-  else 
-    start_game gui player state 
+  synchronize ();
+  Gui.draw_start gui;
+  main gui player state 
 
 (* [end_game gui player state] executes game when state = GameOver *)
 and end_game gui player state = 
+  synchronize ();
   Gui.draw_gameover gui;
   let state' = check state player in 
   if get_state state' <> Start then 
@@ -175,7 +154,7 @@ and select_char gui player state =
     | _ -> failwith "array not implemented <- [select_char]" in 
   let gui' = Gui.set_sprite gui array_no in 
   let state' = make_state () in 
-  start_game gui' player state' 
+  main gui' player state' 
 
 let () = 
   Graphics.open_graph "600 700";
