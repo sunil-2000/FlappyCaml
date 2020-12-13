@@ -12,13 +12,25 @@ ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITer
 # Target: gui.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmo gui.ml # cached
 # Target: main.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules main.ml > main.ml.depends
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules main.ml > main.ml.depends # cached
 # Target: state.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:state.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules state.ml > state.ml.depends # cached
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules state.ml > state.ml.depends
 # Target: state.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml # cached
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
++ ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
+File "state.ml", lines 73-75, characters 2-14:
+73 | ..match Random.int 2 with 
+74 |   | 0 -> if state.state = Run then {state = ToGo} else {state = ToRun}
+75 |   | 1 -> state
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+2
+File "state.ml", line 197, characters 4-11:
+197 |   | Sprite3 -> "sprite3"
+          ^^^^^^^
+Warning 11: this match case is unused.
 # Target: main.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmo main.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmo main.ml # cached
 # Target: game.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:game.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends # cached
 # Target: game.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:game.cmo, file:game.ml, implem, ocaml, quiet, traverse }

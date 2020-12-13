@@ -18,6 +18,8 @@ type state =
   (* add more states for game logic, then just pattern match against in 
   *)
 
+let old_score = ref 0 
+
 (* just make this variant type, not using record if only one field *)
 type t = {
   state : state; 
@@ -67,11 +69,23 @@ let check_key_click () =
   if e.keypressed then true else false 
 
 (* switch moves state to transition *)
-let switch state player =
+let switch (state:t) player =
   match Random.int 2 with 
-  | 0 -> {state = ToRun}
-  | 1 -> {state = ToGo}
+  | 0 -> if state.state = Run then {state = ToGo} else {state = ToRun}
+  | 1 -> state
+
+let switch1 state player = 
+  match state.state with 
+  | Go -> {state = ToRun}
+  | Run -> {state = ToGo}
   | _ -> failwith "switch"
+(* let switch state player =
+   pick_interval player;
+   if get_state state = Go then 
+   {state with state = Run}
+   else if get_state state = Run then
+   {state with state = Go}
+   else state)*)
 (* let pick_interval state player = 
    u.let interval = Random.int 10 + 3 *)
 
@@ -125,7 +139,8 @@ let check_go state player =
   if (Game.get_y player < 100. && get_state state = Go) 
   || Game.get_collision player then 
     {state = GameOver}
-  else if Game.get_score player mod 2 = 0 && Game.get_score player > 0 then 
+  else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
+          && Game.get_score player <> !old_score then     
     switch state player    
   else 
     state 
@@ -133,24 +148,25 @@ let check_go state player =
 let check_run state player = 
   if Game.get_collision player then 
     {state = GameOver}
-  else if Game.get_score player mod 2 = 0 && Game.get_score player > 0 then 
+  else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
+          && Game.get_score player <> !old_score then 
     switch state player  
   else 
     state
 
 let check_torun state player = 
-  if Game.get_y player = 100. then 
+  old_score := Game.get_score player; 
+  if int_of_float (Game.get_y player) <= 100 then 
     {state = Run} 
   else 
     state
 
 let check_togo state player = 
+  old_score := Game.get_score player; 
   if Game.get_y player >= 350. then 
     {state = Go} 
   else 
     state
-
-(* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match get_state state with 
   | GameOver -> check_state_over state 
@@ -160,7 +176,7 @@ let check state player =
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 
-  | ToRun -> check_torun state player
+  | ToRun -> check_torun state player 
   | ToGo -> check_togo state player
   | _ -> failwith "not implmented in state.ml [check]"
 
@@ -177,4 +193,5 @@ let string_of_state t =
   | Sprites -> "sprites"
   | Sprite1 -> "sprite1"
   | Sprite2 -> "sprite2"
+  | Sprite3 -> "sprite3"
   | Sprite3 -> "sprite3"

@@ -29,6 +29,8 @@ val update: float -> t -> t
     occur in Run game state. *)
 val update_run: float -> t -> t
 
+val update_torun: float -> t -> t
+
 (** [get_y t] returns the y-coordinate of the player object. *)
 val get_y: t -> float 
 

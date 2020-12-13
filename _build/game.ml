@@ -113,12 +113,12 @@ let velocity_change t_delta player =
 let move_obs player = 
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
-    if b = -75 then 
+    if b <= -75 then 
       {player with obstacle = Pipe { obs_type = Some i; obs_x = 600}}
     else  
       {player with obstacle = Pipe { obs_type = Some i; obs_x = b -5}}
   | Cactus { obs_type = Some i; obs_x = b} -> 
-    if b = -75 then 
+    if b <= -75 then 
       {player with obstacle = Cactus { obs_type = Some i; obs_x = 600}}
     else  
       {player with obstacle = Cactus { obs_type = Some i; obs_x = b -5}}
@@ -275,5 +275,6 @@ let update_run t_delta player =
 let update_togo t_delta player = 
   gravity_zero t_delta player 
 
+
 let update_torun t_delta player = 
-  gravity t_delta player 
+  gravity_run t_delta player 

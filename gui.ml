@@ -25,7 +25,6 @@ type t = {
   pipe_type : int;
   player_score : int;
   highscore : int; 
-
 }
 
 let array_of_image img =
@@ -136,17 +135,35 @@ let rec animate_player frame t =
 (* [update_fly y score index pipe pipe_type t] updates t appropriately when
    the state is fly (go) *)
 let update_fly y score frame pipe_x pipe_type highscore t =
-  {t with camel_y = y; player_score = score; camel_index = animate_player frame t; 
-          pipe_x = pipe_x; pipe_type = pipe_type; highscore = highscore}
+  {t with camel_y = y; 
+          player_score = score; 
+          camel_index = animate_player frame t; 
+          pipe_x = pipe_x; 
+          pipe_type = pipe_type; highscore = highscore}
 
 let update_run y score frame pipe_x pipe_type highscore t =
-  {t with camel_y = y; player_score = score; camel_index = animate_player frame t;
-          pipe_x = pipe_x; pipe_type = 1}
+  {t with camel_y = y; 
+          player_score = score; 
+          camel_index = animate_player frame t;
+          pipe_x = pipe_x; 
+          pipe_type = pipe_type}
+
+let update_torun y score frame highscore t = 
+  {t with camel_y = y; 
+          player_score = score; 
+          camel_index = animate_player frame t;
+          pipe_x = -100; 
+          pipe_type = 1}
 
 let draw_camel t =
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
   if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
+  draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
+
+let draw_camel_torun t =
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
   draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
 
 let draw_ground init = 
@@ -209,6 +226,7 @@ let make_gui init =
 
 let draw_torun init = 
   draw_ground init;
+  draw_pipes init;
   draw_camel init;
   draw_score init
 

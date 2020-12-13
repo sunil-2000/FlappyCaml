@@ -183,40 +183,28 @@ and select_char gui player state =
   let state' = make_state () in 
   start_game gui' player state' 
 
-(* get rid of redundant code in fly / run *) 
-and update_gui_run player gui =
-  let y' = Game.get_y player |> int_of_float in
-  let pipe_x' = Game.get_obs_x player in
-  let choose_pipe = Game.get_pipe_type player in
-  let score' = Game.get_score player in
-  let highscore = Game.get_highscore player in 
-  Gui.update_run y' score' (!frame_count) pipe_x' 
-    choose_pipe highscore gui
+(* get rid of redundant code in fly / run *)
 
-and torun gui player state delta_t = 
-  Gui.draw_torun gui; 
-
-  let new_player = Game.gravity_run delta_t player in 
-  let player' = Game.set_obs_type new_player "cactus" in 
-  let gui' = update_gui_run player' gui in 
-  main gui' player' state
-
+and torun gui player state delta_t =
+  let player' = Game.update_torun delta_t player in 
+  let new_player = Game.set_obs_type player' "cactus" in
+  let y' = Game.get_y new_player |> int_of_float in 
+  let score' = Game.get_score new_player in
+  let highscore = Game.get_highscore new_player in 
+  let gui_update = Gui.update_torun y' score' (!frame_count) highscore gui in
+  Gui.make_gui gui_update;
+  main gui_update new_player state 
 
 and togo gui player state delta_t =
   let new_player = Game.gravity_zero delta_t player in 
   let player' = Game.set_obs_type new_player "pipe" in 
   let y' = Game.get_y player |> int_of_float in
   print_int y'; 
-  let pipe_x' = Game.get_obs_x player in
-  let choose_pipe = Game.get_pipe_type player in
   let score' = Game.get_score player in
   let highscore = Game.get_highscore player in 
-  let gui' = Gui.update_fly y' score' (!frame_count) pipe_x' 
-      choose_pipe highscore gui in 
-
-
+  let gui' = Gui.update_torun y' score' (!frame_count) highscore gui in 
+  Gui.make_gui gui';
   main gui' player' state
-
 
 let () = 
   Graphics.open_graph "600 700";
