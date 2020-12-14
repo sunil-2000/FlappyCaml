@@ -3,7 +3,7 @@ type t
 
 (** [create (a, b) c] returns a player type with position and velocity 
     specified. *)
-val create: float * float -> float -> int -> string -> int option -> int -> t
+val create: float * float -> float -> int -> string -> int option -> int -> int -> t
 
 (** [get_pipe t] returns the x-coordinate of the bottom-left corner of a pipe.*)
 val get_obs_x: t -> int 
@@ -33,6 +33,11 @@ val update_torun: float -> t -> t
 
 val update_togo: float -> t -> t
 
+val update_tobomb: float -> t -> t
+
+
+val update_death: float -> t -> t
+
 (** [get_y t] returns the y-coordinate of the player object. *)
 val get_y: t -> float 
 
@@ -50,4 +55,12 @@ val get_highscore: t ->  int
 
 val gravity_zero: float -> t -> t 
 
-val gravity_fly: float -> t -> t
+val get_bomber_x: t -> int
+
+val get_bomb_x: t -> int
+
+val get_bomb_y: t -> int
+
+val get_drop_x: t -> int
+
+

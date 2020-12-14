@@ -22,10 +22,14 @@ let cactus_height = 117
 
 type obs_rec = {
   obs_type : int option; 
-  obs_x : int
+  obs_x : int;
+  obs_y : int
 }
 
-type obstacle = Pipe of obs_rec | Cactus of obs_rec 
+type obstacle = 
+  | Pipe of obs_rec 
+  | Cactus of obs_rec 
+  | Bomb of obs_rec 
 
 type powerup = Invincible | None
 
@@ -38,18 +42,24 @@ type t = {
   score_updated : bool;
   highscore : int;
   obstacle : obstacle;
+  bomber_x : int;
+  bomb_x : int;
+  bomb_y : int;
+  drop_x : int;
   powerup : powerup
 }
 
 type player = t 
 (* {obst_type = None; obst_x = 600} <- inital values *)
-let create_obstacle obs_name obs_int obs_x = 
+let create_obstacle obs_name obs_int obs_x obs_y = 
   match obs_name with 
-  | "pipe" -> Pipe {obs_type = obs_int; obs_x = obs_x}
-  | "cactus" -> Cactus {obs_type = obs_int; obs_x = obs_x}
+  | "pipe" -> Pipe {obs_type = obs_int; obs_x = obs_x; obs_y = obs_y}
+  | "cactus" -> Cactus {obs_type = obs_int; obs_x = obs_x; obs_y = obs_y}
+  | "bomb" -> Bomb {obs_type = obs_int; obs_x = obs_x; obs_y = obs_y}
   | _ -> failwith "create_obstacle"
 
-let create pos v highscore obs_name obs_int obs_x = {
+(* set obs_y to 0 if pipe or cactus *)
+let create pos v highscore obs_name obs_int obs_x obs_y = {
   position = pos;
   velocity = v;
   (* pipe_x = 600; *)
@@ -59,28 +69,66 @@ let create pos v highscore obs_name obs_int obs_x = {
   score = 0;
   score_updated = false;
   highscore = highscore;
-  obstacle = create_obstacle obs_name obs_int obs_x;
-  powerup = None
+  obstacle = create_obstacle obs_name obs_int obs_x obs_y;
+  powerup = None;
+  bomber_x = 600;
+  bomb_x = 600;
+  bomb_y = 500;
+  drop_x = 400;
 }
+
+let get_bomb_x player = 
+  player.bomb_x
+
+let get_bomb_y player = 
+  player.bomb_y
+
+let get_drop_x player =
+  player.drop_x
+
+let choose_bomb_x player = {
+  player with drop_x = if player.bomb_y > 100 then player.drop_x else Random.int 400 + 200
+}
+let get_bomber_x player = 
+  player.bomber_x
+
+let move_bomber player = {
+  player with bomber_x = if player.bomber_x = -240 then 600 else player.bomber_x - 2
+}
+
+let move_bomb_x player = {
+  player with bomb_x = if player.bomb_x = -240 then 600 else player.bomb_x - 2
+}
+
+let move_bomb_y player = {
+  player with bomb_y = if player.bomb_x <= player.drop_x && player.bomb_y > 100 && player.bomb_x >= 0 then player.bomb_y - 4 else 
+                if player.bomb_y <= 100 && player.bomb_x = -50 then 500 else player.bomb_y
+}
+
 
 let set_can_jump player bool = 
   {player with can_jump = bool}
 
 let set_obs_x x player = 
   match player.obstacle with 
-  | Pipe {obs_type = Some i; obs_x = b} -> 
-    {player with obstacle = Pipe {obs_type = Some i; obs_x = x}}
-  | Cactus { obs_type = Some i; obs_x = b} -> 
-    {player with obstacle = Cactus {obs_type = Some i; obs_x = x}}
+  | Pipe {obs_type = Some i; obs_x = b; obs_y = c} -> 
+    {player with obstacle = Pipe {obs_type = Some i; obs_x = x; obs_y = c}}
+  | Cactus { obs_type = Some i; obs_x = b; obs_y = c} -> 
+    {player with obstacle = Cactus {obs_type = Some i; obs_x = x; obs_y = c}}
+  | Bomb { obs_type = Some i; obs_x = b; obs_y = c} -> 
+    {player with obstacle = Bomb {obs_type = Some i; obs_x = x; obs_y = c}}
   | _ -> failwith"set_obs_x"
 
 let set_obs_type player name  =
   match name, player.obstacle with
-  | "cactus", (Pipe o | Cactus o)-> 
-    let new_obs = Cactus {obs_type = Some (Random.int 1); obs_x = o.obs_x} in  (* 1 bc only 1 type cactus rn *)
+  | "cactus", (Pipe o | Cactus o | Bomb o)-> 
+    let new_obs = Cactus {obs_type = Some (Random.int 1); obs_x = o.obs_x; obs_y = o.obs_y} in  (* 1 bc only 1 type cactus rn *)
     {player with obstacle = new_obs}
-  | "pipe", (Pipe o | Cactus o) -> 
-    let new_obs = Pipe {obs_type = Some (Random.int 3); obs_x = o.obs_x} in  
+  | "pipe", (Pipe o | Cactus o | Bomb o) -> 
+    let new_obs = Pipe {obs_type = Some (Random.int 3); obs_x = o.obs_x; obs_y = o.obs_y} in  
+    {player with obstacle = new_obs}
+  | "bomb", (Pipe o | Cactus o | Bomb o) -> 
+    let new_obs = Bomb {obs_type = Some (1); obs_x = o.obs_x; obs_y = o.obs_y} in 
     {player with obstacle = new_obs}
   | _ -> failwith "set_obs_type"
 
@@ -98,6 +146,13 @@ let get_obs_x player =
   match player.obstacle with
   | Pipe {obs_type = _ ; obs_x = x} -> x 
   | Cactus {obs_type = _ ; obs_x = x} -> x + cactus_left_width
+  | Bomb {obs_type = _ ; obs_x = x} -> x
+  | _ -> failwith"cannot get obstacle x"
+
+let get_obs_y player = 
+  match player.obstacle with 
+  | Bomb {obs_type = _ ; obs_x = _; obs_y = x} -> x
+  | _ -> failwith "cannot get y"
 (* add more obs type to match case if introducing more obstacles *)
 
 let get_pipe_type player = 
@@ -125,24 +180,33 @@ let move_obs player =
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
     if b <= -75 then 
-      {player with obstacle = Pipe { obs_type = Some i; obs_x = 600}}
+      {player with obstacle = Pipe { obs_type = Some i; obs_x = 600; obs_y = 0}}
     else  
-      {player with obstacle = Pipe { obs_type = Some i; obs_x = b -5}}
+      {player with obstacle = Pipe { obs_type = Some i; obs_x = b -5; obs_y = 0}}
   | Cactus { obs_type = Some i; obs_x = b} -> 
     if b <= -75 then 
-      {player with obstacle = Cactus { obs_type = Some i; obs_x = 600}}
+      {player with obstacle = Cactus { obs_type = Some i; obs_x = 600; obs_y = 0}}
     else  
-      {player with obstacle = Cactus { obs_type = Some i; obs_x = b -5}}
+      {player with obstacle = Cactus { obs_type = Some i; obs_x = b -5; obs_y = 0}}
+  | Bomb { obs_type = Some i; obs_x = b; obs_y = c} -> 
+    if b <= -50 then 
+      {player with obstacle = Cactus { obs_type = Some i; obs_x = 600; obs_y = 400}}
+    else
+    if b <= player.drop_x && c > 100 && b >= 0 then   
+      {player with obstacle = Cactus { obs_type = Some i; obs_x = b - 2; obs_y = c - 4}}
+    else 
+      {player with obstacle = Cactus { obs_type = Some i; obs_x = b - 2; obs_y = c}}
   | _ -> failwith "move_obs"
 
 let pipe_type_change player = 
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
     if b = -75 then 
-      {player with obstacle = Pipe {obs_type = Some (Random.int 3); obs_x = b}}
+      {player with obstacle = Pipe {obs_type = Some (Random.int 3); obs_x = b; obs_y = 0}}
     else 
       player 
   | Cactus _ -> player 
+  | Bomb _ -> player
   | _ -> failwith "pipe_type_change"
 
 (*let powerup_height_change player = 
@@ -176,8 +240,9 @@ let gravity_run t_delta player =
 
 let gravity t_delta player = 
   match player.obstacle with 
-  | Pipe _ -> gravity_fly t_delta player
+  | Pipe _ | Bomb _ -> gravity_fly t_delta player
   | Cactus _ -> gravity_run t_delta player
+
 
 let gravity_zero t_delta player = 
   match player.position with 
@@ -197,7 +262,7 @@ let jump_aux player vel_value =
 let jump player = 
   if player.can_jump then 
     match player.obstacle with 
-    | Pipe _ -> jump_aux player jump_v 
+    | Pipe _ | Bomb _ -> jump_aux player jump_v 
     | Cactus _ -> jump_aux player jump_v_run
   else 
     player 
@@ -255,6 +320,18 @@ let collision_run player =
   else 
     player
 
+let collision_bomb player = 
+  let left_boundary = get_obs_x player + 59 in
+  let right_boundary = get_obs_x player + 50 - 3 in
+  let top_boundary = get_obs_y player + 43 in
+  let bottom_boundary = get_obs_y player in
+  let player_x = get_player_x player in
+  let player_y = get_player_y player in 
+  if player_x > left_boundary && player_x < right_boundary 
+     && player_y < top_boundary && player_y > bottom_boundary then
+    {player with collision = true}
+  else player
+
 let score_update player =
   (* let left_boundary = player.pipe_x - player_width in *)
   let right_boundary = get_obs_x player + pipe_width in 
@@ -281,18 +358,18 @@ let update_fly_aux t_delta player =
   collision |>
   score_update
 
+(* update for fly state *)
+let update t_delta player = 
+  match player.powerup with 
+  | Invincible -> update_fly_aux t_delta player |> collision_reset
+  | None -> update_fly_aux t_delta player 
+
 let update_run t_delta player =
   jump player 
   |> gravity t_delta 
   |> move_obs 
   |> collision_run
   |> score_update
-
-(* update for fly state *)
-let update t_delta player = 
-  match player.powerup with 
-  | Invincible -> update_fly_aux t_delta player |> collision_reset
-  | None -> update_fly_aux t_delta player 
 
 (* [update_togo t_delta player] updates the player and obstacles while in 
     state ToGo. Obstacles are generated offscreen at -100 *)
@@ -306,6 +383,11 @@ let update_torun t_delta player =
   gravity_run t_delta player 
   |> set_obs_x (-100)
 
+let update_tobomb t_delta player = 
+  gravity_fly t_delta player
+
+let update_death t_delta player = 
+  gravity_fly t_delta player 
 
 (***************************DEBUG FUNCTIONS / PRINTERS*************************)
 
@@ -313,6 +395,7 @@ let string_of_obstacle player =
   match player.obstacle with 
   | Pipe _ -> "pipe"
   | Cactus _ -> "cactus"
+  | Bomb _ -> "bomb "
 
 let string_of_velocity player = 
   string_of_float player.velocity 

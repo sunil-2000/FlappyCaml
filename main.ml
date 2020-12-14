@@ -4,8 +4,8 @@ open State
 
 (* move some of these functions to state module *)
 (* gui, player, state initial values *)
-let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 0
-let player_init = Game.create (200., 200.) 5. 0 "pipe" (Some (Random.int 3)) 600 
+let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 0 
+let player_init = Game.create (200., 200.) 5. 0 "pipe" (Some (Random.int 3)) 600 0
 let state_init = State.make_state ()
 (* [old_t] stores the time of the previous call to main, which 
    helps track time of game, which is used in the game module's gravity
@@ -68,13 +68,13 @@ let rec main (gui:Gui.t) player state =
     | Start -> start_game gui player curr_state 
     | Go -> fly gui player curr_state delta_t (!frame_count)
     | Run -> run gui player curr_state delta_t (!frame_count)
+    | Bomb -> bomb gui player curr_state delta_t (!frame_count)
     | Death -> death gui player curr_state delta_t 
     | GameOver -> end_game gui player curr_state
     | Instructions -> instructions gui player curr_state
     | Sprites -> sprites gui player curr_state 
     | Sprite1 | Sprite2 | Sprite3 -> select_char gui player curr_state
-    | ToRun -> transition gui player curr_state delta_t
-    | ToGo -> transition gui player curr_state delta_t 
+    | ToRun | ToGo | ToBomb -> transition gui player curr_state delta_t
     | _ -> failwith "state not implemented <- main"
     (**************************************)
 
@@ -117,7 +117,7 @@ and end_game gui player state =
   else 
     let highscore = Game.get_highscore player in 
     let new_player = Game.create (200., 200.) 5. highscore "pipe" 
-        (Some (Random.int 3)) 600 in 
+        (Some (Random.int 3)) 600 0 in 
     start_game gui_init new_player state_init
 
 and run_fly_aux (gui:Gui.t) player state delta_t frame gamefn guifn bool gmake =  
@@ -181,14 +181,13 @@ and transition gui player state delta_t  =
   | _ -> failwith "transition"
 
 and death gui player state delta_t = 
-  let set_dimg = Gui.set_sprite gui 4 in 
-  let player' = Game.gravity_fly delta_t player in 
-  let y' = Game.get_y player |> int_of_float in 
-  let gui' = Gui.update_death set_dimg y' in 
-  Gui.draw_death gui';
-  main gui' player' state
+  let player' = Game.update_death delta_t player in 
+  Gui.draw_death gui;
+  main gui player' state
 
-
+and bomb gui player state delta_t frame = 
+  let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') in 
+  run_fly_aux gui player state delta_t frame Game.update Gui.update_fly bool Gui.make_gui 
 
 let () = 
   Graphics.open_graph "600 700";

@@ -72,25 +72,12 @@ let check_key_click () =
   if e.keypressed then true else false 
 
 let switch (state:t) player =
-  match Random.int 2 with 
-  | 0 -> if state.state = Run then {state = ToGo} else {state = ToRun}
-  | 1 -> state
+  match state.state with 
+  | Run -> {state = ToGo}
+  | Go -> {state = ToBomb}
+  | Bomb -> {state = ToRun}
   | _ -> failwith "switch"
 
-let switch1 state player = 
-  match state.state with 
-  | Go -> {state = ToRun}
-  | Run -> {state = ToGo}
-  | _ -> failwith "switch"
-(* let switch state player =
-   pick_interval player;
-   if get_state state = Go then 
-   {state with state = Run}
-   else if get_state state = Run then
-   {state with state = Go}
-   else state)*)
-(* let pick_interval state player = 
-   u.let interval = Random.int 10 + 3 *)
 
 (* return true if state should transition to instruction screen 
    xl = left boundary, xr = right boundary, yb = bottom boundary, 
@@ -145,6 +132,9 @@ let check_go state player =
   else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
           && Game.get_score player <> !old_score then      
     switch state player    
+  else if Game.get_score player > 0 && Game.get_score player mod 3 = 0 
+          && Game.get_score player <> !old_score then  
+    switch state player 
   else 
     state 
 
@@ -170,6 +160,11 @@ let check_transition state player =
       {state = Run}
     else
       state
+  | ToBomb -> 
+    if Game.get_obs_x player < -71 then 
+      {state = Bomb}
+    else 
+      state
   | _ -> failwith "not a transition state [check_transition]"
 
 let check_death state player = 
@@ -177,6 +172,14 @@ let check_death state player =
     {state = GameOver} 
   else 
     state  
+
+let check_bomb state player = 
+  if Game.get_collision player then 
+    {state = GameOver}
+  else if Game.get_bomber_x player < -240 then (* plane width = 240 *)
+    {state = Run}
+  else 
+    state 
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
@@ -201,8 +204,10 @@ let string_of_state t =
   | Start -> "start"
   | Pause -> "pause"
   | Run -> "run"
+  | Bomb -> "bomb"
   | ToGo -> "togo"
   | ToRun -> "torun"
+  | ToBomb -> "tobomb"
   | Instructions -> "instructions"
   | Sprites -> "sprites"
   | Sprite1 -> "sprite1"

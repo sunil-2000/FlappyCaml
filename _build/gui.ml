@@ -26,7 +26,6 @@ type t = {
   pipe_type : int;
   player_score : int;
   highscore : int; 
-
 }
 
 let array_of_image img =
@@ -90,6 +89,10 @@ let death = get_img "assets/deathimage.pbm"
 
 let mushroom = get_img "assets/mario_mushroom.pbm"
 
+let bomb = get_img "assets/bomb.ppm"
+
+let bomber = get_img "assets/bomber.ppm"
+
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
 let make_player_array array = 
@@ -108,7 +111,7 @@ let death_array = make_player_array [|"assets/deathimage.pbm"|]
 let sprite_arrays = [|clarkson_array; gries_array; camel_array; death_array|]
 let sprites = [|clarkson; gries; camel; death|]
 
-let make_state wth hgt x y pipe_x pipe_type score index highscore = {
+let make_state wth hgt x y pipe_x pipe_type score index highscore  = {
   canvas_width = wth; 
   canvas_height = hgt;
   camel_x = x;
@@ -129,7 +132,7 @@ let make_state wth hgt x y pipe_x pipe_type score index highscore = {
   ground_image = get_img "assets/new_ground.ppm";
   pipe_type = pipe_type;
   player_score = score;
-  highscore = highscore; 
+  highscore = highscore
 }
 
 let set_sprite t image_array_no = 
@@ -143,12 +146,14 @@ let rec animate_player frame t =
 
 (* [update_fly y score index pipe pipe_type t] updates t appropriately when
    the state is fly (go) *)
-let update_fly y score frame pipe_x pipe_type highscore t =
+let update_fly y score frame pipe_x pipe_type highscore t  =
   {t with camel_y = y; 
           player_score = score; 
           camel_index = animate_player frame t; 
           pipe_x = pipe_x; 
-          pipe_type = pipe_type; highscore = highscore}
+          pipe_type = pipe_type; 
+          highscore = highscore;
+  }
 
 let update_run y score frame pipe_x pipe_type highscore t =
   {t with camel_y = y; 
@@ -172,6 +177,12 @@ let draw_camel t =
   set_color (light_blue);
   if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
   draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
+
+let draw_death_img t =
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
+  draw_image death t.camel_x t.camel_y
 
 let draw_camel_torun t =
   let light_blue = rgb 76 186 196 in
@@ -245,13 +256,22 @@ let draw_powerups init =
   fill_rect 0 100 250 600;
   if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
   draw_powerups_helper init
+(* 
+let draw_bomber init = 
+  set_color white;
+  (* draw_image bomber init.bomber_x 500 *)
+
+let draw_bomb init = 
+  set_color black;
+  draw_image bomb init.bomb_x init.bomb_y;
+  set_color white *)
 
 let make_gui init = 
   draw_ground init;
   draw_pipes init;
   draw_camel init;
-  draw_score init
-    draw_powerups_helper init
+  draw_score init;
+  draw_powerups_helper init
 
 let draw_run init = 
   draw_ground init;
@@ -260,7 +280,7 @@ let draw_run init =
   draw_score init
 
 let draw_death init =
-  draw_camel init
+  draw_death_img init
 
 (* let draw_pause =
    failwith "pause" *)
@@ -314,6 +334,32 @@ let draw_flappycaml x y =
   moveto x (y-50);
   draw_string "               |_|   |_|    |___/                          "
 
+let draw_camel_ascii init x y =
+  moveto x y;
+  draw_string "                    ,,__                               ";
+  moveto x (y-10);
+  draw_string "          ..  ..   / o._)                   .---.      ";
+  moveto x (y-20);
+  draw_string "          /--'/--\  \-'||        .----.    .'     '.   ";
+  moveto x (y-30);
+  draw_string "         /        \_/ / |      .'      '..'         '-.";
+  moveto x (y-40);
+  draw_string "       .'\  \__\  __.'.'     .'          -._           ";
+  moveto x (y-50);
+  draw_string "         )\ |  )\ |      _.'                           ";
+  moveto x (y-60);
+  draw_string "        // \\ // \\                                    ";
+  moveto x (y-70);
+  draw_string "       ||_  \\|_  \\_                                  ";
+  moveto x (y-80);
+  draw_string "       '--' '--'' '--'                                 "  
+
+
+(* Camel ascii art citation:   "------------------------------------------------
+   Thank you for visiting https://asciiart.website/
+   This ASCII pic can be found at
+   https://asciiart.website/index.php?art=animals/camels " *)
+
 let draw_start init =
   Graphics.clear_graph ();
   let light_blue = rgb 76 186 196 in
@@ -352,6 +398,7 @@ let draw_instructions init =
   draw_string "and over the obstacles when running.";
   moveto 150 350;
   draw_string "Press 'q' to exit the game application.";
+  draw_camel_ascii init 100 300;
   set_color red; 
   fill_rect 450 50 100 50;
   moveto 465 70;
@@ -372,32 +419,9 @@ let draw_sprites init =
   fill_rect 450 50 100 50;
   set_color white;
   moveto 465 70;
+
   draw_string "start screen"
 
 
-let draw_camel_ascii init x y =
-  moveto x y;
-  draw_string "                    ,,__                               ";
-  moveto x (y-10);
-  draw_string "          ..  ..   / o._)                   .---.      ";
-  moveto x (y-20);
-  draw_string "          /--'/--\  \-'||        .----.    .'     '.   ";
-  moveto x (y-30);
-  draw_string "         /        \_/ / |      .'      '..'         '-.";
-  moveto x (y-40);
-  draw_string "       .'\  \__\  __.'.'     .'          -._           ";
-  moveto x (y-50);
-  draw_string "         )\ |  )\ |      _.'                           ";
-  moveto x (y-60);
-  draw_string "        // \\ // \\                                    ";
-  moveto x (y-70);
-  draw_string "       ||_  \\|_  \\_                                  ";
-  moveto x (y-80);
-  draw_string "       '--' '--'' '--'                                 ";   
 
-
-  (* Camel ascii art citation:   "------------------------------------------------
-     Thank you for visiting https://asciiart.website/
-     This ASCII pic can be found at
-     https://asciiart.website/index.php?art=animals/camels " *)
 
