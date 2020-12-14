@@ -31,6 +31,8 @@ val update_run: float -> t -> t
 
 val update_torun: float -> t -> t
 
+val update_togo: float -> t -> t
+
 (** [get_y t] returns the y-coordinate of the player object. *)
 val get_y: t -> float 
 
@@ -47,3 +49,5 @@ val get_score: t -> int
 val get_highscore: t ->  int 
 
 val gravity_zero: float -> t -> t 
+
+val gravity_fly: float -> t -> t

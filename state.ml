@@ -8,8 +8,11 @@ type state =
   | Go (* flying *) 
   | Pause 
   | Run 
+  | Bomb 
+  | ToBomb 
   | ToGo 
   | ToRun 
+  | Death 
   | Instructions
   | Sprites
   | Sprite1 (* right now 1 represents clarkson, 2 = gries, 3 = camel *)
@@ -72,6 +75,7 @@ let switch (state:t) player =
   match Random.int 2 with 
   | 0 -> if state.state = Run then {state = ToGo} else {state = ToRun}
   | 1 -> state
+  | _ -> failwith "switch"
 
 let switch1 state player = 
   match state.state with 
@@ -102,7 +106,6 @@ let check_to_transition xl xr yb yt =
 
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
-
   match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
   | true, _, _ -> {state = Go} 
   | _, true, _ -> {state = Instructions}
@@ -138,7 +141,7 @@ let check_sprites state =
 let check_go state player = 
   if (Game.get_y player < 100. && get_state state = Go) 
   || Game.get_collision player then 
-    {state = GameOver}
+    {state = Death}
   else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
           && Game.get_score player <> !old_score then      
     switch state player    
@@ -147,44 +150,53 @@ let check_go state player =
 
 let check_run state player = 
   if Game.get_collision player then 
-    {state = GameOver}
+    {state = Death}
   else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
           && Game.get_score player <> !old_score then 
     switch state player  
   else 
     state
 
-let check_torun state player = 
-  old_score := Game.get_score player; 
-  if int_of_float (Game.get_y player) <= 100 then 
-    {state = Run} 
-  else 
-    state
+let check_transition state player =
+  old_score := Game.get_score player;
+  match state.state with
+  | ToGo ->
+    if Game.get_y player >= 350. then
+      {state = Go}
+    else
+      state
+  | ToRun ->
+    if Game.get_y player <= 100. then
+      {state = Run}
+    else
+      state
+  | _ -> failwith "not a transition state [check_transition]"
 
-let check_togo state player = 
-  old_score := Game.get_score player; 
-  if Game.get_y player >= 350. then 
-    {state = Go} 
+let check_death state player = 
+  if Game.get_y player <= -100. then 
+    {state = GameOver} 
   else 
-    state
+    state  
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match get_state state with 
   | GameOver -> check_state_over state 
+  | Death -> check_death state player
   | Go -> check_go state player 
   | Start -> check_state_start state 
   | Run -> check_run state player 
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 
-  | ToRun -> check_torun state player 
-  | ToGo -> check_togo state player
+  | ToRun -> check_transition state player 
+  | ToGo -> check_transition state player
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
   match t.state with 
   | Go -> "go"
+  | Death -> "death"
   | GameOver -> "gameover"
   | Start -> "start"
   | Pause -> "pause"

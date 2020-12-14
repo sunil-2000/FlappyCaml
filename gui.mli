@@ -23,6 +23,8 @@ val update_run: int -> int -> int -> int -> int -> int -> t -> t
 
 val update_torun: int -> int -> int -> int -> t -> t
 
+val update_death: t -> int -> t
+
 (**[draw_start] is used to draw the start screen when state is Start.
    it displays the sprite that the player will use and that the player should 
    click any key to start *)
@@ -33,11 +35,11 @@ val draw_start: t -> unit
    It also offers an option for the player to restart the game. *)
 val draw_gameover: t -> unit 
 
+val draw_death: t -> unit
+
 val draw_instructions: t -> unit 
 
 val draw_run:  t -> unit 
-
-val draw_torun: t -> unit
 
 val draw_sprites: t -> unit
 

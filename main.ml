@@ -20,6 +20,7 @@ let target_fps = 60.
 let frame_count = ref 0
 let time_per_frame = 1. /. 60.
 let dummy = ref 0
+let death_time = ref (Unix.gettimeofday())
 
 (**************************DEBUG FUNCTIONS*************************************)
 (******************************************************************************)
@@ -41,8 +42,6 @@ let string_of_mouse_pos mouse =
 
 (** [state_torun gui player delta_t frame] that handles the game updates as it 
     transitions to the running game state. *)
-let state_torun gui player delta_t frame = 
-  failwith"TODO"
 
 (* [main gui player state] is responsible for executing the game properly when
    running *)
@@ -69,12 +68,13 @@ let rec main (gui:Gui.t) player state =
     | Start -> start_game gui player curr_state 
     | Go -> fly gui player curr_state delta_t (!frame_count)
     | Run -> run gui player curr_state delta_t (!frame_count)
+    | Death -> death gui player curr_state delta_t 
     | GameOver -> end_game gui player curr_state
     | Instructions -> instructions gui player curr_state
     | Sprites -> sprites gui player curr_state 
     | Sprite1 | Sprite2 | Sprite3 -> select_char gui player curr_state
-    | ToRun -> torun gui player curr_state delta_t
-    | ToGo -> togo gui player curr_state delta_t 
+    | ToRun -> transition gui player curr_state delta_t
+    | ToGo -> transition gui player curr_state delta_t 
     | _ -> failwith "state not implemented <- main"
     (**************************************)
 
@@ -164,26 +164,31 @@ and select_char gui player state =
 
 (* get rid of redundant code in fly / run *)
 
-and torun gui player state delta_t =
-  let player' = Game.update_torun delta_t player in 
-  let new_player = Game.set_obs_type player' "cactus" in
-  let y' = Game.get_y new_player |> int_of_float in 
-  let score' = Game.get_score new_player in
-  let highscore = Game.get_highscore new_player in 
-  let gui_update = Gui.update_torun y' score' (!frame_count) highscore gui in
-  Gui.make_gui gui_update;
-  main gui_update new_player state 
-
-and togo gui player state delta_t =
-  let new_player = Game.gravity_zero delta_t player in 
-  let player' = Game.set_obs_type new_player "pipe" in 
+and transition_aux gui player state delta_t game_updatefn obs_name =
+  let new_player = game_updatefn delta_t player in 
+  let player' = Game.set_obs_type new_player obs_name in 
   let y' = Game.get_y player |> int_of_float in
-  print_int y'; 
   let score' = Game.get_score player in
   let highscore = Game.get_highscore player in 
   let gui' = Gui.update_torun y' score' (!frame_count) highscore gui in 
   Gui.make_gui gui';
   main gui' player' state
+
+and transition gui player state delta_t  = 
+  match state.state with 
+  | ToGo -> transition_aux gui player state delta_t Game.update_togo "pipe" 
+  | ToRun -> transition_aux gui player state delta_t Game.update_torun "cactus"
+  | _ -> failwith "transition"
+
+and death gui player state delta_t = 
+  let set_dimg = Gui.set_sprite gui 4 in 
+  let player' = Game.gravity_fly delta_t player in 
+  let y' = Game.get_y player |> int_of_float in 
+  let gui' = Gui.update_death set_dimg y' in 
+  Gui.draw_death gui';
+  main gui' player' state
+
+
 
 let () = 
   Graphics.open_graph "600 700";

@@ -3,6 +3,7 @@ open Camlimages
 open Images
 open Game 
 let open_screen = Graphics.open_graph " 600x700";
+
 type t = {
   canvas_width : int; 
   canvas_height : int;
@@ -19,6 +20,7 @@ type t = {
   bottom_pipe_low_image : Graphics.image;
   top_pipe_low_image : Graphics.image;
   cactus_image : Graphics.image;
+  powerup_image : Graphics.image;
   pipe_num : int;
   ground_image: Graphics.image;
   pipe_type : int;
@@ -84,6 +86,10 @@ let w_white = get_img "assets/white.ppm"
 
 let camel = get_img "assets/camel_1.pbm"
 
+let death = get_img "assets/deathimage.pbm"
+
+let mushroom = get_img "assets/mario_mushroom.pbm"
+
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
 let make_player_array array = 
@@ -97,8 +103,10 @@ let gries_array = make_player_array [|"assets/gries.ppm"|]
 let camel_array = make_player_array 
     [|"assets/camel_1.pbm"; "assets/camel_2.pbm"; "assets/camel_3.pbm"|]
 
-let sprite_arrays = [|clarkson_array; gries_array; camel_array|]
-let sprites = [|clarkson; gries; camel|]
+let death_array = make_player_array [|"assets/deathimage.pbm"|]
+
+let sprite_arrays = [|clarkson_array; gries_array; camel_array; death_array|]
+let sprites = [|clarkson; gries; camel; death|]
 
 let make_state wth hgt x y pipe_x pipe_type score index highscore = {
   canvas_width = wth; 
@@ -116,6 +124,7 @@ let make_state wth hgt x y pipe_x pipe_type score index highscore = {
   bottom_pipe_low_image = low_bottom_pipe;
   top_pipe_low_image = low_top_pipe; 
   cactus_image = cactus; 
+  powerup_image = mushroom;
   pipe_num = 0;
   ground_image = get_img "assets/new_ground.ppm";
   pipe_type = pipe_type;
@@ -154,6 +163,9 @@ let update_torun y score frame highscore t =
           camel_index = animate_player frame t;
           pipe_x = -100; 
           pipe_type = 1}
+
+let update_death t y = 
+  {t with camel_y = y}
 
 let draw_camel t =
   let light_blue = rgb 76 186 196 in
@@ -218,17 +230,28 @@ let draw_score init =
   draw_string score_string;
   set_color white
 
+let draw_powerups_helper init =
+  let rand_pipe = 3 in
+  if init.player_score mod rand_pipe = 0 then 
+    let y_pos = Random.int 400 + 100 in 
+    draw_image init.powerup_image (init.pipe_x-100) y_pos
+  else 
+    ()
+
+let draw_powerups init = 
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 250 100 400 600;
+  fill_rect 0 100 250 600;
+  if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
+  draw_powerups_helper init
+
 let make_gui init = 
   draw_ground init;
   draw_pipes init;
   draw_camel init;
   draw_score init
-
-let draw_torun init = 
-  draw_ground init;
-  draw_pipes init;
-  draw_camel init;
-  draw_score init
+    draw_powerups_helper init
 
 let draw_run init = 
   draw_ground init;
@@ -236,8 +259,11 @@ let draw_run init =
   draw_camel init; 
   draw_score init
 
-let draw_pause =
-  "fail"
+let draw_death init =
+  draw_camel init
+
+(* let draw_pause =
+   failwith "pause" *)
 
 let draw_gameover init = 
   Graphics.clear_graph ();
@@ -347,3 +373,31 @@ let draw_sprites init =
   set_color white;
   moveto 465 70;
   draw_string "start screen"
+
+
+let draw_camel_ascii init x y =
+  moveto x y;
+  draw_string "                    ,,__                               ";
+  moveto x (y-10);
+  draw_string "          ..  ..   / o._)                   .---.      ";
+  moveto x (y-20);
+  draw_string "          /--'/--\  \-'||        .----.    .'     '.   ";
+  moveto x (y-30);
+  draw_string "         /        \_/ / |      .'      '..'         '-.";
+  moveto x (y-40);
+  draw_string "       .'\  \__\  __.'.'     .'          -._           ";
+  moveto x (y-50);
+  draw_string "         )\ |  )\ |      _.'                           ";
+  moveto x (y-60);
+  draw_string "        // \\ // \\                                    ";
+  moveto x (y-70);
+  draw_string "       ||_  \\|_  \\_                                  ";
+  moveto x (y-80);
+  draw_string "       '--' '--'' '--'                                 ";   
+
+
+  (* Camel ascii art citation:   "------------------------------------------------
+     Thank you for visiting https://asciiart.website/
+     This ASCII pic can be found at
+     https://asciiart.website/index.php?art=animals/camels " *)
+
