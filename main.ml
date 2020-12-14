@@ -5,7 +5,7 @@ open State
 (* move some of these functions to state module *)
 (* gui, player, state initial values *)
 let gui_init = Gui.make_state 600 700 200 200 400 0 0 0 0
-let player_init = Game.create (200., 200.) 5. 0 
+let player_init = Game.create (200., 200.) 5. 0 "pipe" (Some (Random.int 3)) 600 
 let state_init = State.make_state ()
 (* [old_t] stores the time of the previous call to main, which 
    helps track time of game, which is used in the game module's gravity
@@ -58,6 +58,7 @@ let rec main (gui:Gui.t) player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
+    print_string (State.string_of_state curr_state); 
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and
@@ -71,7 +72,9 @@ let rec main (gui:Gui.t) player state =
     | GameOver -> end_game gui player curr_state
     | Instructions -> instructions gui player curr_state
     | Sprites -> sprites gui player curr_state 
-    | Sprite1 | Sprite2 | Sprite3 -> select_char gui player curr_state 
+    | Sprite1 | Sprite2 | Sprite3 -> select_char gui player curr_state
+    | ToRun -> torun gui player curr_state delta_t
+    | ToGo -> togo gui player curr_state delta_t 
     | _ -> failwith "state not implemented <- main"
     (**************************************)
 
@@ -112,9 +115,12 @@ and end_game gui player state =
   if get_state state' <> Start then 
     end_game gui player state
   else 
-    start_game gui_init (Game.create (200., 200.) 5. (Game.get_highscore player)) state_init
+    let highscore = Game.get_highscore player in 
+    let new_player = Game.create (200., 200.) 5. highscore "pipe" 
+        (Some (Random.int 3)) 600 in 
+    start_game gui_init new_player state_init
 
-and run_fly_aux (gui:Gui.t) player state delta_t frame gamefn guifn bool = 
+and run_fly_aux (gui:Gui.t) player state delta_t frame gamefn guifn bool gmake =  
   let player' = 
     if bool then 
       Game.set_can_jump player true
@@ -123,26 +129,26 @@ and run_fly_aux (gui:Gui.t) player state delta_t frame gamefn guifn bool =
 
   let new_player = gamefn delta_t player' in 
   let y' = Game.get_y new_player |> int_of_float in
-  let pipe_x' = Game.get_pipe new_player in
+  let pipe_x' = Game.get_obs_x new_player in
   let choose_pipe = Game.get_pipe_type new_player in
   let score' = Game.get_score new_player in
   let highscore = Game.get_highscore new_player in 
   let gui_update = guifn y' score' frame pipe_x' choose_pipe highscore gui in 
 
-  Gui.make_gui gui_update;
+  gmake gui_update;
   main gui_update new_player state 
 
 (* executes game properly when state = Go *)
 and fly (gui: Gui.t) player state delta_t frame = 
   let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') in 
-  run_fly_aux gui player state delta_t frame Game.update Gui.update_fly bool 
+  run_fly_aux gui player state delta_t frame Game.update Gui.update_fly bool Gui.make_gui 
 
 (* [state_run gui player delta_t] is a helper function for main that runs
    game properly when state = Run *)
 and run gui player state delta_t frame = 
   let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') 
              && (Game.get_y player <= 100.) in 
-  run_fly_aux gui player state delta_t frame Game.update_run Gui.update_run bool 
+  run_fly_aux gui player state delta_t frame Game.update_run Gui.update_run bool Gui.draw_run 
 
 (* transitions state properly when user selects a character *)
 and select_char gui player state = 
@@ -155,6 +161,29 @@ and select_char gui player state =
   let gui' = Gui.set_sprite gui array_no in 
   let state' = make_state () in 
   main gui' player state' 
+
+(* get rid of redundant code in fly / run *)
+
+and torun gui player state delta_t =
+  let player' = Game.update_torun delta_t player in 
+  let new_player = Game.set_obs_type player' "cactus" in
+  let y' = Game.get_y new_player |> int_of_float in 
+  let score' = Game.get_score new_player in
+  let highscore = Game.get_highscore new_player in 
+  let gui_update = Gui.update_torun y' score' (!frame_count) highscore gui in
+  Gui.make_gui gui_update;
+  main gui_update new_player state 
+
+and togo gui player state delta_t =
+  let new_player = Game.gravity_zero delta_t player in 
+  let player' = Game.set_obs_type new_player "pipe" in 
+  let y' = Game.get_y player |> int_of_float in
+  print_int y'; 
+  let score' = Game.get_score player in
+  let highscore = Game.get_highscore player in 
+  let gui' = Gui.update_torun y' score' (!frame_count) highscore gui in 
+  Gui.make_gui gui';
+  main gui' player' state
 
 let () = 
   Graphics.open_graph "600 700";
