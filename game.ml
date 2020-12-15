@@ -516,10 +516,10 @@ and update_fly_aux t_delta player obs_move =
   |> move_obs obs_move 
   |> pipe_type_change 
   |> collision 
+  |> powerup_change 
   |> generate_powerup 
   |> move_powerup 
   |> powerup_collision 
-  |> powerup_change 
   |> score_update
 
 (* [update_fly t_delta player] updates player when state = fly (go). [update_fly]

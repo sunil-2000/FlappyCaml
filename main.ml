@@ -54,6 +54,7 @@ let rec main (gui:Gui.t) player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
+    (* print_string (Game.string_of_powerup player); *)
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and

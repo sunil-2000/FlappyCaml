@@ -33,14 +33,26 @@ let set_gameover state =
 let set_go state = 
   Go
 
+let set_togo state = 
+  ToGo
+
 let set_torun state = 
   ToRun
 
-let set_pause state = 
-  GameOver
-
 let set_run state = 
   Run
+
+let set_death state = 
+  Death
+
+let set_bomb state = 
+  Bomb
+
+let set_tobomb state = 
+  ToBomb 
+
+let set_instructions state = 
+  Instructions
 (******************************************************************************)
 
 let game_over player = 
@@ -58,7 +70,7 @@ let check_key_click () =
 let switch state player =
   match state with 
   | Run -> ToGo
-  | Go -> ToRun (* temporarily not allowing switching to bomb *)
+  | Go -> ToBomb
   | Bomb -> ToRun
   | _ -> failwith "switch"
 
