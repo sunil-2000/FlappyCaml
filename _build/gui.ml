@@ -33,6 +33,7 @@ type t = {
   player_score : int;
   highscore : int; 
   pwr_positions : position_rec;
+  bomb : Game.bomb_rec;
 }
 
 let array_of_image img =
@@ -148,7 +149,8 @@ let make_state x y pipe_x pipe_type score highscore = {
   pipe_type = pipe_type;
   player_score = score;
   highscore = highscore;
-  pwr_positions = {x = 0; y = 0; pre_x = 0; pre_y = 0; index = -1; isactive = false}
+  pwr_positions = {x = 0; y = 0; pre_x = 0; pre_y = 0; index = -1; isactive = false};
+  bomb = {bombs = []; bomber_x = 600};
 }
 
 let set_sprite t image_array_no = 
@@ -197,6 +199,9 @@ let update_torun player frame t =
 
 let update_death t y = 
   {t with camel_y = y}
+
+let update_bomb player t =
+  {t with bomb = Game.get_bomb_rec player}
 
 let draw_camel t =
   let light_blue = rgb 76 186 196 in
@@ -287,14 +292,22 @@ let draw_powerups init =
 
 
 
-(* let draw_bomber init = 
-   set_color white;
-   (* draw_image bomber init.bomber_x 500 *)
+let draw_bomber init = 
+  set_color white;
+  draw_image bomber init.bomb.bomber_x 500 
 
-   let draw_bomb init = 
-   set_color black;
-   draw_image bomb init.bomb_x init.bomb_y;
-   set_color white  *)
+let draw_bomb_ob_aux lst =  
+  match lst with 
+  | h::t ->
+    begin 
+      match h with 
+      | None -> ()
+      | Bomb (x, y, b) ->  if b then draw_image bomb x y else ()
+    end 
+  | [] -> failwith "impossible case of empty bomb list, [draw_bomb_ob_aux]"
+
+let draw_bomb_ob init = 
+  draw_bomb_ob_aux init.bomb.bombs
 
 let draw_fly init = 
   draw_ground init;
@@ -308,6 +321,13 @@ let draw_run init =
   draw_cactus init;
   draw_camel init; 
   draw_powerups init;
+  draw_score init
+
+let draw_bomb init = 
+  draw_ground init;
+  draw_bomb_ob init;
+  draw_camel init;
+  draw_bomber init;
   draw_score init
 
 let draw_death init =
@@ -461,6 +481,7 @@ let draw_update init state =
   match state with 
   | "go" -> draw_fly init
   | "run" -> draw_run init 
+  | "bomb" -> draw_bomb init
   | "death" -> draw_death init 
   | "gameover" -> draw_gameover init 
   | "sprites" -> draw_sprites init 
@@ -468,4 +489,6 @@ let draw_update init state =
   | "start" -> draw_start init 
   | "torun" -> draw_fly init 
   | "togo" -> draw_fly init 
+  | "tobomb" -> draw_fly init
+  | _ -> failwith "draw for this state not impl [draw_update]"
   | _ -> failwith "draw for this state not impl [draw_update]"

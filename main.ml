@@ -168,7 +168,7 @@ and transition gui player state delta_t  =
   match State.string_of_state state with 
   | "togo" -> transition_aux gui player state delta_t Game.update "pipe" 
   | "torun" -> transition_aux gui player state delta_t Game.update "cactus"
-  | "tobomb" -> failwith "tobomb not implement in transition [main.ml]"
+  | "tobomb" -> transition_aux gui player state delta_t Game.update "bomb"
   | _ -> failwith "transition"
 
 and death gui player state delta_t = 

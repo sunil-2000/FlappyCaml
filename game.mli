@@ -2,6 +2,16 @@
 (** Abstract type representing a player object*)
 type t
 
+type bomb = Bomb of int * int * bool | None 
+
+type bomb_rec = {
+  bombs : bomb list; 
+  bomber_x : int;
+} 
+
+
+val get_bomb_rec: t -> bomb_rec
+
 (** [create (a, b) c] returns a player type with position and velocity 
     specified. *)
 val create: float * float -> float -> int -> string -> int option -> int -> int -> t
