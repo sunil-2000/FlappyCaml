@@ -16,6 +16,10 @@ val gravity_run: float -> t -> t
     tuple.*)
 val get_position: t -> float * float 
 
+val set_score: int -> t -> t
+
+val set_collision: bool -> t -> t
+
 (** [set_can_jump t] sets the boolean field determining whether the player is 
     allowed to jump or not. *)
 val set_can_jump: t -> bool -> t 
@@ -42,6 +46,8 @@ val update_death: float -> t -> t
 (** [get_y t] returns the y-coordinate of the player object. *)
 val get_y: t -> float 
 
+val get_velocity: t -> float
+
 (** [get_pipe_type t] returns the type of pipe being drawn. *) 
 val get_pipe_type: t -> int
 
@@ -51,6 +57,8 @@ val get_collision: t -> bool
 
 (** [get_score t] returns the current score of the player. *)
 val get_score: t -> int
+
+val get_score_updated: t -> bool
 
 val get_highscore: t ->  int 
 

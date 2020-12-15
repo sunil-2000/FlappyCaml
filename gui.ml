@@ -315,17 +315,7 @@ let draw_death init =
 
 (* let draw_pause =
    failwith "pause" *)
-
-let draw_gameover init = 
-  Graphics.clear_graph ();
-  let light_blue = rgb 76 186 196 in
-  set_color (light_blue);
-  fill_rect 0 0 600 700;
-  draw_image init.bottom_pipe_high_image 0 100;
-  draw_image init.top_pipe_high_image 0 575;
-  draw_image init.bottom_pipe_low_image 530 100;
-  draw_image init.top_pipe_low_image 530 400;
-  draw_ground init;
+let draw_gameover_ascii init = 
   set_color black;
   moveto 80 500;
   draw_string " _______  _______  __   __  _______    _______  __   __  _______  ______   ";
@@ -340,7 +330,19 @@ let draw_gameover init =
   moveto 80 450;
   draw_string "|   |_| ||   _   || ||_|| ||   |___   |       | |     | |   |___ |   |  | |";
   moveto 80 440;
-  draw_string "|_______||__| |__||_|   |_||_______|  |_______|  |___|  |_______||___|  |_|";
+  draw_string "|_______||__| |__||_|   |_||_______|  |_______|  |___|  |_______||___|  |_|"
+
+let draw_gameover init = 
+  Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  draw_image init.bottom_pipe_high_image 0 100;
+  draw_image init.top_pipe_high_image 0 575;
+  draw_image init.bottom_pipe_low_image 530 100;
+  draw_image init.top_pipe_low_image 530 400;
+  draw_ground init;
+  draw_gameover_ascii init; 
   moveto 260 275;
   draw_string "High Score: ";
   draw_string (string_of_int init.highscore); 
@@ -450,10 +452,7 @@ let draw_sprites init =
   fill_rect 450 50 100 50;
   set_color white;
   moveto 465 70;
-
   draw_string "start screen"
-
-
 
 (* [draw_update init state] is reponsible for drawing the correct frame, which
    is dependent upon [state] that is represented by a string *)

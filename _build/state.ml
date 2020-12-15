@@ -182,11 +182,13 @@ let check state player =
   | Go -> check_go state player 
   | Start -> check_state_start state 
   | Run -> check_run state player 
+  | Bomb -> check_bomb state player
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 
   | ToRun -> check_transition state player 
   | ToGo -> check_transition state player
+  | ToBomb -> check_transition state player
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 

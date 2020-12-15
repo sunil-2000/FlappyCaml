@@ -99,7 +99,7 @@ let create pos v highscore obs_name obs_int obs_x obs_y = {
   drop_x = 400;
   pwr_active = false;
 }
-(*****************************GETTERS*******************************************)
+(*****************************GETTERS******************************************)
 let get_player_x player = 
   match player.position with 
   | (x, y) -> int_of_float x 
@@ -167,6 +167,12 @@ let get_bomber_x player =
   player.bomber_x
 (******************************************************************************)
 (***********************************SETTERS************************************)
+let set_score int player = 
+  {player with score = int}
+
+let set_collision bool player = 
+  {player with collision = bool}
+
 let set_can_jump player bool = 
   {player with can_jump = bool}
 
