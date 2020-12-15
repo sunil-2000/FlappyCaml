@@ -33,6 +33,8 @@ let mushroom_h_buffer = 2
 
 let player_width = 50
 let player_height = 50 
+
+let previous_power_score = ref 0 
 (******************************************************************************)
 type obs_rec = {
   obs_type : int option; 
@@ -449,22 +451,11 @@ let generate_powerup player =  (* adding conditional on pwr_active *)
   else 
     player 
 
-(* let powerup_change player = 
-   match player.pwr_active with 
-   | true -> 
-   | false -> 
-   | Invincible {x = x; y = y} -> 
-    if x <= -100 then 
-      {player with powerup = None }
-    else 
-      player 
-   | Slow {x = x; y = y} -> 
-    if x <= -75 then 
-      {player with powerup = None }
-    else 
-      player
-   | None -> player *)
-
+let powerup_change player = 
+  if player.score - !previous_power_score > 2 then 
+    {player with powerup = None; pwr_active = false}
+  else 
+    player 
 (* [move_powerup player] moves the powerup object appropriately. If active is true
    then return None as powerup *)
 let move_powerup player = 
@@ -488,12 +479,15 @@ let powerup_collision player =
     let rect2x = fst(get_pwr_pos player) in 
     let rect2y = snd (get_pwr_pos player) in 
 
-    if rect1x < rect2x + mushroom_w && rect1x + player_width > rect2x 
-       && rect1y < rect2y + mushroom_h && rect1y + player_height > rect2y then 
+    match rect1x < rect2x + mushroom_w && 
+          rect1x + player_width > rect2x 
+          && rect1y < rect2y + mushroom_h && 
+          rect1y + player_height > rect2y with  
+    | true -> 
+      previous_power_score := player.score; 
       {player with pwr_active = true}
-    else 
-      player 
-
+    (* update powerup score ref *)
+    | false -> player 
   else 
     player 
 
@@ -517,31 +511,49 @@ let rec update t_delta player state_string =
 
 (* [update_fly_aux t_delta player] is a helper for [update_fly] *)
 and update_fly_aux t_delta player obs_move = 
-  jump player |> 
-  gravity t_delta |> 
-  move_obs obs_move |> 
-  pipe_type_change |> 
-  collision |> 
-  generate_powerup |>
-  move_powerup |>
-  powerup_collision |>
-  score_update
+  jump player 
+  |> gravity t_delta 
+  |> move_obs obs_move 
+  |> pipe_type_change 
+  |> collision 
+  |> generate_powerup 
+  |> move_powerup 
+  |> powerup_collision 
+  |> powerup_change 
+  |> score_update
 
 (* [update_fly t_delta player] updates player when state = fly (go). [update_fly]
    gives the appropriate update if the player has a powerup *)
 and update_fly t_delta player = 
   match player.powerup, player.pwr_active with 
-  | Slow _ , true-> update_fly_aux t_delta player slow_obs_move
-  | Invincible _, true -> update_fly_aux t_delta player normal_obs_move |> collision_reset 
-  | None, _ | _ -> update_fly_aux t_delta player normal_obs_move
+  | Slow _ , true -> 
+    update_fly_aux t_delta player slow_obs_move
+  | Invincible _, true -> 
+    update_fly_aux t_delta player normal_obs_move |> collision_reset 
+  | None, _ | _ -> 
+    update_fly_aux t_delta player normal_obs_move
+
+
+and update_run_aux t_delta player obs_move = 
+  jump player 
+  |> gravity t_delta 
+  |> move_obs obs_move
+  |> collision_run
+  |> generate_powerup 
+  |> move_powerup
+  |> powerup_collision
+  |> powerup_change 
+  |> score_update
 
 (* [update_run t_delta player] updates player when state = run. *)
 and update_run t_delta player =
-  jump player 
-  |> gravity t_delta 
-  |> move_obs normal_obs_move
-  |> collision_run
-  |> score_update
+  match player.powerup, player.pwr_active with 
+  | Slow _ , true -> 
+    update_run_aux t_delta player slow_obs_move
+  | Invincible _, true -> 
+    update_run_aux t_delta player normal_obs_move |> collision_reset 
+  | None, _ | _ -> 
+    update_run_aux t_delta player normal_obs_move 
 
 (* [update_totun t_delta player] updates the player and obstacles while in 
     state ToRun. Obstacles are generated offscreen at -100 *)

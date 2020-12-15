@@ -307,6 +307,7 @@ let draw_run init =
   draw_ground init;
   draw_cactus init;
   draw_camel init; 
+  draw_powerups init;
   draw_score init
 
 let draw_death init =

@@ -24,14 +24,6 @@ type t =
   (* add more states for game logic, then just pattern match against in 
   *)
 
-
-
-let pick_interval player = 
-  let interval = (Random.int 1) + 1 in 
-  let new_interval = interval + Game.get_score player in
-  (*print_int new_interval;*)
-  state_interval := new_interval 
-
 let make_state () =  
   Start
 (********************************SETTERS***************************************)
