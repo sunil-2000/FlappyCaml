@@ -1,8 +1,11 @@
 open Game
 open Graphics 
 open Random 
+(* GLOBAL VARIABLES FOR STATE *)
+let old_score = ref 0 
+let state_interval = ref 0
 
-type state = 
+type t = 
   | Start
   | GameOver 
   | Go (* flying *) 
@@ -21,14 +24,7 @@ type state =
   (* add more states for game logic, then just pattern match against in 
   *)
 
-let old_score = ref 0 
 
-(* just make this variant type, not using record if only one field *)
-type t = {
-  state : state; 
-}
-
-let state_interval = ref 0
 
 let pick_interval player = 
   let interval = (Random.int 1) + 1 in 
@@ -37,27 +33,23 @@ let pick_interval player =
   state_interval := new_interval 
 
 let make_state () =  
-  {
-    state = Start;
-  }
-
-let get_state t = 
-  t.state
-
+  Start
+(********************************SETTERS***************************************)
 let set_gameover state = 
-  {state = GameOver}
+  GameOver
 
 let set_go state = 
-  {state = Go}
+  Go
 
 let set_torun state = 
-  {state = ToRun}
+  ToRun
 
 let set_pause state = 
-  {state = GameOver}
+  GameOver
 
 let set_run state = 
-  {state = Run}
+  Run
+(******************************************************************************)
 
 let game_over player = 
   let y = snd (Game.get_position player) in 
@@ -71,11 +63,11 @@ let check_key_click () =
   let e = wait_next_event [Key_pressed] in
   if e.keypressed then true else false 
 
-let switch (state:t) player =
-  match state.state with 
-  | Run -> {state = ToGo}
-  | Go -> {state = ToBomb}
-  | Bomb -> {state = ToRun}
+let switch state player =
+  match state with 
+  | Run -> ToGo
+  | Go -> ToRun (* temporarily not allowing switching to bomb *)
+  | Bomb -> ToRun
   | _ -> failwith "switch"
 
 
@@ -94,20 +86,20 @@ let check_to_transition xl xr yb yt =
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
   match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
-  | true, _, _ -> {state = Go} 
-  | _, true, _ -> {state = Instructions}
-  | _, _, true -> {state = Sprites}
+  | true, _, _ -> Go 
+  | _, true, _ -> Instructions
+  | _, _, true -> Sprites
   | _, _, _ -> state  
 
 (* transitions state appropriately if state = GameOver *)
 let check_state_over state = 
   match check_key_click () with 
-  | true -> {state = Start}
+  | true -> Start
   | false -> state 
 
 let check_instructions state = 
   match check_to_transition 450 550 50 100 with 
-  | true -> {state = Start}
+  | true -> Start
   | false -> state
 
 let check_sprite_select state = 
@@ -115,32 +107,29 @@ let check_sprite_select state =
   let sp2 = check_to_transition 270 320 300 350 in 
   let sp3 = check_to_transition 370 420 300 350 in 
   match sp1, sp2, sp3 with 
-  | true, _, _ -> {state = Sprite1} (* clarkson *)
-  | _, true, _ -> {state = Sprite2} (* gries *)
-  | _, _, true -> {state = Sprite3} (* camel *)
+  | true, _, _ -> Sprite1 (* clarkson *)
+  | _, true, _ -> Sprite2 (* gries *)
+  | _, _, true -> Sprite3 (* camel *)
   | _ -> state 
 
 let check_sprites state = 
   match check_to_transition 450 550 50 100 with 
-  | true -> {state = Start}
+  | true -> Start
   | false -> check_sprite_select state
 
 let check_go state player = 
-  if (Game.get_y player < 100. && get_state state = Go) 
+  if (Game.get_y player < 100. && state = Go) 
   || Game.get_collision player then 
-    {state = Death}
-  else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
+    Death
+  else if Game.get_score player > 0 && Game.get_score player mod 2 = 0 
           && Game.get_score player <> !old_score then      
     switch state player    
-  else if Game.get_score player > 0 && Game.get_score player mod 3 = 0 
-          && Game.get_score player <> !old_score then  
-    switch state player 
   else 
     state 
 
 let check_run state player = 
   if Game.get_collision player then 
-    {state = Death}
+    Death
   else if Game.get_score player > 0 && Game.get_score player mod 4 = 0 
           && Game.get_score player <> !old_score then 
     switch state player  
@@ -149,41 +138,41 @@ let check_run state player =
 
 let check_transition state player =
   old_score := Game.get_score player;
-  match state.state with
+  match state with
   | ToGo ->
     if Game.get_y player >= 350. then
-      {state = Go}
+      Go
     else
       state
   | ToRun ->
     if Game.get_y player <= 100. then
-      {state = Run}
+      Run
     else
       state
   | ToBomb -> 
     if Game.get_obs_x player < -71 then 
-      {state = Bomb}
+      Bomb
     else 
       state
   | _ -> failwith "not a transition state [check_transition]"
 
 let check_death state player = 
-  if Game.get_y player <= -100. then 
-    {state = GameOver} 
+  if Game.get_y player <= -50. then 
+    GameOver
   else 
     state  
 
 let check_bomb state player = 
   if Game.get_collision player then 
-    {state = GameOver}
+    GameOver
   else if Game.get_bomber_x player < -240 then (* plane width = 240 *)
-    {state = Run}
+    Run
   else 
     state 
 
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
-  match get_state state with 
+  match state with 
   | GameOver -> check_state_over state 
   | Death -> check_death state player
   | Go -> check_go state player 
@@ -197,7 +186,7 @@ let check state player =
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
-  match t.state with 
+  match t with 
   | Go -> "go"
   | Death -> "death"
   | GameOver -> "gameover"

@@ -1,3 +1,4 @@
+
 (** Abstract type representing a player object*)
 type t
 
@@ -23,7 +24,7 @@ val set_obs_type: t -> string -> t
 
 (** [update (a, b) t] updates the parameters of the player to reflect changes 
     in game state due to gravity, jumping, score, collisions, and pipes. *)
-val update: float -> t -> t
+val update: float -> t -> string -> t
 
 (** [update_run t] updates parameters of the player to reflect changes that 
     occur in Run game state. *)
@@ -63,4 +64,12 @@ val get_bomb_y: t -> int
 
 val get_drop_x: t -> int
 
+val get_highscore: t -> int 
 
+val string_of_powerup: t -> string 
+
+val int_of_powerup:  t -> int 
+
+val get_pwr_pos : t -> int * int
+
+val get_pwr_active : t -> bool 
