@@ -154,7 +154,7 @@ let check_transition state player =
     else
       state
   | ToBomb -> 
-    if Game.get_obs_x player < 600 then 
+    if Game.get_obs_x player < -71 then 
       Bomb
     else 
       state
@@ -170,7 +170,7 @@ let check_bomb state player =
   if Game.get_collision player then 
     GameOver
   else if Game.get_bomber_x player < -240 then (* plane width = 240 *)
-    Run
+    ToRun
   else 
     state 
 

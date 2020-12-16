@@ -335,15 +335,15 @@ let rec draw_erase_bombs lst =
   | h::t ->
     begin 
       match h with 
-      | None -> (); draw_bomb_ob_aux t 
+      | None -> (); draw_erase_bombs t 
       | Bomb (x, y, b) -> 
         begin 
           match b with 
           | true -> 
             let light_blue = rgb 76 186 196 in
             set_color (light_blue);
-            fill_rect x y 35 35; draw_bomb_ob_aux t 
-          | false ->  draw_bomb_ob_aux t 
+            fill_rect x y 39 39; draw_erase_bombs t 
+          | false ->  draw_erase_bombs t 
         end 
     end 
   | [] -> ()
