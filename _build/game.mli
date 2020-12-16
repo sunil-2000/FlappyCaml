@@ -50,7 +50,7 @@ val update_tobomb: float -> t -> t
 val update_death: float -> t -> t
 
 (** [get_y t] returns the y-coordinate of the player object. *)
-val get_y: t -> float 
+val get_player_y: t -> int 
 
 (** [get_pipe_type t] returns the type of pipe being drawn. *) 
 val get_pipe_type: t -> int
@@ -77,3 +77,5 @@ val int_of_powerup:  t -> int
 val get_pwr_pos : t -> int * int
 
 val get_pwr_active : t -> bool 
+
+val get_player_x : t -> int 

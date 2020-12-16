@@ -122,7 +122,7 @@ let check_sprites state =
   | false -> check_sprite_select state
 
 let check_go state player = 
-  if (Game.get_y player < 100. && state = Go) 
+  if (Game.get_player_y player < 100 && state = Go) 
   || Game.get_collision player then 
     Death
   else if Game.get_score player > 0 && Game.get_score player mod 2 = 0 
@@ -144,12 +144,12 @@ let check_transition state player =
   old_score := Game.get_score player;
   match state with
   | ToGo ->
-    if Game.get_y player >= 350. then
+    if Game.get_player_y player >= 350 then
       Go
     else
       state
   | ToRun ->
-    if Game.get_y player <= 100. then
+    if Game.get_player_y player <= 100 then
       Run
     else
       state
@@ -161,7 +161,7 @@ let check_transition state player =
   | _ -> failwith "not a transition state [check_transition]"
 
 let check_death state player = 
-  if Game.get_y player <= -50. then 
+  if Game.get_player_y player <= -50 then 
     GameOver
   else 
     state  

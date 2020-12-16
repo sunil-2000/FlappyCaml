@@ -122,7 +122,7 @@ let get_highscore player =
 
 let get_y player =
   match player.position with 
-  | (x,y) -> y 
+  | (x,y) -> y |> int_of_float 
 
 let get_velocity player = 
   player.velocity 
@@ -446,22 +446,30 @@ let powerup_collision player w1 h1 w2 h2 =
 let bomber_h = 500
 let b_interval = 80 
 
-let rec generate_aux (lst : bomb list) mult = 
+let rec generate_aux (lst : bomb list) mult  = 
   if List.length lst < 4 then 
     match lst, Random.int 2 with 
-    | [] , 1 -> Bomb (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
-    | h :: t, 1 -> Bomb (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
-    | [] , 0 -> None :: generate_aux lst (mult + 1)
-    | h :: t, 0 -> None :: generate_aux lst (mult + 1)
+    | [] , 1 -> 
+      let lst' = Bomb (game_width - b_interval * mult, 500, false) :: lst in 
+      generate_aux lst' (mult + 1)
+    | h :: t, 1 -> 
+      let lst' = Bomb (game_width - b_interval * mult, 500, false) :: lst in 
+      generate_aux lst' (mult + 1)
+    | [] , 0 -> 
+      let lst' = None :: lst in 
+      generate_aux lst' (mult + 1)
+    | h :: t, 0 -> 
+      let lst' = None :: lst in 
+      generate_aux lst' (mult + 1)
     | _, _ -> failwith "[generate_aux] failed in game"
   else 
     lst 
 
 let move_bomber player = 
   if player.bomb.bomber_x = 600 then 
-    {player with bomb = {bombs = generate_aux [] 1; bomber_x = 600}}
+    {player with bomb = {bombs = generate_aux [] 1; bomber_x = player.bomb.bomber_x - 2 }}
   else 
-    {player with bomb = {bombs = player.bomb.bombs; bomber_x = player.bomb.bomber_x - normal_obs_move}} 
+    {player with bomb = {bombs = player.bomb.bombs; bomber_x = player.bomb.bomber_x - 2}} 
 
 let bomb_drop = 10 
 let bomb_x_int = 3
@@ -473,9 +481,9 @@ let rec dropping_bombs lst =
       match h with  
       | Bomb (x, y, bool) -> 
         if bool then 
-          Bomb (x - 5, y - bomb_drop, bool) :: dropping_bombs t 
+          Bomb (x - 1, y - bomb_drop, bool) :: dropping_bombs t 
         else 
-          Bomb (x - 5, y, bool) :: dropping_bombs t 
+          Bomb (x - 1, y, bool) :: dropping_bombs t 
 
       | None -> None :: dropping_bombs t
     end 
@@ -488,7 +496,7 @@ let rec make_true bomb_list player =
       match h with 
       | None -> None :: make_true t player
       | Bomb (x, y, b) -> begin
-          if x <= player.bomb.bomber_x then Bomb (x, y, true) :: make_true t player else Bomb (x, y, b) :: make_true t player
+          if x >= player.bomb.bomber_x then Bomb (x, y, true) :: make_true t player else Bomb (x, y, b) :: make_true t player
         end
     end
 
@@ -560,7 +568,7 @@ and update_run_aux t_delta player obs_move =
 (* [update_run t_delta player] updates player when state = run. *)
 and update_run t_delta player =
   match player.powerup, player.pwr_active with 
-  | Slow _ , true -> 
+  | Slow _ , true ->  
     update_run_aux t_delta player slow_obs_move
   | Invincible _, true -> 
     update_run_aux t_delta player normal_obs_move |> collision_reset 
@@ -589,8 +597,8 @@ and update_death t_delta player =
 
 and update_bomb t_delta player = 
   jump player 
-  |> gravity t_delta
-  |> move_bomber 
+  |> gravity_fly t_delta
+  |> move_bomber  
   |> drop_bomb 
   |> collision_bomb 
 
