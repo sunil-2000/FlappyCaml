@@ -2,6 +2,16 @@
 (** Abstract type representing a player object*)
 type t
 
+type bomb = Bomb of int * int * bool | None 
+
+type bomb_rec = {
+  bombs : bomb list; 
+  bomber_x : int;
+} 
+
+
+val get_bomb_rec: t -> bomb_rec
+
 (** [create (a, b) c] returns a player type with position and velocity 
     specified. *)
 val create: float * float -> float -> int -> string -> int option -> int -> int -> t
@@ -44,7 +54,7 @@ val update_tobomb: float -> t -> t
 val update_death: float -> t -> t
 
 (** [get_y t] returns the y-coordinate of the player object. *)
-val get_y: t -> float 
+val get_player_y: t -> int 
 
 val get_velocity: t -> float
 
@@ -66,12 +76,6 @@ val gravity_zero: float -> t -> t
 
 val get_bomber_x: t -> int
 
-val get_bomb_x: t -> int
-
-val get_bomb_y: t -> int
-
-val get_drop_x: t -> int
-
 val get_highscore: t -> int 
 
 val string_of_powerup: t -> string 
@@ -81,3 +85,5 @@ val int_of_powerup:  t -> int
 val get_pwr_pos : t -> int * int
 
 val get_pwr_active : t -> bool 
+
+val get_player_x : t -> int 
