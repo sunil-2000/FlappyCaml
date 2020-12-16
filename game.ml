@@ -435,7 +435,7 @@ let rectangle_collision player w1 h1 w2 h2  =
 (* [powerup_collision player] return player.powerup with the active field as
    true if the player has collided with a powerup object, otherwise it returns
    the player unchanged. *)
-let powerup_collision player w1 h1 w2 h2 = 
+let powerup_collision w1 h1 w2 h2 player = 
   if player.pwr_active <> true && player.powerup <> None then 
     match rectangle_collision player w1 h1 w2 h2 with 
     | true -> 
@@ -444,6 +444,7 @@ let powerup_collision player w1 h1 w2 h2 =
     | false -> player
   else 
     player 
+
 
 
 (********************************BOMB STATE************************************)
@@ -567,7 +568,7 @@ and update_fly_aux t_delta player obs_move =
   |> powerup_change 
   |> generate_powerup 
   |> move_powerup 
-  (*|> powerup_collision player player_width player_height mushroom_w mushroom_h*)
+  |> powerup_collision player_width player_height mushroom_w mushroom_h
   |> score_update
 
 (* [update_fly t_delta player] updates player when state = fly (go). [update_fly]
@@ -589,7 +590,7 @@ and update_run_aux t_delta player obs_move =
   |> collision_run
   |> generate_powerup 
   |> move_powerup
-  (*|> powerup_collision player player_width player_height mushroom_w mushroom_h*)
+  |> powerup_collision player_width player_height mushroom_w mushroom_h
   |> powerup_change 
   |> score_update
 
