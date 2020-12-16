@@ -47,6 +47,12 @@ type pwr_rec = {
   y : int 
 }
 
+type obstacle = 
+  | Pipe of obs_rec 
+  | Cactus of obs_rec 
+
+type powerup = Invincible of pwr_rec | Slow of pwr_rec | None
+
 type bomb = Bomb of int * int * bool | None 
 
 type bomb_rec = {
@@ -54,11 +60,6 @@ type bomb_rec = {
   bomber_x : int;
 }
 
-type obstacle = 
-  | Pipe of obs_rec 
-  | Cactus of obs_rec 
-
-type powerup = Invincible of pwr_rec | Slow of pwr_rec | None
 
 type t = {
   position : (float * float);
@@ -428,7 +429,7 @@ let rectangle_collision player w1 h1 w2 h2  =
 (* [powerup_collision player] return player.powerup with the active field as
    true if the player has collided with a powerup object, otherwise it returns
    the player unchanged. *)
-let powerup_collison player w1 h1 w2 h2 return_value = 
+let powerup_collision player w1 h1 w2 h2 = 
   if player.pwr_active <> true && player.powerup <> None then 
     match rectangle_collision player w1 h1 w2 h2 with 
     | true -> 
@@ -445,59 +446,61 @@ let powerup_collison player w1 h1 w2 h2 return_value =
 let bomber_h = 500
 let b_interval = 80 
 
-let rec generate_aux lst mult = 
-  if List.length lst <> 4 then 
+let rec generate_aux (lst : bomb list) mult = 
+  if List.length lst < 4 then 
     match lst, Random.int 2 with 
+    | [] , 1 -> Bomb (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
+    | h :: t, 1 -> Bomb (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
     | [] , 0 -> None :: generate_aux lst (mult + 1)
     | h :: t, 0 -> None :: generate_aux lst (mult + 1)
-    | [] , 1 -> (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
-    | h :: t, 1 -> (game_width - b_interval * mult, 500, false) :: generate_aux lst (mult + 1)
+    | _, _ -> failwith "[generate_aux] failed in game"
   else 
     lst 
 
 let move_bomber player = 
-  if player.bomb.bomber_x = -240 then 
+  if player.bomb.bomber_x = 600 then 
     {player with bomb = {bombs = generate_aux [] 1; bomber_x = 600}}
   else 
     {player with bomb = {bombs = player.bomb.bombs; bomber_x = player.bomb.bomber_x - normal_obs_move}} 
 
 let bomb_drop = 10 
 let bomb_x_int = 3
+
 let rec dropping_bombs lst = 
   match lst with 
   | h :: t -> 
     begin 
-      match h with 
-      | (x, y, bool) -> 
+      match h with  
+      | Bomb (x, y, bool) -> 
         if bool then 
-          (x, y - bo - bomb_x_intmb_drop, bool) :: dropping_bombs_aux t 
+          Bomb (x - 5, y - bomb_drop, bool) :: dropping_bombs t 
         else 
-          (x, y, bool) :: dropping_bombs_aux t 
+          Bomb (x - 5, y, bool) :: dropping_bombs t 
 
-      | None -> None :: dropping_bombs_aux t
+      | None -> None :: dropping_bombs t
     end 
-  | [] -> failwith "should not be possible [dropping_bombs]"
+  | [] -> []
 
-let make_true bomb_list = 
+let rec make_true bomb_list player = 
   match bomb_list with 
-  | [] -> failwith "no bombs"
+  | [] -> []
   | h :: t -> begin
       match h with 
-      | None -> None :: make_true t
+      | None -> None :: make_true t player
       | Bomb (x, y, b) -> begin
-          if x <= player.bomb.bomber_x then (x, y, true) :: make_true t else Bomb (x, y, b) :: make_true t
+          if x <= player.bomb.bomber_x then Bomb (x, y, true) :: make_true t player else Bomb (x, y, b) :: make_true t player
         end
     end
 
 
 let drop_bomb player = 
   if (game_width - player.bomb.bomber_x) mod b_interval = 0 && player.bomb.bomber_x <> 0 && player.bomb.bomber_x > 250 then 
-    {player with bomb = {bombs = make_true player.bomb.bombs; bomber_x = player.bomb.bomber_x }}
+    {player with bomb = {bombs = make_true player.bomb.bombs player; bomber_x = player.bomb.bomber_x }}
   else 
     {player with bomb = {bombs = dropping_bombs player.bomb.bombs; bomber_x = player.bomb.bomber_x}}
 
 let collision_bomb player = 
-  if rectangle_collision 50 50 50 50 player then {player with collision = true} else player
+  if rectangle_collision player 50 50 50 50  then {player with collision = true} else player
 
 
 
@@ -515,7 +518,7 @@ let rec update t_delta player state_string =
   | "torun" -> update_torun t_delta player
   | "tobomb" -> update_tobomb t_delta player 
   | "death" -> update_death t_delta player
-  | "bomb" -> failwith "update, bomb not implemented in game.ml"
+  | "bomb" -> update_bomb t_delta player
   | _ -> failwith "update not implemented in game.ml"
 
 (* [update_fly_aux t_delta player] is a helper for [update_fly] *)
@@ -528,7 +531,7 @@ and update_fly_aux t_delta player obs_move =
   |> powerup_change 
   |> generate_powerup 
   |> move_powerup 
-  |> powerup player_width player_height mushroom_w mushroom_h 
+  (*> powerup_collision player player_width player_height mushroom_w mushroom_h*)
   |> score_update
 
 (* [update_fly t_delta player] updates player when state = fly (go). [update_fly]
@@ -550,7 +553,7 @@ and update_run_aux t_delta player obs_move =
   |> collision_run
   |> generate_powerup 
   |> move_powerup
-  |> powerup_collision player_width player_height mushroom_w mushroom_h 
+  (*|> powerup_collision player player_width player_height mushroom_w mushroom_h *)
   |> powerup_change 
   |> score_update
 
@@ -597,7 +600,6 @@ let string_of_obstacle player =
   match player.obstacle with 
   | Pipe _ -> "pipe"
   | Cactus _ -> "cactus"
-  | Bomb _ -> "bomb "
 
 let string_of_velocity player = 
   string_of_float player.velocity 
@@ -621,5 +623,4 @@ let int_of_powerup player =
   | Slow _ -> 1
 
 let get_pwr_active player =
-  player.pwr_activeplayer =
   player.pwr_active

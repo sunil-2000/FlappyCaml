@@ -54,7 +54,10 @@ let rec main (gui:Gui.t) player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
-    (* print_string (Game.string_of_powerup player); *)
+    (*print_string (Game.string_of_powerup player);*) 
+    print_string (State.string_of_state curr_state); 
+    print_string " ";
+    print_int (Game.get_obs_x player);
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and
@@ -164,11 +167,17 @@ and transition_aux gui player state delta_t game_updatefn obs_name =
   Gui.draw_update gui' (State.string_of_state state);
   main gui' player' state
 
+and transition_aux_bomb gui player state delta_t game_updatefn =
+  let new_player = game_updatefn delta_t player (string_of_state state) in
+  let gui' = Gui.update_torun new_player (!frame_count) gui in  
+  Gui.draw_update gui' (State.string_of_state state);
+  main gui' new_player state
+
 and transition gui player state delta_t  = 
   match State.string_of_state state with 
   | "togo" -> transition_aux gui player state delta_t Game.update "pipe" 
   | "torun" -> transition_aux gui player state delta_t Game.update "cactus"
-  | "tobomb" -> transition_aux gui player state delta_t Game.update "bomb"
+  | "tobomb" -> transition_aux_bomb gui player state delta_t Game.update
   | _ -> failwith "transition"
 
 and death gui player state delta_t = 
@@ -178,7 +187,7 @@ and death gui player state delta_t =
 
 and bomb gui player state delta_t frame = 
   let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') in 
-  run_fly_aux gui player state delta_t frame Game.update Gui.update_fly bool 
+  run_fly_aux gui player state delta_t frame Game.update Gui.update_bomb bool 
 
 let () = 
   Graphics.open_graph "600 700";

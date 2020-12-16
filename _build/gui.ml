@@ -200,7 +200,7 @@ let update_torun player frame t =
 let update_death t y = 
   {t with camel_y = y}
 
-let update_bomb player t =
+let update_bomb player frame t =
   {t with bomb = Game.get_bomb_rec player}
 
 let draw_camel t =
@@ -296,15 +296,16 @@ let draw_bomber init =
   set_color white;
   draw_image bomber init.bomb.bomber_x 500 
 
-let draw_bomb_ob_aux lst =  
+let rec draw_bomb_ob_aux lst =  
   match lst with 
   | h::t ->
     begin 
       match h with 
-      | None -> ()
-      | Bomb (x, y, b) ->  if b then draw_image bomb x y else ()
-    end 
-  | [] -> failwith "impossible case of empty bomb list, [draw_bomb_ob_aux]"
+      | None -> (); draw_bomb_ob_aux t
+      | Bomb (x, y, b) ->  
+        if b then draw_image bomb x y; draw_bomb_ob_aux t else draw_bomb_ob_aux t
+end 
+| [] -> ()
 
 let draw_bomb_ob init = 
   draw_bomb_ob_aux init.bomb.bombs
@@ -490,5 +491,4 @@ let draw_update init state =
   | "torun" -> draw_fly init 
   | "togo" -> draw_fly init 
   | "tobomb" -> draw_fly init
-  | _ -> failwith "draw for this state not impl [draw_update]"
   | _ -> failwith "draw for this state not impl [draw_update]"

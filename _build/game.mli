@@ -68,12 +68,6 @@ val gravity_zero: float -> t -> t
 
 val get_bomber_x: t -> int
 
-val get_bomb_x: t -> int
-
-val get_bomb_y: t -> int
-
-val get_drop_x: t -> int
-
 val get_highscore: t -> int 
 
 val string_of_powerup: t -> string 

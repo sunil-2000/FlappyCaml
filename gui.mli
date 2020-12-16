@@ -20,6 +20,8 @@ val draw_update: t -> string -> unit
 (* [update_run y score index t] updates t appropriately when the state is run *)
 val update_run: Game.t -> int -> t -> t
 
+val update_bomb: Game.t -> int ->  t -> t
+
 
 val update_torun: Game.t -> int -> t -> t
 
