@@ -18,7 +18,7 @@ let go_player_pipe = Game.create (200., 150.) 10. 7 "pipe" (Some 2) 200 100
 let go_player_transition = Game.create (200., 400.) 10. 4 "pipe" (Some 2) 400 100
                            |> Game.set_score 4
 
-let run_player_alive = Game.create (200., 100.) 10. 7 "cactus" (Some 1) 400 100
+let run_player_alive = Game.create (200., 100.) 0. 7 "cactus" (Some 1) 400 100
 let run_player_dead = Game.create (200., 100.) 10. 7 "cactus" (Some 1) 175 100
                       |> Game.set_collision true
 let run_player_transition = Game.create (200., 100.) 10. 7 "cactus" (Some 1) 400 100
@@ -66,71 +66,95 @@ let state_tests = [
    against the updated fields using getters*)
 
 let update_player player state_string = 
-  Game.update 1. player state_string
+  Game.update 0.01 player state_string
 
 let update_test
     (name: string)
     (player: Game.t)
     (state_string: string)
+    (t_delta: float)
     (getter)
     (expected_output) : test = 
   name >:: fun _ -> 
-    assert_equal expected_output (Game.update 1. player state_string |> getter) 
+    assert_equal expected_output (Game.update t_delta player state_string |> getter) 
 
 let jump_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: float) : test = 
-  update_test name player state_string Game.get_velocity expected_output
+  update_test name player state_string 0.01 Game.get_velocity expected_output
 
 let gravity_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: float) : test = 
-  update_test name player state_string Game.get_y expected_output 
+  update_test name player state_string 0.1 Game.get_y expected_output 
 
 let move_obs_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: int) : test = 
-  update_test name player state_string Game.get_obs_x expected_output
+  update_test name player state_string 0.1 Game.get_obs_x expected_output
 
 let collision_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: bool) : test = 
-  update_test name player state_string Game.get_collision expected_output
+  update_test name player state_string 0.1 Game.get_collision expected_output
 
 let move_powerup_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: int * int) : test = 
-  update_test name player state_string Game.get_pwr_pos expected_output
+  update_test name player state_string 0.1 Game.get_pwr_pos expected_output
 
 let score_update_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: int) : test = 
-  update_test name player state_string Game.get_score expected_output
+  update_test name player state_string 0.1 Game.get_score expected_output
 
 let score_updated_test 
     (name: string)
     (player: Game.t)
     (state_string: string)
     (expected_output: bool) : test = 
-  update_test name player state_string Game.get_score_updated expected_output 
+  update_test name player state_string 0.1 Game.get_score_updated expected_output 
 
 let fly_can_jump = go_player_alive
 let fly_no_jump = Game.set_can_jump fly_can_jump false
+let no_vel = Game.create (200., 400.) 0. 5 "pipe" (Some 1) 400 100 
+let fly_no_vel = Game.set_can_jump no_vel false
+let pipe_offs = Game.create (200., 400.) 0. 5 "pipe" (Some 1) -75 100
+
+let run_can_jump = run_player_alive
+let run_no_jump = Game.set_can_jump run_can_jump false
+let run_above_ground = Game.create (200., 300.) 0. 5 "cactus" (Some 1) 400 100
+let run_no_vel = Game.set_can_jump run_above_ground false
+let cactus_offs = Game.create (200., 100.) 0. 5 "cactus" (Some 1) -75 100
 
 let game_tests = [
-  jump_test "velocity after jumping in fly-state" fly_can_jump "go" 10.;
+  jump_test "velocity after jumping in fly-state" fly_can_jump "go" (225.5);
+  jump_test "downwards velocity after no jump in fly-state" 
+    fly_no_jump "go" (5.5);
+  jump_test "velocity after jumping in run-state" run_can_jump "run" (335.5);
+  jump_test "downwards velocity in run-state" run_no_jump "run" (-4.5);
+  jump_test "no jump during torun" fly_can_jump "torun" (5.5);
+  gravity_test "fly-state, y dropping with 0 velocity" fly_no_vel "go" 399.25;
+  gravity_test "fly-state, y increasing after jumping" fly_can_jump "go" 422.25;
+  gravity_test "run-state, y stays at 100" run_no_jump "run" 100.;
+  gravity_test "run-state, y dropping with 0 velocity" run_no_vel "run" 299.25;
+  gravity_test "run-state, y increasing after jumping" run_can_jump "run" 133.25;
+  move_obs_test "fly-state, no powerups, pipe on screen" fly_can_jump "go" 395;
+  move_obs_test "fly-state, no powerups, pipe off-screen" pipe_offs "go" 600;
+  move_obs_test "run-state, no powerups, cactus on screen" run_can_jump "run" 395;
+  move_obs_test "run-state, no powerups, cactus off screen" cactus_offs "run" 600;
 ]
 (******************************************************************************)
 let suite =

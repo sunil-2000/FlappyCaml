@@ -1,0 +1,30 @@
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:0:fly-state, alive player.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:0:fly-state, alive player is successful.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:0:fly-state, alive player.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:2:fly-state, player hits obstacle.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:2:fly-state, player hits obstacle is successful.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:2:fly-state, player hits obstacle.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:4:run-state, alive player.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:4:run-state, alive player is successful.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:4:run-state, alive player.
+2020-12-16T04:48:07+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:6:ToGo transition ok.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:6:ToGo transition ok is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:6:ToGo transition ok.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:8:ToRun transition ok.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:8:ToRun transition ok is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:8:ToRun transition ok.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:10:transition to Gameover.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:10:transition to Gameover is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:10:transition to Gameover.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:12:velocity after jumping in fly-state.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:12:velocity after jumping in fly-state is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:12:velocity after jumping in fly-state.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:16:no jump during torun.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:16:no jump during torun is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:16:no jump during torun.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:19:run-state, y stays at 100.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:19:run-state, y stays at 100 is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:19:run-state, y stays at 100.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Start test test lists:22:run-state, no powerups, pipe on screen.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: Test test lists:22:run-state, no powerups, pipe on screen is successful.
+2020-12-16T04:48:08+00:00 Stevens-MacBook-Pro-4.local#01 I: End test test lists:22:run-state, no powerups, pipe on screen.
