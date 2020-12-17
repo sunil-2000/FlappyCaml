@@ -105,6 +105,13 @@ let move_obs_test
     (expected_output: int) : test = 
   update_test name player state_string 0.1 Game.get_obs_x expected_output
 
+let pipe_type_change_test 
+    (name: string)
+    (player: Game.t)
+    (state_string: string)
+    (expected_output: int) : test =
+  update_test name player state_string 0.1 Game.get_pipe_type expected_output  
+
 let collision_test 
     (name: string)
     (player: Game.t)
@@ -139,12 +146,88 @@ let fly_no_jump = Game.set_can_jump fly_can_jump false
 let no_vel = Game.create (200., 400.) 0. 5 "pipe" (Some 1) 400 100 
 let fly_no_vel = Game.set_can_jump no_vel false
 let pipe_offs = Game.create (200., 400.) 0. 5 "pipe" (Some 1) (-75) 100
+let fly_slow = Game.set_pwr_active fly_can_jump true 
+               |> Game.set_powerup "slow" 100 100 
+let fly_slow_inactive = Game.set_powerup "slow" 100 100 fly_can_jump 
+let fly_slow_newpipe = Game.set_pwr_active pipe_offs true
+                       |> Game.set_powerup "slow" 100 100
+let fly_pipe_collision = Game.create (200., 150.) 10. 7 "pipe" (Some 2) 200 100
+let i_fly_pipe_collision = Game.set_pwr_active fly_pipe_collision true 
+                           |> Game.set_powerup "invincible" 0 0
+let fly_pipe_nocollision = 
+  Game.create (200., 150.) 10. 7 "pipe" (Some 2) 400 100
+let i_fly_pipe_nocollision = Game.set_pwr_active fly_pipe_nocollision true 
+                             |> Game.set_powerup "invincible" 0 0
+let fly_pipe_collision_top = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 2) 200 100
+let i_fly_pipe_collision_top = Game.set_pwr_active fly_pipe_collision_top true 
+                               |> Game.set_powerup "invincible" 0 0
+let fly_pipe_nocollision_top = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 2) 400 100
+let fly_pipe_no_collision_inbetween =
+  Game.create (200., 300.) 10. 7 "pipe" (Some 2) 200 10
+
+let fly_pipe_collision_1 = 
+  Game.create (200., 150.) 10. 7 "pipe" (Some 1) 200 100
+let i_fly_pipe_collision_1 = Game.set_pwr_active fly_pipe_collision_1 true 
+                             |> Game.set_powerup "invincible" 0 0
+let fly_pipe_collision_top_1 = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 1) 200 100
+let i_fly_pipe_collision_top_1 = 
+  Game.set_pwr_active fly_pipe_collision_top_1 true 
+  |> Game.set_powerup "invincible" 0 0
+let fly_pipe_nocollision_1 = 
+  Game.create (200., 150.) 10. 7 "pipe" (Some 1) 400 100
+let i_fly_pipe_nocollision_1 = Game.set_pwr_active fly_pipe_nocollision_1 true 
+                               |> Game.set_powerup "invincible" 0 0
+let fly_pipe_nocollision_top_1 = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 1) 400 100
+let i_fly_pipe_nocollision_top_1 = 
+  Game.set_pwr_active fly_pipe_nocollision_top_1 true 
+  |> Game.set_powerup "invincible" 0 0
+let fly_pipe_no_collision_inbetween_1 =
+  Game.create (200., 300.) 10. 7 "pipe" (Some 1) 200 10
+let i_fly_pipe_no_collision_inbetween_1 = 
+  Game.set_pwr_active fly_pipe_no_collision_inbetween_1 true 
+  |> Game.set_powerup "invincible" 0 0
+
+let fly_pipe_collision_0 = 
+  Game.create (200., 150.) 10. 7 "pipe" (Some 0) 200 100
+let i_fly_pipe_collision_0 = Game.set_pwr_active fly_pipe_collision_0 true 
+                             |> Game.set_powerup "invincible" 0 0
+let fly_pipe_collision_top_0 = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 0) 200 100
+let i_fly_pipe_collision_top_0 = 
+  Game.set_pwr_active fly_pipe_collision_top_0 true 
+  |> Game.set_powerup "invincible" 0 0  
+let fly_pipe_nocollision_0 = 
+  Game.create (200., 150.) 10. 7 "pipe" (Some 0) 400 100
+let i_fly_pipe_nocollision_0 = Game.set_pwr_active fly_pipe_nocollision_0 true 
+                               |> Game.set_powerup "invincible" 0 0
+let fly_pipe_nocollision_top_0 = 
+  Game.create (200., 590.) 10. 7 "pipe" (Some 0) 400 100
+let i_fly_pipe_nocollision_top_0 = 
+  Game.set_pwr_active fly_pipe_nocollision_top_0 true 
+  |> Game.set_powerup "invincible" 0 0
+let fly_pipe_no_collision_inbetween_0 =
+  Game.create (200., 300.) 10. 7 "pipe" (Some 0) 200 100
+let i_fly_pipe_no_collision_inbetween_0 = 
+  Game.set_pwr_active fly_pipe_no_collision_inbetween_0 true 
+  |> Game.set_powerup "invincible" 0 0
 
 let run_can_jump = run_player_alive
 let run_no_jump = Game.set_can_jump run_can_jump false
 let run_above_ground = Game.create (200., 300.) 0. 5 "cactus" (Some 1) 400 100
 let run_no_vel = Game.set_can_jump run_above_ground false
 let cactus_offs = Game.create (200., 100.) 0. 5 "cactus" (Some 1) (-75) 100
+let run_slow = Game.set_pwr_active run_can_jump true 
+               |> Game.set_powerup "slow" 100 100
+let run_slow_newcac = Game.set_pwr_active cactus_offs true 
+                      |> Game.set_powerup "slow" 100 100
+let run_collides = Game.create (200., 100.) 10. 7 "cactus" (Some 1) 175 100
+
+let pipe_test_player = Game.create (200.,100.) 0. 5 "pipe" (Some 0) (-75) 100
+let cactus_test_player = Game.create (200.,100.) 0. 5 "pipe" (Some 1) (-75) 100
 
 let game_tests = [
   jump_test "velocity after jumping in fly-state" fly_can_jump "go" (225.5);
@@ -162,9 +245,92 @@ let game_tests = [
   move_obs_test "fly-state, no powerups, pipe on screen" fly_can_jump "go" 395;
   move_obs_test "fly-state, no powerups, pipe off-screen" pipe_offs "go" 600;
   move_obs_test 
-    "run-state, no powerups, cactus on screen" run_can_jump "run" 395;
+    "fly-state, time powerup active, pipe on screen" fly_slow "go" 399;
+  move_obs_test "fly-state, time powerup active, pipe off screen" 
+    fly_slow_newpipe "go" 600;
   move_obs_test 
-    "run-state, no powerups, cactus off screen" cactus_offs "run" 600;
+    "run-state, no powerups, cactus on screen" run_can_jump "run" 419;
+  move_obs_test 
+    "run-state, no powerups, cactus off screen" cactus_offs "run" 624;
+  move_obs_test "run-state, time powerup active, cactus on screen"
+    run_slow "run" 423;
+  move_obs_test "run-state, time powerup active, cactus off screen"
+    run_slow_newcac "run" 624;
+  pipe_type_change_test
+    "run-state, no powerups, of type pipe" pipe_test_player "run" 0;
+  pipe_type_change_test
+    "run-state, no powerups, of type cactus" cactus_test_player "run" 1;
+  pipe_type_change_test
+    "go-state, no powerups, of type pipe" pipe_test_player "go" 0;
+  pipe_type_change_test
+    "go-state, no powerups, of type cactus" cactus_test_player "go" 1;
+  pipe_type_change_test
+    "togo-state, no powerups, of type pipe" pipe_test_player "togo" 0;
+  pipe_type_change_test
+    "togo-state, no powerups, of type cactus" cactus_test_player "togo" 1;
+  pipe_type_change_test
+    "torun-state, no powerups, of type pipe" pipe_test_player "torun" 0;
+  pipe_type_change_test
+    "torun-state, no powerups, of type cactus" cactus_test_player "torun" 1;
+  pipe_type_change_test
+    "tobomb-state, no powerups, of type pipe" pipe_test_player "tobomb" 0;
+  pipe_type_change_test
+    "tobomb-state, no powerups, of type cactus" cactus_test_player "tobomb" 1;
+  pipe_type_change_test
+    "todeath-state, no powerups, of type pipe" pipe_test_player "death" 0;
+  pipe_type_change_test
+    "todeath-state, no powerups, of type cactus" cactus_test_player "death" 1;
+  pipe_type_change_test
+    "tobomb-state, no powerups, of type pipe" pipe_test_player "bomb" 0;
+  pipe_type_change_test
+    "tobomb-state, no powerups, of type cactus" cactus_test_player "bomb" 1;
+  collision_test "fly-state, player collides with pipe" 
+    fly_pipe_collision "go" true;
+  collision_test "fly-state, no collision with pipe"
+    fly_can_jump "go" false;
+  collision_test "run-state, player collides with cactus" 
+    run_collides "run" true;
+  collision_test "run-state, no collision with pipe" 
+    run_can_jump "run" false;
+  collision_test "fly state, player doesn't collide with pipe" 
+    fly_pipe_nocollision "go" false; 
+  collision_test "fly-state, player collides with top pipe" 
+    fly_pipe_collision_top "go" true;
+  collision_test "fly-state, player doesn't collides with top pipe" 
+    fly_pipe_nocollision_top "go" false;
+  collision_test "fly-state, player doesn't collides with top pipe" 
+    fly_pipe_no_collision_inbetween "go" false;
+  collision_test "fly-state, player collides with bottom pipe 1" 
+    fly_pipe_collision_1 "go" true;
+  collision_test "fly state, player doesn't collide with bottom pipe 1" 
+    fly_pipe_nocollision_1 "go" false; 
+  collision_test "fly-state, player collides with top pipe 1" 
+    fly_pipe_collision_top_1 "go" true;
+  collision_test "fly-state, player doesn't collides with top pipe 1" 
+    fly_pipe_nocollision_top_1 "go" false;
+  collision_test "fly-state, player does collides with inbetween pipe 1" 
+    fly_pipe_no_collision_inbetween_1 "go" true;
+  collision_test "fly-state, player collides with bottom pipe 0" 
+    fly_pipe_collision_0 "go" true;
+  collision_test "fly state, player doesn't collide with bottom pipe 0" 
+    fly_pipe_nocollision_0 "go" false; 
+  collision_test "fly-state, player collides with top pipe 0" 
+    fly_pipe_collision_top_0 "go" true;
+  collision_test "fly-state, player doesn't collides with top pipe 0" 
+    fly_pipe_nocollision_top_0 "go" false;
+  collision_test "fly-state, player does collides with inbetween pipe 0" 
+    fly_pipe_no_collision_inbetween_0 "go" true;
+  collision_test "fly-state, invin active, collides with side pipe set 2"
+    i_fly_pipe_collision "go" false;
+  collision_test "fly-state, invin active, collides with top pipe, set 2" 
+    i_fly_pipe_collision_top "go" false;
+  collision_test "fly-state, invin active, collides with top pipe, set 2" 
+    i_fly_pipe_nocollision "go" false;
+  move_powerup_test "fly-state, time powerup inactive" 
+    fly_slow_inactive "go" (95, 100);
+  move_powerup_test "fly-state, time powerup active" 
+    fly_slow "go" (0, 0);
+
 ]
 (******************************************************************************)
 let suite =
@@ -174,4 +340,11 @@ let suite =
   ]
 
 let _ = run_test_tt_main suite
+
+
+
+
+
+
+
 

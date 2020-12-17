@@ -36,6 +36,10 @@ val set_can_jump: t -> bool -> t
 
 val set_obs_type: t -> string -> t 
 
+val set_pwr_active: t -> bool -> t
+
+val set_powerup: string -> int -> int -> t -> t
+
 (** [update (a, b) t] updates the parameters of the player to reflect changes 
     in game state due to gravity, jumping, score, collisions, and pipes. *)
 val update: float -> t -> string -> t
