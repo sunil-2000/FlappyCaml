@@ -14,7 +14,7 @@ val update_fly: Game.t -> int -> t -> t
     pipes, camel and score objects on the screen *)
 
 (** [make_state] instantiates the state type with all the required parameters *)
-val make_state: int -> int -> int -> int -> int -> int  -> t
+val make_state: Game.t -> t
 
 val draw_update: t -> string -> unit 
 (* [update_run y score index t] updates t appropriately when the state is run *)

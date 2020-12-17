@@ -155,6 +155,9 @@ let get_pipe_type player =
 let get_bomber_x player = 
   player.bomb.bomber_x
 
+let get_bombs_list player = 
+  player.bomb.bombs
+
 let get_bomb_rec player = 
   player.bomb 
 (******************************************************************************)
@@ -177,6 +180,7 @@ let set_obs_x x player =
   | _ -> failwith"set_obs_x"
 
 let set_obs_type player name  =
+  Random.self_init ();
   match name, player.obstacle with
   | "cactus", (Pipe o | Cactus o)-> 
     let new_obs = 
@@ -187,6 +191,17 @@ let set_obs_type player name  =
       Pipe {obs_type = Some (Random.int 3); obs_x = o.obs_x; obs_y = o.obs_y} in  
     {player with obstacle = new_obs}
   | _ -> failwith "set_obs_type"
+
+let set_powerup name x y player = 
+  match name with 
+  | "slow" -> let pwrup = Slow {x = x; y = y} in 
+    {player with powerup = pwrup}
+  | "invincible" -> let pwrup = Invincible {x = x; y = y} in 
+    {player with powerup = pwrup}
+  | _ -> {player with powerup = None}
+
+let set_pwr_active player bool = 
+  {player with pwr_active = bool}
 (******************************************************************************)
 (*******************GAME MECHANICS FUNCTIONS***********************************)
 
@@ -208,6 +223,7 @@ let move_obs d player =
   | _ -> failwith "move_obs"
 
 let pipe_type_change player = 
+  Random.self_init ();
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
     if b = -75 then 
@@ -354,6 +370,7 @@ let collision_reset player =
 (* [generate_random bound1 bound2] returns a random int between bound1
    and bound2 *)
 let generate_random bound1 bound2 =
+  Random.self_init ();
   let diff = (max bound1 bound2) - (min bound1 bound2) in 
   Random.int diff + (min bound1 bound2)
 
@@ -371,6 +388,7 @@ let create_powerup pwr_name =
 (* [generate_powerup player] randomly generates a powerup object in the game.
    A powerup is not generated if one is already active. *)
 let generate_powerup player =  (* adding conditional on pwr_active *)
+  Random.self_init ();
   if player.powerup = None then 
     match Random.int 3 with 
     | 0 -> {player with powerup = None}
@@ -499,7 +517,7 @@ let rec make_true bomb_list player =
 
 
 let drop_bomb player = 
-  if (game_width - player.bomb.bomber_x) mod b_interval = 0 && player.bomb.bomber_x <> 0 && player.bomb.bomber_x > 0 then 
+  if (game_width - player.bomb.bomber_x) mod b_interval = 0 && player.bomb.bomber_x > 0 then 
     {player with bomb = {bombs = make_true player.bomb.bombs player; bomber_x = player.bomb.bomber_x }}
   else 
     {player with bomb = {bombs = dropping_bombs player.bomb.bombs; bomber_x = player.bomb.bomber_x}}
@@ -512,9 +530,9 @@ let bomb_collision player x1 y1 =
   let rect2x = x1 in 
   let rect2y = y1 in 
 
-  rect1x < rect2x + 39 && 
+  rect1x < rect2x + 30 && 
   rect1x + 50 > rect2x 
-  && rect1y < rect2y + 38 && 
+  && rect1y < rect2y + 30 && 
   rect1y + 50 > rect2y   
 
 let collision_ground player =
@@ -624,7 +642,7 @@ and update_togo t_delta player =
 (* [update_tobomb t_delta player] updates the player when state = tobomb *)
 and update_tobomb t_delta player = 
   set_pwr_none player 
-  |> gravity_fly t_delta 
+  |> gravity_zero t_delta 
   |> move_obs normal_obs_move
 
 (* [update_death t_delta player] updates the player when state = death *)

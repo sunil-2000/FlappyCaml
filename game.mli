@@ -9,6 +9,7 @@ type bomb_rec = {
   bomber_x : int;
 } 
 
+val get_bombs_list: t -> bomb list
 
 val get_bomb_rec: t -> bomb_rec
 

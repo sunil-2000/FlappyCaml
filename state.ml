@@ -21,6 +21,7 @@ type t =
   | Sprite1 (* right now 1 represents clarkson, 2 = gries, 3 = camel *)
   | Sprite2 
   | Sprite3 
+  | Dev
   (* add more states for game logic, then just pattern match against in 
   *)
 
@@ -68,12 +69,18 @@ let check_key_click () =
   if e.keypressed then true else false 
 
 let switch state player =
-  match state with 
-  | Run -> ToGo
-  | Go -> ToBomb
-  | Bomb -> ToRun
+  Random.self_init (); 
+  match state, Random.int 3 with 
+  | Go, 0 -> Go
+  | Run, 0 -> Run
+  | Bomb, 0 -> ToGo
+  | Go, 1 -> ToRun
+  | Run, 1 -> ToGo
+  | Bomb, 1 -> ToGo
+  | Go, 2 -> ToBomb
+  | Run, 2 -> ToGo
+  | Bomb, 2 -> ToGo
   | _ -> failwith "switch"
-
 
 (* return true if state should transition to instruction screen 
    xl = left boundary, xr = right boundary, yb = bottom boundary, 
@@ -89,11 +96,14 @@ let check_to_transition xl xr yb yt =
 
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
-  match Graphics.key_pressed (), check_to_transition 255 355 195 220, check_to_transition 255 355 145 170 with 
-  | true, _, _ -> Go 
-  | _, true, _ -> Instructions
-  | _, _, true -> Sprites
-  | _, _, _ -> state  
+  match Graphics.key_pressed (), check_to_transition 255 355 195 220, 
+        check_to_transition 255 355 145 170, check_to_transition 255 355 95 120
+  with 
+  | true, _, _, _ -> Go 
+  | _, true, _, _ -> Instructions
+  | _, _, true, _ -> Sprites
+  | _, _, _, true -> Dev
+  | _, _, _, _ -> state  
 
 (* transitions state appropriately if state = GameOver *)
 let check_state_over state = 
@@ -140,7 +150,14 @@ let check_run state player =
   else 
     state
 
+let flush_kp () = 
+  while Graphics.key_pressed () do
+    let c = Graphics.read_key ()
+    in ()
+  done
+
 let check_transition state player =
+  flush_kp ();
   old_score := Game.get_score player;
   match state with
   | ToGo ->
@@ -154,7 +171,7 @@ let check_transition state player =
     else
       state
   | ToBomb -> 
-    if Game.get_obs_x player < -71 then 
+    if Game.get_obs_x player < 600 then 
       Bomb
     else 
       state
@@ -174,6 +191,11 @@ let check_bomb state player =
   else 
     state 
 
+let check_dev state player = 
+  match check_to_transition 450 550 50 100 with 
+  | true -> Start
+  | false -> state
+
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match state with 
@@ -189,6 +211,7 @@ let check state player =
   | ToRun -> check_transition state player 
   | ToGo -> check_transition state player
   | ToBomb -> check_transition state player
+  | Dev -> check_dev state player
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
@@ -208,3 +231,4 @@ let string_of_state t =
   | Sprite1 -> "sprite1"
   | Sprite2 -> "sprite2"
   | Sprite3 -> "sprite3"
+  | Dev -> "dev"

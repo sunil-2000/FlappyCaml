@@ -3,8 +3,9 @@ open Game
 open State
 
 (* gui, player, state initial values *)
-let gui_init = Gui.make_state  200 200 400 0 0 0 
-let player_init = Game.create (200., 200.) 5. 0 "pipe" (Some (Random.int 3)) 600 0
+
+let player_init = Game.create (200., 350.) 5. 0 "pipe" (Some (Random.int 3)) 600 0
+let gui_init = Gui.make_state player_init
 let state_init = State.make_state ()
 
 (* [old_t] stores the time of the previous call to main, which 
@@ -54,13 +55,13 @@ let rec main (gui:Gui.t) player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
-    print_int (Game.get_obs_x player); print_string " ";
+    print_string (State.string_of_state curr_state);    
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and
        pattern match against that, haven't made mli yet which is why we can access
        type of state directly *)
-    (**************************************)
+    (** ************************************)
     match state' with 
     | "start" -> start_game gui player curr_state 
     | "go" -> fly gui player curr_state delta_t (!frame_count)
@@ -113,7 +114,7 @@ and end_game gui player state =
     end_game gui player state
   else 
     let highscore = Game.get_highscore player in 
-    let new_player = Game.create (200., 200.) 5. highscore "pipe" 
+    let new_player = Game.create (200., 350.) 5. highscore "pipe" 
         (Some (Random.int 3)) 600 0 in 
     start_game gui_init new_player state_init
 
@@ -155,7 +156,7 @@ and select_char gui player state =
     | _ -> failwith "array not implemented <- [select_char]" in 
   let gui' = Gui.set_sprite gui array_no in 
   let state' = make_state () in 
-  main gui' player state' 
+  main gui' player state'
 
 and transition_aux gui player state delta_t game_updatefn obs_name =
   let new_player = game_updatefn delta_t player (string_of_state state) in 
