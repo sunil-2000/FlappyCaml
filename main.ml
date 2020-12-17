@@ -3,8 +3,9 @@ open Game
 open State
 
 (* gui, player, state initial values *)
-let gui_init = Gui.make_state  200 200 400 0 0 0 
+
 let player_init = Game.create (200., 200.) 5. 0 "pipe" (Some (Random.int 3)) 600 0
+let gui_init = Gui.make_state player_init 0 0 
 let state_init = State.make_state ()
 
 (* [old_t] stores the time of the previous call to main, which 
@@ -54,7 +55,9 @@ let rec main (gui:Gui.t) player state =
     old_t := time_instant;
     old_t_fps := time_instant;
     frame_count := (!frame_count) + 1;
-    print_int (Game.get_obs_x player); print_string " ";
+    print_string (State.string_of_state curr_state);
+    print_int (Game.get_pipe_type player);
+    (* print_string (Game.string_of_powerup player); *)
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and

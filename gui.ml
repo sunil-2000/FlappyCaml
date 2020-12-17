@@ -7,37 +7,42 @@ let open_screen = Graphics.open_graph " 600x700";
   (* right now, 0 maps to mushroom, 1 maps to slow powerup sprite <- for draw *)
 type position_rec = {x : int; y: int; pre_x : int; pre_y : int; index : int; isactive : bool}
 
-type img_rec = {img : Graphics.image; x: int; y: int; pre_x : int; pre_y : int}
-type gui_bomb = {curr: Game.bomb_rec; past : Game.bomb_rec}
+type img_rec = {img : Graphics.image array; x: int; y: int; pre_x : int; pre_y : int}
+(* type gui_bomb = {curr: Game.bomb_rec; past : Game.bomb_rec} *)
 
+type pipe_rec = {img : ((Graphics.image * (int))* (Graphics.image * (int))) array; 
+                 x: int; y: int; pre_x : int; pre_y : int}
+type cactus_rec = {img : Graphics.image; x: int; y: int; pre_x : int; pre_y : int}
 let pwr_width = 35
 let pwr_height = 34 
 
 type t = {
   canvas_width : int; 
   canvas_height : int;
-  camel_x : int;
-  camel_y : int;
-  pipe_x : int;
+  pipes: pipe_rec;
+  cactus : cactus_rec ;
+  player : Game.t;
   camel : img_rec ;
-  camel_image : Graphics.image;
   camel_index : int; 
-  camel_image_array: Graphics.image array;
-  bottom_pipe_image: Graphics.image;
-  top_pipe_image: Graphics.image;
-  bottom_pipe_high_image : Graphics.image;
-  top_pipe_high_image : Graphics.image;
-  bottom_pipe_low_image : Graphics.image;
-  top_pipe_low_image : Graphics.image;
-  cactus_image : Graphics.image;
+  camel_home : Graphics.image;
   powerup_image : Graphics.image;
-  pipe_num : int;
   ground_image: Graphics.image;
   pipe_type : int;
   player_score : int;
   highscore : int; 
   pwr_positions : position_rec;
-  bomb : gui_bomb;
+  (* bomb : gui_bomb; *)
+}
+
+type new_t = {
+  camel_ : img_rec;
+  camel_anim_index: int;
+  pipes_ : pipe_rec; 
+  cactus_ : img_rec; 
+  powerup_: position_rec;
+  score_ : int;
+  highscore_: int; 
+  ground: Graphics.image; 
 }
 
 let array_of_image img =
@@ -131,55 +136,53 @@ let sprites = [|clarkson; gries; camel; death|]
 
 let powerup_array = [|mushroom; death|] (* change sprites for diff powerups *)
 
-let make_state x y pipe_x pipe_type score highscore = {
+let pipe_array = [|((reg_top_pipe, 500), (reg_bottom_pipe, 100)); 
+                   ((high_top_pipe, 575), (high_bottom_pipe, 100)); 
+                   ((low_top_pipe, 400), (low_bottom_pipe, 100))|]
+
+(* initial gui drawing, and values initalized *)
+let make_state player score highscore = {
   canvas_width = 600; 
   canvas_height = 700;
-  camel_x = x;
-  camel_y = y;
-  pipe_x = pipe_x;
-  camel = {img = camel; x = 200; y = 300; pre_x = 200; pre_y = 300};
-  camel_image = camel;
+  player = player;
+  cactus = {img = cactus; x = 0; y = 100; pre_x = 0; pre_y = 100 };
+  pipes = {img = pipe_array; x = 0; y = 0; pre_x = 0; pre_y = 0};
+  camel = {img = camel_array; x = 200; y = 300; pre_x = 200; pre_y = 300};
   camel_index = 0;
-  camel_image_array = camel_array;
-  bottom_pipe_image = reg_bottom_pipe;
-  top_pipe_image = reg_top_pipe;
-  bottom_pipe_high_image = high_bottom_pipe;
-  top_pipe_high_image = high_top_pipe;
-  bottom_pipe_low_image = low_bottom_pipe;
-  top_pipe_low_image = low_top_pipe; 
-  cactus_image = cactus; 
+  camel_home = camel;
   powerup_image = mushroom;
-  pipe_num = 0;
+  pipe_type = 0;
   ground_image = get_img "assets/new_ground.ppm";
-  pipe_type = pipe_type;
   player_score = score;
   highscore = highscore;
   pwr_positions = {x = 0; y = 0; pre_x = 0; pre_y = 0; index = -1; isactive = false};
-  bomb = {curr = {bombs = []; bomber_x = 600}; past = {bombs = []; bomber_x = 600}};
+  (* bomb = {curr = {bombs = []; bomber_x = 600}; past = {bombs = []; bomber_x = 600}}; *)
 }
 
 let set_sprite t image_array_no = 
-  {t with 
-   camel_image_array = sprite_arrays.(image_array_no - 1);
-   camel_image =  sprites.(image_array_no - 1)}
+  {t with camel_home = sprites.(image_array_no -1) }
 
 let rec animate_player frame t =  
   if frame mod 5 = 0 then 
-    (t.camel_index + 1) mod Array.length t.camel_image_array
+    (t.camel_index + 1) mod Array.length t.camel.img
   else t.camel_index
 
-(* [update_fly y score index pipe pipe_type t] updates t appropriately when
+(* update_fly y score index pipe pipe_type t] updates t appropriately when 
    the state is fly (go) , if draw = -1, then powerup = None *)
 let update_fly player frame t  =
   let active = Game.get_pwr_active player in 
   {t with 
-   camel = {img = camel; x = Game.get_player_x player; y = Game.get_player_y player;
-            pre_x = t.camel.x; pre_y = t.camel.y };
-
+   camel = {img = camel_array; 
+            x = Game.get_player_x player; 
+            y = Game.get_player_y player;
+            pre_x = t.camel.x; 
+            pre_y = t.camel.y };
    player_score = Game.get_score player; 
    camel_index = animate_player frame t; 
-   pipe_x = Game.get_obs_x player; 
-   pipe_type = Game.get_pipe_type player; 
+   pipes = {t.pipes with x = Game.get_obs_x player; 
+                         pre_x = t.pipes.x;
+                         pre_y = t.pipes.y};
+   pipe_type = Game.get_pipe_type player;
    highscore = Game.get_highscore player;
    pwr_positions = {x = fst (Game.get_pwr_pos player); 
                     y = snd (Game.get_pwr_pos player); 
@@ -191,26 +194,37 @@ let update_fly player frame t  =
 
 let update_run player frame t =
   {t with 
-   camel = {img = camel; x = Game.get_player_x player; y = Game.get_player_y player;
+   camel = {img = camel_array; x = Game.get_player_x player; y = Game.get_player_y player;
+            pre_x = t.camel.x; pre_y = t.camel.y };
+   player_score = Game.get_score player; 
+   cactus = {t.cactus with x = Game.get_obs_x player};
+   camel_index = animate_player frame t;
+   highscore = Game.get_highscore player}
+
+let update_torun player frame t = 
+  {t with 
+   camel = {img = camel_array; 
+            x = Game.get_player_x player; 
+            y = Game.get_player_y player;
+            pre_x = t.camel.x; pre_y = t.camel.y };
+   player_score = Game.get_score player; 
+   camel_index = animate_player frame t;
+   highscore = Game.get_highscore player} 
+
+(* let update_death t y = 
+   {t with camel = y} *)
+(* 
+let update_bomb player frame t =
+  {t with 
+   camel = {img = camel; x = Game.get_player_x player; y = Game.get_player_y player ;
             pre_x = t.camel.x; pre_y = t.camel.y };
    player_score = Game.get_score player; 
    camel_index = animate_player frame t;
    pipe_x = Game.get_obs_x player; 
    pipe_type = Game.get_pipe_type player; 
-   highscore = Game.get_highscore player}
-
-let update_torun player frame t = 
-  {t with 
-   camel = {img = camel; x = Game.get_player_x player; y = Game.get_player_y player;
-            pre_x = t.camel.x; pre_y = t.camel.y };
-   player_score = Game.get_score player; 
-   camel_index = animate_player frame t;
-   pipe_x = -100; 
-   pipe_type = 1;
-   highscore = Game.get_highscore player}
-
-let update_death t y = 
-  {t with camel_y = y}
+   highscore = Game.get_highscore player;
+   bomb = {curr = Game.get_bomb_rec player; past = t.bomb.curr}
+  } *)
 
 let update_bomb player frame t =
   {t with 
@@ -228,18 +242,12 @@ let draw_camel t =
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
   fill_rect t.camel.pre_x t.camel.pre_y 50 50; 
-  draw_image (t.camel_image_array.(t.camel_index)) t.camel.x t.camel.y
+  draw_image (t.camel.img.(t.camel_index)) t.camel.x t.camel.y
 
 let draw_death_img t =
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
-  if t.pipe_x < 250 && t.pipe_x > 100 then () else fill_rect 200 100 50 600;
-  draw_image death t.camel_x t.camel_y
-
-let draw_camel_torun t =
-  let light_blue = rgb 76 186 196 in
-  set_color (light_blue);
-  draw_image (t.camel_image_array.(t.camel_index)) t.camel_x t.camel_y
+  draw_image death t.camel.x t.camel.y
 
 let draw_ground init = 
   draw_image init.ground_image 0 0;
@@ -252,37 +260,23 @@ let draw_back init =
   set_color (light_blue);
   fill_rect 0 0 init.canvas_width init.canvas_height
 
-let draw_pipe_helper_bottom init t = 
-  match t with 
-  | 0 -> draw_image init.bottom_pipe_image init.pipe_x 100
-  | 1 -> draw_image init.bottom_pipe_high_image init.pipe_x 100
-  | _ -> draw_image init.bottom_pipe_low_image init.pipe_x 100
+let draw_pipes init  = 
+  (* erase previous position; draw current position *)
+  (* set rectangle to pipe dimensions *)
 
-let draw_pipe_helper_top init t =
-  match t with 
-  | 0 -> draw_image init.top_pipe_image init.pipe_x 500
-  | 1 -> draw_image init.top_pipe_high_image init.pipe_x 575
-  | _ -> draw_image init.top_pipe_low_image init.pipe_x 400
-
-let draw_pipes init =
-  let light_blue = rgb 76 186 196 in
-  set_color (light_blue);
-  fill_rect 250 100 400 600;
-  fill_rect 0 100 250 600;
-  if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
-  draw_pipe_helper_bottom init init.pipe_type;
-  draw_pipe_helper_top init init.pipe_type
-
-let draw_cactus_helper init = 
-  draw_image init.cactus_image init.pipe_x 100
+  match init.pipes.img.(init.pipe_type) with 
+  | ((top , y), (bottom, y')) -> 
+    let light_blue = rgb 76 186 196 in
+    set_color (light_blue);
+    fill_rect init.pipes.pre_x 100 150 600;
+    draw_image bottom init.pipes.x y';
+    draw_image top init.pipes.x y
 
 let draw_cactus init = 
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
-  fill_rect 250 100 400 600;
-  fill_rect 0 100 250 600;
-  if init.pipe_x < 250 && init.pipe_x > 150 then fill_rect 200 100 50 600 else ();
-  draw_cactus_helper init
+  fill_rect init.cactus.pre_x init.cactus.pre_y 100 117; (* hardcoded width /height *)
+  draw_image init.cactus.img init.cactus.x init.cactus.y 
 
 let draw_score init =
   let score_string = string_of_int init.player_score in
@@ -311,13 +305,12 @@ let draw_powerups init =
   else 
     ()
 
-let draw_bomber init = 
+(* let draw_bomber init = 
+   draw_image bomber init.bomb.curr.bomber_x 500 
 
-  draw_image bomber init.bomb.curr.bomber_x 500 
-
-let rec draw_bomb_ob_aux lst =  
-  match lst with 
-  | h::t ->
+   let rec draw_bomb_ob_aux lst =  
+   match lst with 
+   | h::t ->
     begin 
       match h with 
       | None -> (); draw_bomb_ob_aux t 
@@ -328,11 +321,11 @@ let rec draw_bomb_ob_aux lst =
           | false ->  draw_bomb_ob_aux t 
         end 
     end 
-  | [] -> ()
+   | [] -> ()
 
-let rec draw_erase_bombs lst = 
-  match lst with 
-  | h::t ->
+   let rec draw_erase_bombs lst = 
+   match lst with 
+   | h::t ->
     begin 
       match h with 
       | None -> (); draw_erase_bombs t 
@@ -342,15 +335,16 @@ let rec draw_erase_bombs lst =
           | true -> 
             let light_blue = rgb 76 186 196 in
             set_color (light_blue);
-            fill_rect x y 39 39; draw_erase_bombs t 
+            fill_rect x y 35 35; 
+            draw_erase_bombs t 
           | false ->  draw_erase_bombs t 
         end 
     end 
-  | [] -> ()
+   | [] -> ()
 
-let draw_bomb_ob init = 
-  draw_erase_bombs init.bomb.past.bombs;
-  draw_bomb_ob_aux init.bomb.curr.bombs 
+   let draw_bomb_ob init = 
+   draw_erase_bombs init.bomb.past.bombs;
+   draw_bomb_ob_aux init.bomb.curr.bombs  *)
 
 let draw_fly init = 
   draw_ground init;
@@ -366,19 +360,35 @@ let draw_run init =
   draw_powerups init;
   draw_score init
 
-let draw_bomb init = 
-  draw_ground init;
-  draw_camel init;
-  draw_bomb_ob init;
-  draw_bomber init;
-  draw_score init
+(* let draw_bomb init = 
+   draw_ground init;
+   draw_camel init;
+   draw_bomb_ob init;
+   draw_bomber init;
+   draw_score init *)
 
 let draw_death init =
   draw_death_img init
 
 (* let draw_pause =
    failwith "pause" *)
-let draw_gameover_ascii init = 
+let pipe_array = [|((reg_top_pipe, 500), (reg_bottom_pipe, 100)); 
+                   ((high_top_pipe, 575), (high_bottom_pipe, 100)); 
+                   ((low_top_pipe, 400), (low_bottom_pipe, 100))|]
+let draw_gameover init = 
+  Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+
+  let low_bott = pipe_array.(2) |> snd |> fst in 
+  let high_top = pipe_array.(1) |> fst |> fst in 
+  let low_top = pipe_array.(1) |> snd |> fst in 
+  draw_image low_bott 0 100;
+  draw_image high_top 0 575;
+  draw_image low_bott 530 100;
+  draw_image low_top 530 400;
+  draw_ground init;
   set_color black;
   moveto 80 500;
   draw_string " _______  _______  __   __  _______    _______  __   __  _______  ______   ";
@@ -393,19 +403,7 @@ let draw_gameover_ascii init =
   moveto 80 450;
   draw_string "|   |_| ||   _   || ||_|| ||   |___   |       | |     | |   |___ |   |  | |";
   moveto 80 440;
-  draw_string "|_______||__| |__||_|   |_||_______|  |_______|  |___|  |_______||___|  |_|"
-
-let draw_gameover init = 
-  Graphics.clear_graph ();
-  let light_blue = rgb 76 186 196 in
-  set_color (light_blue);
-  fill_rect 0 0 600 700;
-  draw_image init.bottom_pipe_high_image 0 100;
-  draw_image init.top_pipe_high_image 0 575;
-  draw_image init.bottom_pipe_low_image 530 100;
-  draw_image init.top_pipe_low_image 530 400;
-  draw_ground init;
-  draw_gameover_ascii init; 
+  draw_string "|_______||__| |__||_|   |_||_______|  |_______|  |___|  |_______||___|  |_|";
   moveto 260 275;
   draw_string "High Score: ";
   draw_string (string_of_int init.highscore); 
@@ -461,15 +459,19 @@ let draw_start init =
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
   fill_rect 0 0 600 700;
-  draw_image init.bottom_pipe_high_image 0 100;
-  draw_image init.top_pipe_high_image 0 575;
-  draw_image init.bottom_pipe_low_image 530 100;
-  draw_image init.top_pipe_low_image 530 400;
+  let low_bott = pipe_array.(2) |> snd |> fst in 
+  let high_top = pipe_array.(1) |> fst |> fst in 
+  let high_low = pipe_array.(1) |> snd |> fst in 
+  let low_top = pipe_array.(1) |> snd |> fst in 
+  draw_image high_low 0 100;
+  draw_image high_top 0 575;
+  draw_image low_bott 530 100;
+  draw_image low_top 530 400;
   draw_ground init;
   set_color black;
   set_text_size 10;
   draw_flappycaml 120 500;
-  draw_image init.camel_image 280 300;
+  draw_image init.camel.img.(0) 280 300;
   moveto 240 400;
   set_color red;
   draw_string "Press any key to start";
@@ -481,7 +483,7 @@ let draw_start init =
   moveto 283 147;
   draw_string "Sprites"
 
-let draw_instructions init = 
+let draw_instructions init =  
   Graphics.clear_graph ();
   let light_blue = rgb 76 186 196 in
   set_color (light_blue);
@@ -515,7 +517,10 @@ let draw_sprites init =
   fill_rect 450 50 100 50;
   set_color white;
   moveto 465 70;
+
   draw_string "start screen"
+
+
 
 (* [draw_update init state] is reponsible for drawing the correct frame, which
    is dependent upon [state] that is represented by a string *)
@@ -523,7 +528,7 @@ let draw_update init state =
   match state with 
   | "go" -> draw_fly init
   | "run" -> draw_run init 
-  | "bomb" -> draw_bomb init
+  (* | "bomb" -> draw_bomb init *)
   | "death" -> draw_death init 
   | "gameover" -> draw_gameover init 
   | "sprites" -> draw_sprites init 

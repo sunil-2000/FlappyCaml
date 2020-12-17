@@ -87,3 +87,5 @@ val get_pwr_pos : t -> int * int
 val get_pwr_active : t -> bool 
 
 val get_player_x : t -> int 
+
+val get_player_y : t -> int 
