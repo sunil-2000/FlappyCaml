@@ -187,17 +187,6 @@ let set_obs_type player name  =
       Pipe {obs_type = Some (Random.int 3); obs_x = o.obs_x; obs_y = o.obs_y} in  
     {player with obstacle = new_obs}
   | _ -> failwith "set_obs_type"
-
-let set_powerup name x y player = 
-  match name with 
-  | "slow" -> let pwrup = Slow {x = x; y = y} in 
-    {player with powerup = pwrup}
-  | "invincible" -> let pwrup = Invincible {x = x; y = y} in 
-    {player with powerup = pwrup}
-  | _ -> {player with powerup = None}
-
-let set_pwr_active player bool = 
-  {player with pwr_active = bool}
 (******************************************************************************)
 (*******************GAME MECHANICS FUNCTIONS***********************************)
 
