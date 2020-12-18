@@ -87,6 +87,9 @@ let bomb = get_img "assets/bomb.ppm"
 
 let bomber = get_img "assets/bomber.ppm"
 
+let turtle = get_img "assets/turtle.pbm"
+
+let star = get_img "assets/star.pbm"
 (* [make_player_array lst] constructs image array of player, used for
    animations *)
 let make_player_array array = 
@@ -111,7 +114,7 @@ let sprite_arrays = [|clarkson_array; gries_array; camel_array; death_array|]
 
 let sprites = [|clarkson; gries; camel; death|]
 
-let powerup_array = [|mushroom; death|] (* change sprites for diff powerups *)
+let powerup_array = [|star; turtle|] 
 
 let pipe_array = [|((reg_top_pipe, 500), (reg_bottom_pipe, 100)); 
                    ((high_top_pipe, 575), (high_bottom_pipe, 100)); 
@@ -213,7 +216,6 @@ let draw_score init =
   moveto 520 620;
   set_text_size 500;
   set_color black;
-  (*set_font "-*-Helvetica-medium-r-normal--50-*-*-*-*-*-iso8859-1";*)
   draw_string score_string;
   set_color white
 
@@ -356,10 +358,29 @@ let draw_camel_ascii init x y =
   draw_string "       '--' '--'' '--'                                 "  
 
 
+
+
+
 (* Camel ascii art citation:   "------------------------------------------------
    Thank you for visiting https://asciiart.website/
    This ASCII pic can be found at
    https://asciiart.website/index.php?art=animals/camels " *)
+
+let draw_developers_ascii x y = 
+  moveto x y;
+  draw_string " ______   _______  __   __  _______  ___      _______  _______  _______  ______    _______ ";
+  moveto x (y - 10);
+  draw_string "|      | |       ||  | |  ||       ||   |    |       ||       ||       ||    _ |  |       |";   
+  moveto x (y - 20);
+  draw_string "|  _    ||    ___||  |_|  ||    ___||   |    |   _   ||    _  ||    ___||   | ||  |  _____|"; 
+  moveto x (y - 30);
+  draw_string "| | |   ||   |___ |       ||   |___ |   |    |  | |  ||   |_| ||   |___ |   |_||_ | |_____ ";
+  moveto x (y - 40);
+  draw_string "| |_|   ||    ___||       ||    ___||   |___ |  |_|  ||    ___||    ___||    __  ||_____  |";
+  moveto x (y - 50);
+  draw_string "|       ||   |___  |     | |   |___ |       ||       ||   |    |   |___ |   |  | | _____| |";
+  moveto x (y - 60);
+  draw_string "|______| |_______|  |___|  |_______||_______||_______||___|    |_______||___|  |_||_______|"
 
 let draw_start init =
   Graphics.clear_graph ();
@@ -378,16 +399,22 @@ let draw_start init =
   moveto 240 400;
   set_color red;
   draw_string "Press any key to start";
+
   fill_rect 255 195 100 25; (* rectangle box that can be clicked *)
   fill_rect 255 140 100 25; 
-  fill_rect 255 90 100 25; 
-  moveto 270 202;
+  fill_rect 255 245 100 25;
+  fill_rect 525 0 75 50;  
   set_color white;
+  moveto 293 252;
+  draw_string "Devs";
+  moveto 270 202;
   draw_string "Instructions";
   moveto 283 147;
   draw_string "Sprites";
-  moveto 283 92;
-  draw_string "Dev"
+  moveto 540 10;
+  draw_string "QUIT";
+  set_font "fixed"
+
 
 
 let draw_instructions init = 
@@ -426,6 +453,22 @@ let draw_sprites init =
   moveto 465 70;
   draw_string "start screen"
 
+let draw_developers init = 
+  Graphics.clear_graph ();
+  let light_blue = rgb 76 186 196 in
+  set_color (light_blue);
+  fill_rect 0 0 600 700;
+  set_color black;
+  moveto 150 500;
+  draw_developers_ascii 120 500;
+  moveto 150 300;
+  draw_string "Made with <3 by:";
+  set_color red; 
+  fill_rect 450 50 100 50;
+  moveto 465 70;
+  set_color white;
+  draw_string "start screen"
+
 (* [draw_update init state] is reponsible for drawing the correct frame, which
    is dependent upon [state] that is represented by a string *)
 let draw_update init state = 
@@ -436,7 +479,8 @@ let draw_update init state =
   | "death" -> draw_death init 
   | "gameover" -> draw_gameover init 
   | "sprites" -> draw_sprites init 
-  | "instructions" -> draw_instructions init 
+  | "instructions" -> draw_instructions init
+  | "dev" -> draw_developers init 
   | "start" -> draw_start init 
   | "torun" -> draw_fly init 
   | "togo" -> draw_fly init 
@@ -444,24 +488,4 @@ let draw_update init state =
   | _ -> failwith "draw for this state not impl [draw_update]"
 
 
-let draw_developers_ascii () = 
 
-  ______               _                           
-|  _  \             | |                          
-| | | |_____   _____| | ___  _ __   ___ _ __ ___ 
-| | | / _ \ \ / / _ \ |/ _ \| '_ \ / _ \ '__/ __|
-| |/ /  __/\ V /  __/ | (_) | |_) |  __/ |  \__ \
-                                  |___/ \___| \_/ \___|_|\___/| .__/ \___|_|  |___/
-                                                                               | |                  
-                                                                               |_|                  
-
-                                  let draw_dev init = 
-                                    Graphics.clear_graph ();
-                                    let light_blue = rgb 76 186 196 in
-                                    set_color (light_blue);
-                                    fill_rect 0 0 600 700;
-                                    move_to 150 200;
-                                    draw_developers_ascii ();
-                                    set_color black;
-                                    moveto 150 400;
-                                    draw_string "Made with <3 by:" 

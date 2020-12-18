@@ -10,87 +10,87 @@ ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITer
 # Target: gui.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:gui.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.ml > gui.ml.depends
 + ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.ml > gui.ml.depends
-File "gui.ml", line 330, characters 35-37:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 35-37:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 330, characters 41-43:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 41-43:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                                ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 330, characters 70-72:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 70-72:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                                                             ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 25-27:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 25-27:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 43-45:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 43-45:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                  ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 51-53:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 51-53:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 56-58:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 56-58:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                               ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 344, characters 35-37:
-344 |   draw_string "          /--'/--\  \-'||        .----.    .'     '.   ";
+File "gui.ml", line 346, characters 35-37:
+346 |   draw_string "          /--'/--\  \-'||   
                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 346, characters 33-35:
-346 |   draw_string "         /        \_/ / |      .'      '..'         '-.";
+File "gui.ml", line 348, characters 33-35:
+348 |   draw_string "         /        \_/ / |      .'      '..'         '-.";
                                        ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 348, characters 27-29:
-348 |   draw_string "       .'\  \__\  __.'.'     .'          -._           ";
+File "gui.ml", line 350, characters 27-29:
+350 |   draw_string "       .'\  \__\  __.'.'     .'          -._           ";
                                  ^^
 Warning 14: illegal backslash escape in string.
 # Target: gui.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmo gui.ml
 + ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmo gui.ml
-File "gui.ml", line 330, characters 35-37:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 35-37:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 330, characters 41-43:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 41-43:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                                ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 330, characters 70-72:
-330 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+File "gui.ml", line 332, characters 70-72:
+332 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
                                                                             ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 25-27:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 25-27:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 43-45:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 43-45:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                  ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 51-53:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 51-53:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 334, characters 56-58:
-334 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+File "gui.ml", line 336, characters 56-58:
+336 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
                                                               ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 344, characters 35-37:
-344 |   draw_string "          /--'/--\  \-'||        .----.    .'     '.   ";
+File "gui.ml", line 346, characters 35-37:
+346 |   draw_string "          /--'/--\  \-'||   
                                          ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 346, characters 33-35:
-346 |   draw_string "         /        \_/ / |      .'      '..'         '-.";
+File "gui.ml", line 348, characters 33-35:
+348 |   draw_string "         /        \_/ / |      .'      '..'         '-.";
                                        ^^
 Warning 14: illegal backslash escape in string.
-File "gui.ml", line 348, characters 27-29:
-348 |   draw_string "       .'\  \__\  __.'.'     .'          -._           ";
+File "gui.ml", line 350, characters 27-29:
+350 |   draw_string "       .'\  \__\  __.'.'     .'          -._           ";
                                  ^^
 Warning 14: illegal backslash escape in string.
 # Target: main.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
@@ -110,8 +110,8 @@ ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerm
 # Target: state.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
 + ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
-File "state.ml", line 155, characters 8-9:
-155 |     let c = Graphics.read_key ()
+File "state.ml", line 161, characters 8-9:
+161 |     let c = Graphics.read_key ()
               ^
 Warning 26: unused variable c.
 # Compilation successful.

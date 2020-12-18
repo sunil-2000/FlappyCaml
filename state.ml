@@ -22,6 +22,7 @@ type t =
   | Sprite2 
   | Sprite3 
   | Dev
+  | Quit 
   (* add more states for game logic, then just pattern match against in 
   *)
 
@@ -30,6 +31,9 @@ let make_state () =
 (********************************SETTERS***************************************)
 let set_gameover state = 
   GameOver
+
+let set_quit state = 
+  Quit 
 
 let set_go state = 
   Go
@@ -66,7 +70,8 @@ let game_over player =
 (* [check_mouse_click] returns true if a mouse click has occured *)
 let check_key_click () = 
   let e = wait_next_event [Key_pressed] in
-  if e.keypressed then true else false 
+  if e.keypressed then true 
+  else false 
 
 let switch state player =
   Random.self_init (); 
@@ -97,13 +102,15 @@ let check_to_transition xl xr yb yt =
 (* transitions state appropriately if state = Start *)
 let check_state_start state = 
   match Graphics.key_pressed (), check_to_transition 255 355 195 220, 
-        check_to_transition 255 355 145 170, check_to_transition 255 355 95 120
+        check_to_transition 255 355 145 170, check_to_transition 255 355 245 270
+        , check_to_transition 500 600 0 50 
   with 
-  | true, _, _, _ -> Go 
-  | _, true, _, _ -> Instructions
-  | _, _, true, _ -> Sprites
-  | _, _, _, true -> Dev
-  | _, _, _, _ -> state  
+  | true, _, _, _, _ -> Go 
+  | _, true, _, _, _ -> Instructions
+  | _, _, true, _, _ -> Sprites
+  | _, _, _, true, _ -> Dev
+  | _, _, _, _, true -> Quit 
+  | _, _, _, _, _ -> state  
 
 (* transitions state appropriately if state = GameOver *)
 let check_state_over state = 
@@ -157,7 +164,7 @@ let flush_kp () =
   done
 
 let check_transition state player =
-  flush_kp ();
+  (* flush_kp (); *)
   old_score := Game.get_score player;
   match state with
   | ToGo ->
@@ -196,6 +203,9 @@ let check_dev state player =
   | true -> Start
   | false -> state
 
+let check_quit state player = 
+  Quit 
+
 (* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match state with 
@@ -212,6 +222,7 @@ let check state player =
   | ToGo -> check_transition state player
   | ToBomb -> check_transition state player
   | Dev -> check_dev state player
+  | Quit -> check_quit state player 
   | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
@@ -232,3 +243,4 @@ let string_of_state t =
   | Sprite2 -> "sprite2"
   | Sprite3 -> "sprite3"
   | Dev -> "dev"
+  | Quit -> "quit"

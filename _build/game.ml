@@ -60,7 +60,6 @@ type bomb_rec = {
   bomber_x : int;
 }
 
-
 type t = {
   position : (float * float);
   velocity : float;
@@ -120,10 +119,6 @@ let get_score_updated player =
 let get_highscore player = 
   max player.score player.highscore
 
-let get_y player =
-  match player.position with 
-  | (x,y) -> y |> int_of_float 
-
 let get_velocity player = 
   player.velocity 
 
@@ -141,9 +136,6 @@ let get_obs_x player =
   | Pipe {obs_type = _ ; obs_x = x} -> x 
   | Cactus {obs_type = _ ; obs_x = x} -> x + cactus_left_width
 
-let get_obs_y player = 
-  match player.obstacle with 
-  | _ -> failwith "cannot get y"
 (* add more obs type to match case if introducing more obstacles *)
 
 let get_pipe_type player = 
@@ -284,7 +276,6 @@ let gravity t_delta player =
   match player.obstacle with 
   | Pipe _ -> gravity_fly t_delta player
   | Cactus _ -> gravity_run t_delta player
-
 
 let jump_aux player vel_value =  
   if player.can_jump then 

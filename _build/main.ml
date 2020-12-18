@@ -4,7 +4,8 @@ open State
 
 (* gui, player, state initial values *)
 
-let player_init = Game.create (200., 350.) 5. 0 "pipe" (Some (Random.int 3)) 600 0
+let player_init = Game.create (200., 350.) 5. 0 "pipe" (Some (Random.int 3)) 
+    600 0
 let gui_init = Gui.make_state player_init
 let state_init = State.make_state ()
 
@@ -19,7 +20,7 @@ let fps = ref 0.
 let last_update = ref 0. 
 let target_fps = 60.
 let frame_count = ref 0
-let time_per_frame = 1. /. 60.
+let time_per_frame = 1. /. 120.
 let dummy = ref 0
 let death_time = ref (Unix.gettimeofday())
 
@@ -54,8 +55,7 @@ let rec main (gui:Gui.t) player state =
     let delta_t = time_instant -. !old_t in
     old_t := time_instant;
     old_t_fps := time_instant;
-    frame_count := (!frame_count) + 1;
-    print_string (State.string_of_state curr_state);    
+    frame_count := (!frame_count) + 1; 
     (**************************************)
     (* factor into helper for pattern matches against state *)
     (* state is abstract so need to make method for getting string_of_state, and
@@ -63,16 +63,18 @@ let rec main (gui:Gui.t) player state =
        type of state directly *)
     (** ************************************)
     match state' with 
-    | "start" -> start_game gui player curr_state 
+    | "start" -> static_screen gui player curr_state 
     | "go" -> fly gui player curr_state delta_t (!frame_count)
     | "run" -> run gui player curr_state delta_t (!frame_count)
     | "bomb" -> bomb gui player curr_state delta_t (!frame_count)
     | "death" -> death gui player curr_state delta_t 
     | "gameover" -> end_game gui player curr_state
-    | "instructions" -> instructions gui player curr_state
-    | "sprites" -> sprites gui player curr_state 
+    | "instructions" -> static_screen gui player curr_state
+    | "sprites" -> static_screen gui player curr_state 
     | "sprite1" | "sprite2" | "sprite3" -> select_char gui player curr_state
     | "torun" | "togo" | "tobomb" -> transition gui player curr_state delta_t
+    | "dev" -> static_screen gui player curr_state
+    | "quit" -> quit gui player curr_state 
     | _ -> failwith "state not implemented <- main"
     (**************************************)
 
@@ -88,22 +90,10 @@ and synchronize () =
   old_t_fps :=  Unix.gettimeofday ();
   Graphics.auto_synchronize true
 
-and instructions gui player state = 
+and static_screen gui player state = 
   synchronize ();
   Gui.draw_update gui (State.string_of_state state);
   main gui player state
-
-and sprites gui player state = 
-  synchronize ();
-  Gui.draw_update gui (State.string_of_state state);
-  main gui player state 
-
-(* [start_game gui player state] runs game with start screen and then changes
-   to go state when user executes a mouse click *)
-and start_game gui player state = 
-  synchronize ();
-  Gui.draw_update gui (State.string_of_state state);
-  main gui player state 
 
 (* [end_game gui player state] executes game when state = GameOver *)
 and end_game gui player state = 
@@ -116,7 +106,7 @@ and end_game gui player state =
     let highscore = Game.get_highscore player in 
     let new_player = Game.create (200., 350.) 5. highscore "pipe" 
         (Some (Random.int 3)) 600 0 in 
-    start_game gui_init new_player state_init
+    main gui_init new_player state_init
 
 and run_fly_aux gui player state delta_t frame gamefn guifn bool =  
   let player' = 
@@ -184,10 +174,13 @@ and death gui player state delta_t =
   main gui player' state
 
 and bomb gui player state delta_t frame = 
-  print_int (Game.get_player_y player);
   let bool = (Graphics.key_pressed ()) && (Graphics.read_key () = '\032') in 
   run_fly_aux gui player state delta_t frame Game.update Gui.update_bomb bool 
 
+and quit gui player state = 
+  Graphics.close_graph ()
+
 let () = 
   Graphics.open_graph "600 700";
-  start_game gui_init player_init state_init
+  Graphics.set_window_title "Flappy Caml"; 
+  main gui_init player_init state_init
