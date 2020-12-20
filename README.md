@@ -1,4 +1,4 @@
-# Flappy Caml
+# <img src="https://i.imgur.com/Z8PReLj.jpg" width="10%">&nbsp;Flappy Caml
 
 ![](flappycaml.gif)
 
