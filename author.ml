@@ -3,4 +3,4 @@
     @author Sunil Sabnis (svs57)
     @author Udai Khattar (uk49)
     @author Rishik Zaparde (rz293) *)
-let hours_worked = 14
+let hours_worked = 85

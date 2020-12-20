@@ -35,6 +35,11 @@ let player_width = 50
 let player_height = 50 
 
 let previous_power_score = ref 0 
+
+let bomb_drop = 10 
+let bomb_x_int = 3
+let bomber_h = 500
+let b_interval = 180 
 (******************************************************************************)
 type obs_rec = {
   obs_type : int option; 
@@ -75,13 +80,19 @@ type t = {
 }
 
 type player = t 
-(* {obst_type = None; obst_x = 600} <- inital values *)
+
+(* [create_obstacle] creates a pipe or cactus object based on the obs_name
+   passed, type of obstacle, and initial position*)
 let create_obstacle obs_name obs_int obs_x obs_y = 
   match obs_name with 
   | "pipe" -> Pipe {obs_type = obs_int; obs_x = obs_x; obs_y = obs_y}
   | "cactus" -> Cactus {obs_type = obs_int; obs_x = obs_x; obs_y = obs_y}
   | _ -> failwith "create_obstacle"
 
+(* [create] takes in a position (float * float), velocity (int), highscore (int)
+   , obstacle name (string), obstacle type (int), x (int), and y (int) and 
+   returns a player type with position and velocity specified and initializes 
+   all the fields needed to create a game *)
 (* set obs_y to 0 if pipe or cactus *)
 let create pos v highscore obs_name obs_int obs_x obs_y = {
   position = pos;
@@ -136,9 +147,7 @@ let get_obs_x player =
   | Pipe {obs_type = _ ; obs_x = x} -> x 
   | Cactus {obs_type = _ ; obs_x = x} -> x + cactus_left_width
 
-(* add more obs type to match case if introducing more obstacles *)
-
-let get_pipe_type player = 
+let get_obs_type player = 
   match player.obstacle with 
   | Pipe {obs_type = Some x; obs_x = _} -> x
   | Cactus {obs_type = Some x; obs_x = _} -> x
@@ -171,12 +180,13 @@ let set_obs_x x player =
     {player with obstacle = Cactus {obs_type = Some i; obs_x = x; obs_y = c}}
   | _ -> failwith"set_obs_x"
 
-let set_obs_type player name  =
+let set_obs_type name player  =
   Random.self_init ();
   match name, player.obstacle with
   | "cactus", (Pipe o | Cactus o)-> 
     let new_obs = 
-      Cactus {obs_type = Some (Random.int 1); obs_x = o.obs_x; obs_y = o.obs_y} in  (* 1 bc only 1 type cactus rn *)
+      Cactus {obs_type = Some (Random.int 1); obs_x = o.obs_x; 
+              obs_y = o.obs_y} in  (* 1 bc only 1 type cactus rn *)
     {player with obstacle = new_obs}
   | "pipe", (Pipe o | Cactus o) -> 
     let new_obs = 
@@ -194,6 +204,12 @@ let set_powerup name x y player =
 
 let set_pwr_active player bool = 
   {player with pwr_active = bool}
+
+(* [set_pwr_none player] is used to set the powerup field to None and 
+   pwr_active field to false. This function is called when the powerup should 
+   stop being applied to the player. *)
+let set_pwr_none player = 
+  {player with powerup = None; pwr_active = false }
 (******************************************************************************)
 (*******************GAME MECHANICS FUNCTIONS***********************************)
 
@@ -204,14 +220,18 @@ let move_obs d player =
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
     if b <= -75 then 
-      {player with obstacle = Pipe { obs_type = Some i; obs_x = 600; obs_y = 0}}
+      {player with obstacle = Pipe { obs_type = Some i; 
+                                     obs_x = 600; obs_y = 0}}
     else  
-      {player with obstacle = Pipe { obs_type = Some i; obs_x = b - d; obs_y = 0}}
+      {player with obstacle = Pipe { obs_type = Some i; 
+                                     obs_x = b - d; obs_y = 0}}
   | Cactus { obs_type = Some i; obs_x = b} -> 
     if b <= -75 then 
-      {player with obstacle = Cactus { obs_type = Some i; obs_x = 600; obs_y = 0}}
+      {player with obstacle = Cactus { obs_type = Some i; 
+                                       obs_x = 600; obs_y = 0}}
     else  
-      {player with obstacle = Cactus { obs_type = Some i; obs_x = b - d; obs_y = 0}}
+      {player with obstacle = Cactus { obs_type = Some i; 
+                                       obs_x = b - d; obs_y = 0}}
   | _ -> failwith "move_obs"
 
 let pipe_type_change player = 
@@ -219,21 +239,12 @@ let pipe_type_change player =
   match player.obstacle with 
   | Pipe { obs_type = Some i; obs_x = b} -> 
     if b = -75 then 
-      {player with obstacle = Pipe {obs_type = Some (Random.int 3); obs_x = b; obs_y = 0}}
+      {player with obstacle = Pipe {obs_type = Some (Random.int 3); 
+                                    obs_x = b; obs_y = 0}}
     else 
       player 
   | Cactus _ -> player 
   | _ -> failwith "pipe_type_change"
-
-(*let powerup_height_change player = 
-  match player.obstacle with 
-  | Pipe { obs_type = Some i; obs_x = b} -> 
-    if b = -75 then 
-      {player with obstacle = Pipe {obs_type = Some (Random.int 3); obs_x = b}}
-    else 
-      player 
-  | Cactus _ -> player 
-  | _ -> failwith "pipe_type_change"*)
 
 (* [gravity_fly t_delta player] is the main gravity function used when state
    = Go (fly) or Bomb *)
@@ -277,12 +288,16 @@ let gravity t_delta player =
   | Pipe _ -> gravity_fly t_delta player
   | Cactus _ -> gravity_run t_delta player
 
+(* [jump_aux player vel_value] is a helper function for [jump] that sets the 
+   player's velocity to [vel_value] if the player.can_jump field is true. *)
 let jump_aux player vel_value =  
   if player.can_jump then 
     {player with velocity = vel_value; can_jump = false}
   else 
     player 
 
+(* [jump player] is a function that is responsible for the jump mechanice. It 
+   applies the jump if player.can_jump = true *)
 let jump player = 
   if player.can_jump then 
     match player.obstacle with 
@@ -318,7 +333,8 @@ let collision player =
     let player_y =  get_player_y player in 
     match pipe_chooser player with 
     | (bottom, top) -> 
-      if player_y <= bottom + bottom_height || player_y + player_height >= top then 
+      if player_y <= bottom + bottom_height || 
+         player_y + player_height >= top then 
         {player with collision = true}
       else 
         player 
@@ -378,7 +394,7 @@ let create_powerup pwr_name =
 
 (* [generate_powerup player] randomly generates a powerup object in the game.
    A powerup is not generated if one is already active. *)
-let generate_powerup player =  (* adding conditional on pwr_active *)
+let generate_powerup player = 
   Random.self_init ();
   if player.powerup = None then 
     match Random.int 3 with 
@@ -397,11 +413,14 @@ let generate_powerup player =  (* adding conditional on pwr_active *)
   else 
     player 
 
+(* [powerup_change player] sets the powerup field to None and pwr_active field
+   to false if the player has passed two obstacles (score incremented by 2) *)
 let powerup_change player = 
   if player.score - !previous_power_score = 2 then 
     {player with powerup = None; pwr_active = false}
   else 
     player 
+
 (* [move_powerup player] moves the powerup object appropriately. If active is true
    then return None as powerup *)
 let move_powerup player = 
@@ -441,16 +460,10 @@ let powerup_collision w1 h1 w2 h2 player =
   else 
     player 
 
-let set_pwr_none player = 
-  {player with powerup = None; pwr_active = false }
-
 (********************************BOMB STATE************************************)
 
-(* 500 = y , 80 is bomb interval*)
-let bomber_h = 500
-let b_interval = 180 
-
 let rec generate_aux (lst : bomb list) mult  = 
+  Random.self_init ();
   if List.length lst < 3 then 
     match lst, 1 with 
     | [] , 1 -> 
@@ -471,14 +484,18 @@ let rec generate_aux (lst : bomb list) mult  =
 
 let move_bomber player = 
   if player.bomb.bomber_x = 600 then 
-    {player with bomb = {bombs = generate_aux [] 1; bomber_x = player.bomb.bomber_x - 1 }}
+    {player with
+     bomb = 
+       {bombs = generate_aux [] 1; 
+        bomber_x = player.bomb.bomber_x - 1 }}
   else if player.bomb.bomber_x = -240 then 
-    {player with score = player.score + 5; bomb = {bombs = player.bomb.bombs; bomber_x = player.bomb.bomber_x - 1}}
+    {player with score = player.score + 5; 
+                 bomb = 
+                   {bombs = player.bomb.bombs; 
+                    bomber_x = player.bomb.bomber_x - 1}}
   else 
-    {player with bomb = {bombs = player.bomb.bombs; bomber_x = player.bomb.bomber_x - 1}} 
-
-let bomb_drop = 10 
-let bomb_x_int = 3
+    {player with bomb = {bombs = player.bomb.bombs; 
+                         bomber_x = player.bomb.bomber_x - 1}} 
 
 let rec dropping_bombs lst = 
   match lst with 
@@ -490,7 +507,6 @@ let rec dropping_bombs lst =
           Bomb (x - 1, y - 1, bool) :: dropping_bombs t 
         else 
           Bomb (x, y, bool) :: dropping_bombs t 
-
       | None -> None :: dropping_bombs t
     end 
   | [] -> []
@@ -502,16 +518,22 @@ let rec make_true bomb_list player =
       match h with 
       | None -> None :: make_true t player
       | Bomb (x, y, b) -> begin
-          if x >= player.bomb.bomber_x then Bomb (x, y, true) :: make_true t player else Bomb (x, y, b) :: make_true t player
+          if x >= player.bomb.bomber_x then 
+            Bomb (x, y, true) :: make_true t player 
+          else 
+            Bomb (x, y, b) :: make_true t player
         end
     end
 
 
 let drop_bomb player = 
-  if (game_width - player.bomb.bomber_x) mod b_interval = 0 && player.bomb.bomber_x > 0 then 
-    {player with bomb = {bombs = make_true player.bomb.bombs player; bomber_x = player.bomb.bomber_x }}
+  if (game_width - player.bomb.bomber_x) mod b_interval = 0 && 
+     player.bomb.bomber_x > 0 then 
+    {player with bomb = {bombs = make_true player.bomb.bombs player; 
+                         bomber_x = player.bomb.bomber_x }}
   else 
-    {player with bomb = {bombs = dropping_bombs player.bomb.bombs; bomber_x = player.bomb.bomber_x}}
+    {player with bomb = {bombs = dropping_bombs player.bomb.bombs; 
+                         bomber_x = player.bomb.bomber_x}}
 
 
 let bomb_collision player x1 y1 = 
@@ -540,18 +562,19 @@ let rec check_bomb_collision  player lst =
       | None -> check_bomb_collision player t
       | Bomb (x, y, b) ->  
         if b && bomb_collision player x y then 
-          true else 
+          true 
+        else 
           check_bomb_collision player t
     end
   | [] -> false
 
 (* [collision_bomb player] returns {player with collision = true} if the player 
    hits a bomb, during the Bomb state, otherwise it returns the same player *)
-
 let collision_bomb player = 
-  if check_bomb_collision player player.bomb.bombs then {player with collision = true} else player
-
-
+  if check_bomb_collision player player.bomb.bombs then {
+    player with collision = true} 
+  else
+    player
 
 (******************************************************************************)
 
@@ -640,6 +663,7 @@ and update_tobomb t_delta player =
 and update_death t_delta player = 
   gravity_fly t_delta player 
 
+(* [update_bomb t_delta player] updates the player when state = bomb *)
 and update_bomb t_delta player = 
   jump player 
   |> gravity_fly t_delta
@@ -678,3 +702,18 @@ let int_of_powerup player =
 
 let get_pwr_active player =
   player.pwr_active
+
+let string_of_bomb bomb = 
+  match bomb with 
+  | None -> "None"
+  | Bomb (x, y, b) -> "[Bomb: (" ^ string_of_int x ^ ", " ^ 
+                      string_of_int y ^ "); " ^ string_of_bool b ^ "]"
+
+let rec pp_bomb_lst_aux lst = 
+  match lst with 
+  | h :: t -> string_of_bomb h ^ pp_bomb_lst_aux t 
+  | [] -> ""
+
+let pp_bomb_lst player = 
+  pp_bomb_lst_aux player.bomb.bombs 
+

@@ -8,8 +8,7 @@ let state_interval = ref 0
 type t = 
   | Start
   | GameOver 
-  | Go (* flying *) 
-  | Pause 
+  | Go 
   | Run 
   | Bomb 
   | ToBomb 
@@ -17,14 +16,13 @@ type t =
   | ToRun 
   | Death 
   | Instructions
+  | Easter
   | Sprites
-  | Sprite1 (* right now 1 represents clarkson, 2 = gries, 3 = camel *)
+  | Sprite1 
   | Sprite2 
   | Sprite3 
   | Dev
   | Quit 
-  (* add more states for game logic, then just pattern match against in 
-  *)
 
 let make_state () =  
   Start
@@ -60,13 +58,6 @@ let set_instructions state =
   Instructions
 (******************************************************************************)
 
-let game_over player = 
-  let y = snd (Game.get_position player) in 
-  if y < 100. then 
-    true 
-  else 
-    false
-
 (* [check_mouse_click] returns true if a mouse click has occured *)
 let check_key_click () = 
   let e = wait_next_event [Key_pressed] in
@@ -87,9 +78,10 @@ let switch state player =
   | Bomb, 2 -> ToGo
   | _ -> failwith "switch"
 
-(* return true if state should transition to instruction screen 
-   xl = left boundary, xr = right boundary, yb = bottom boundary, 
-   yt = top boundary *)
+(* [check_to_transition xl xr yb yt] returns true if the user's mouse is within
+   the [xl, xr] and [yb yt] range and the user has clicked. 
+   xl = left boundary, xr = right boundary, 
+   yb = bottom boundary, yt = top boundary *)
 let check_to_transition xl xr yb yt = 
   match Graphics.mouse_pos () , Graphics.button_down () with 
   | (x, y), b -> 
@@ -99,11 +91,15 @@ let check_to_transition xl xr yb yt =
     else 
       false  
 
-(* transitions state appropriately if state = Start *)
+(* [check_state_start state] transitions state appropriately if state = Start.
+   If the user presses any button the state switches to Go; the other state 
+   transitions are determined if the user presses a specific area of the screen. *)
 let check_state_start state = 
-  match Graphics.key_pressed (), check_to_transition 255 355 195 220, 
-        check_to_transition 255 355 145 170, check_to_transition 255 355 245 270
-        , check_to_transition 500 600 0 50 
+  match Graphics.key_pressed (), 
+        check_to_transition 255 355 195 220, 
+        check_to_transition 255 355 145 170, 
+        check_to_transition 255 355 245 270, 
+        check_to_transition 500 600 0 50 
   with 
   | true, _, _, _, _ -> Go 
   | _, true, _, _, _ -> Instructions
@@ -112,32 +108,37 @@ let check_state_start state =
   | _, _, _, _, true -> Quit 
   | _, _, _, _, _ -> state  
 
-(* transitions state appropriately if state = GameOver *)
+(* [check_state_over state] transitions state appropriately if state = GameOver *)
 let check_state_over state = 
   match check_key_click () with 
   | true -> Start
-  | false -> state 
+  | _ -> state
 
+(* [check_instructions state] transitions state appropriately if 
+    state = Instructions*)
 let check_instructions state = 
   match check_to_transition 450 550 50 100 with 
   | true -> Start
   | false -> state
-
+(* [check_sprite_select state] is a helper function used to transition the state 
+    appropriately if state = Sprite *)
 let check_sprite_select state = 
   let sp1 = check_to_transition 170 220 300 350 in 
   let sp2 = check_to_transition 270 320 300 350 in 
   let sp3 = check_to_transition 370 420 300 350 in 
   match sp1, sp2, sp3 with 
-  | true, _, _ -> Sprite1 (* clarkson *)
-  | _, true, _ -> Sprite2 (* gries *)
-  | _, _, true -> Sprite3 (* camel *)
+  | true, _, _ -> Sprite1 
+  | _, true, _ -> Sprite2 
+  | _, _, true -> Sprite3 
   | _ -> state 
 
+(* [check_sprites state] transitions state appropriately if state = Sprites *)
 let check_sprites state = 
   match check_to_transition 450 550 50 100 with 
   | true -> Start
   | false -> check_sprite_select state
 
+(* [check_go state player] transitions state appropriately if state = Go *)
 let check_go state player = 
   if (Game.get_player_y player < 100 && state = Go) 
   || Game.get_collision player then 
@@ -148,6 +149,7 @@ let check_go state player =
   else 
     state 
 
+(* [check_run state player] transitions state appropriately if state = Run *)
 let check_run state player = 
   if Game.get_collision player then 
     Death
@@ -157,14 +159,17 @@ let check_run state player =
   else 
     state
 
+(* [flush_kp ()] removes all the key presses in the queue *)
 let flush_kp () = 
   while Graphics.key_pressed () do
     let c = Graphics.read_key ()
     in ()
   done
 
+(* [check_transition state player] transitions state appropriately if state = 
+   ToGo or ToRun or ToBomb *)
 let check_transition state player =
-  (* flush_kp (); *)
+  flush_kp ();
   old_score := Game.get_score player;
   match state with
   | ToGo ->
@@ -184,29 +189,41 @@ let check_transition state player =
       state
   | _ -> failwith "not a transition state [check_transition]"
 
+(* [check_death state player] transitions state appropriately if state = Death *)
 let check_death state player = 
   if Game.get_player_y player <= -50 then 
     GameOver
   else 
     state  
 
+(* [check_bomb state player] transitions state appropriately if state = Bomb *)
 let check_bomb state player = 
   if Game.get_collision player then 
-    GameOver
+    Death
   else if Game.get_bomber_x player < -240 then (* plane width = 240 *)
     ToRun
   else 
     state 
 
+(* [check_dev state player] transitions state appropriately if state = Dev *)
 let check_dev state player = 
+  match check_to_transition 450 550 50 100, 
+        check_to_transition 420 470 220 270  with 
+  | true, _ -> Start
+  | _, true -> Easter
+  | _, _ -> state
+
+(* [check_easter state player] transitions state appropriately if state = 
+   Easter *)
+let check_easter state player = 
   match check_to_transition 450 550 50 100 with 
   | true -> Start
-  | false -> state
+  | false -> state 
 
+(* [check_quit state player] transitions state appropriately if state = Quit *)
 let check_quit state player = 
   Quit 
 
-(* [check state player] returns the correct state of the game at given instance *)
 let check state player = 
   match state with 
   | GameOver -> check_state_over state 
@@ -215,6 +232,7 @@ let check state player =
   | Start -> check_state_start state 
   | Run -> check_run state player 
   | Bomb -> check_bomb state player
+  | Easter -> check_easter state player
   | Instructions -> check_instructions state
   | Sprites -> check_sprites state
   | Sprite1 | Sprite2 | Sprite3 -> state 
@@ -223,7 +241,6 @@ let check state player =
   | ToBomb -> check_transition state player
   | Dev -> check_dev state player
   | Quit -> check_quit state player 
-  | _ -> failwith "not implmented in state.ml [check]"
 
 let string_of_state t = 
   match t with 
@@ -231,9 +248,9 @@ let string_of_state t =
   | Death -> "death"
   | GameOver -> "gameover"
   | Start -> "start"
-  | Pause -> "pause"
   | Run -> "run"
   | Bomb -> "bomb"
+  | Easter -> "easter"
   | ToGo -> "togo"
   | ToRun -> "torun"
   | ToBomb -> "tobomb"
