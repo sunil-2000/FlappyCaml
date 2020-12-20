@@ -2,6 +2,9 @@
 
 ![](flappycaml.gif)
 
+## Description
+This project was done for CS 3110, Fall 2020.
+
 ## Setting Up Your Environment
 
 This project depends on:
@@ -16,7 +19,7 @@ To install the packages: run the command ```opam install 'package_name'```.
 
 ## Starting Up Your Environment
 
-To build the project and run the game run ```make```. XQuartz should open up after 20-30 seconds after the first ```make``` command.
+To build the project and run the game run ```make play```. XQuartz should open up after 20-30 seconds after the first ```make``` command.
 
 ## Contributors
 
