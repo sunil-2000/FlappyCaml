@@ -4,7 +4,10 @@
 
 ## Setting Up Your Environment
 
-This project depends on the graphics and camlimages packages.
+This project depends on the packages:
+* graphics
+* camlimages 
+
 To install the packages: run the command ```opam install 'package_name'```. 
 
 ## Contributors
