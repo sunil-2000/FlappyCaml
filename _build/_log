@@ -2,13 +2,54 @@
 # Target: gui.mli.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:mli, file:gui.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.mli > gui.mli.depends # cached
 # Target: game.mli.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:mli, file:game.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.mli > game.mli.depends
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.mli > game.mli.depends # cached
 # Target: game.cmi, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:mli, file:game.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o game.cmi game.mli
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o game.cmi game.mli # cached
 # Target: gui.cmi, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:mli, file:gui.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmi gui.mli
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmi gui.mli # cached
 # Target: gui.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:gui.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.ml > gui.ml.depends # cached
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.ml > gui.ml.depends
++ ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules gui.ml > gui.ml.depends
+File "gui.ml", line 378, characters 35-37:
+378 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+                                         ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 378, characters 41-43:
+378 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+                                               ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 378, characters 70-72:
+378 |   draw_string " | |_  | |/ _` | '_ \| '_ \| | | | | |   / _` | '_ ` _ \| |";
+                                                                            ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 382, characters 25-27:
+382 |   draw_string " |_|   |_|\__,_| ._
+                               ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 382, characters 43-45:
+382 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+                                                 ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 382, characters 51-53:
+382 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+                                                         ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 382, characters 56-58:
+382 |   draw_string " |_|   |_|\__,_| .__/| .__/ \__, |  \____\__,_|_| |_| |_|_|";
+                                                              ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 393, characters 35-37:
+393 |   draw_string "          /--'/--\  \-'||        .----.    .'     '.
+                                         ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 395, characters 33-35:
+395 |   draw_string "         /        \_/ / |      .'      '..'         '-.";
+                                       ^^
+Warning 14: illegal backslash escape in string.
+File "gui.ml", line 397, characters 27-29:
+397 |   draw_string "       .'\  \__\  __.'.'     .'          -._           ";
+                                 ^^
+Warning 14: illegal backslash escape in string.
 # Target: gui.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmo gui.ml
 + ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o gui.cmo gui.ml
@@ -53,28 +94,23 @@ File "gui.ml", line 397, characters 27-29:
                                  ^^
 Warning 14: illegal backslash escape in string.
 # Target: main.mli.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:mli, file:main.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules main.mli > main.mli.depends
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules main.mli > main.mli.depends # cached
 # Target: state.mli.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:mli, file:state.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules state.mli > state.mli.depends # cached
 # Target: state.cmi, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:mli, file:state.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmi state.mli
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmi state.mli # cached
 # Target: main.cmi, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:mli, file:main.mli, interf, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmi main.mli
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmi main.mli # cached
 # Target: main.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules main.ml > main.ml.depends # cached
 # Target: main.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmo main.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o main.cmo main.ml # cached
 # Target: game.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:game.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends
+ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules game.ml > game.ml.depends # cached
 # Target: game.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:game.cmo, file:game.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o game.cmo game.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o game.cmo game.ml # cached
 # Target: state.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), extension:ml, file:state.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -modules state.ml > state.ml.depends # cached
 # Target: state.cmo, tags: { package(ANSITerminal), package(Graphics), package(camlimages), package(camlimages.jpeg), package(camlimages.png), package(graphics), package(oUnit), package(str), package(yojson), byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
-+ ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml
-File "state.ml", line 165, characters 8-9:
-165 |     let c = Graphics.read_key ()
-              ^
-Warning 26: unused variable c.
+ocamlfind ocamlc -c -package oUnit -package yojson -package str -package ANSITerminal -package Graphics -package camlimages -package camlimages.png -package camlimages.jpeg -package graphics -o state.cmo state.ml # cached
 # Compilation successful.

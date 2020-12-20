@@ -471,6 +471,12 @@ let draw_instructions init =
   draw_string "Press spacebar to jump through the obstacles when flying";
   moveto 150 380;
   draw_string "and over the obstacles when running.";
+  moveto 150 360;
+  draw_string "If you touch a star or turtle, the player will have a status";
+  moveto 150 340;
+  draw_string "effect. A star grants invincibility, while the turtle slows";
+  moveto 150 320;
+  draw_string "the player down";
   draw_camel_ascii init 100 300;
   set_color red; 
   fill_rect 450 50 100 50;
