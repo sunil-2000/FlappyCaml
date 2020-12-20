@@ -4,11 +4,19 @@
 
 ## Setting Up Your Environment
 
+This project depends on:
+* OCaml (4.10.0 as of this writing)
+* XQuartz (2.7.11 as of this writing)
+
 This project depends on the packages:
-* graphics
-* camlimages 
+* graphics (5.1.0 as of this writing)
+* camlimages (5.0.4 as of this writing)
 
 To install the packages: run the command ```opam install 'package_name'```. 
+
+## Starting Up Your Environment
+
+To build the project and run the game run ```make```. XQuartz should open up after 20-30 seconds after the first ```make``` command.
 
 ## Contributors
 
