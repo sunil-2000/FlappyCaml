@@ -4,6 +4,9 @@
 
 ## Setting Up Your Environment
 
+This project depends on the graphics and camlimages packages.
+To install the packages: run the command opam install 'package_name'. 
+
 ## Contributors
 
 * [**Rishik Zaparde**](https://github.coecis.cornell.edu/rz293)
